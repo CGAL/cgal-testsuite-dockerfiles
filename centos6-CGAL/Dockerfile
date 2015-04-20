@@ -19,5 +19,5 @@ RUN yum -y install cmake gcc-c++  \
                    /usr/lib64/libXxf86vm.so /usr/lib64/libjpeg.so \
                    /usr/lib64/libxcb.so /usr/lib64/libdrm.so \
                    /usr/lib64/libfreetype.so /usr/lib64/libfontconfig.so \
-                   zlib-devel.x86_64; \
-    yum clean all
+                   zlib-devel.x86_64
+RUN yum clean all
