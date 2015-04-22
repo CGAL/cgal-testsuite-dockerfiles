@@ -38,6 +38,11 @@ def get_cgal(latest, testsuite):
     download_from=cgal_release_url + latest
     download_to=os.path.join(testsuite, os.path.basename(download_from))
     print 'Trying to download latest release to ' + download_to
+
+    if os.path.exists(download_to):
+        print download_to + ' already exists, reusing'
+        return download_to
+
     try:
         response = urllib2.urlopen(download_from)
         with open(download_to, "wb") as local_file:
