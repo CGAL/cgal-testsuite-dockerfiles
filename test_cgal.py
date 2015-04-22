@@ -71,6 +71,23 @@ def image_default():
             images.append(tag)
     return images
 
+# TODO pythonize me
+def do_images_exist(images):
+    client = docker.Client(base_url='unix://var/run/docker.sock')
+    dimages = client.images()
+    for img in images:
+        found = False
+        for dimg in dimages:
+            if any(x == img for x in dimg[u'RepoTags']):
+                found = True
+                break
+            else:
+                found = False
+        if not found:
+            print 'Could not find image: ' + img
+            return False
+    return True
+
 def launch_image(img, client):
     return ''
 
@@ -97,7 +114,7 @@ def main():
 
     if not args.images: # no images, use default
         args.images=image_default()
-    # TODO assert that the listed images actually exist
+    assert(do_images_exist(args.images))
 
     print 'Using images ' + ', '.join(args.images)
 
