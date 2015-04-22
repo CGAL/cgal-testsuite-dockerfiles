@@ -70,10 +70,13 @@ def main():
     urllib2.install_opener(opener)
 
     if not args.use_local:
-        print 'Downloading CGAL'
+        print 'Trying to determine LATEST'
         latest = get_latest()
-        get_cgal(latest)
-        # unzip_cgal
+        print 'LATEST is ' + latest
+        print 'Trying to download latest release'
+        path_to_release=get_cgal(latest)
+        print 'Unzipping latest release and cleaning up'
+        unzip(path_to_release)
     else:
         print 'Using local CGAL'
 
