@@ -24,6 +24,7 @@ import urllib2
 cgal_release_url='https://cgal.geometryfactory.com/CGAL/Members/Releases/'
 
 def get_latest():
+    print 'Trying to determine LATEST'
     try:
         response = urllib2.urlopen(cgal_release_url + 'LATEST')
         return response.read()
@@ -32,14 +33,22 @@ def get_latest():
             print 'Did you forget to provide --username and --passwd?'
         sys.exit('Failure retrieving LATEST: ' +  e.reason)
 
-def get_cgal(latest):
+def get_cgal(latest, testsuite):
+    download_from=cgal_release_url + latest
+    download_to=os.path.join(testsuite, os.path.basename(download_from))
+    print 'Trying to download latest release to ' + download_to
     try:
-        response = urllib2.urlopen(cgal_release_url + latest)
-        return ''
+        response = urllib2.urlopen(download_from)
+        with open(download_to, "wb") as local_file:
+            local_file.write(response.read())
+        return download_to
     except urllib2.URLError as e:
         if hasattr(e, 'code') and e.code == 401:
             print 'Did you forget to provide --username and --passwd?'
         sys.exit('Failure retrieving the CGAL specified by latest.' + e.reason)
+
+def extract(path):
+    return ''
 
 def main():
     parser = argparse.ArgumentParser(
@@ -72,13 +81,11 @@ def main():
         urllib2.install_opener(opener)
 
     if not args.use_local:
-        print 'Trying to determine LATEST'
         latest = get_latest()
         print 'LATEST is ' + latest
-        print 'Trying to download latest release'
-        path_to_release=get_cgal(latest)
-        print 'Unzipping latest release and cleaning up'
-        unzip(path_to_release)
+        path_to_release=get_cgal(latest, args.testsuite)
+        print 'Extracting latest release and cleaning up'
+        extract(path_to_release)
     else:
         print 'Using local CGAL'
 
