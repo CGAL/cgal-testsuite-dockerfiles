@@ -105,7 +105,6 @@ def main():
     # TODO make internal releases and latest public?
     parser.add_argument('--user', help='Username for CGAL Members')
     parser.add_argument('--passwd', help='Password for CGAL Members')
-    # TODO Add the default by parsing docker ps
     parser.add_argument('--images', nargs='*', help='List of images to launch, defaults to all prefixed with cgal-testsuite')
 
     args = parser.parse_args()
