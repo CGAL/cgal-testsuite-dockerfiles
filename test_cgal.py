@@ -54,6 +54,7 @@ def get_cgal(latest, testsuite):
             print 'Did you forget to provide --username and --passwd?'
         sys.exit('Failure retrieving the CGAL specified by latest.' + e.reason)
 
+# TODO This could do with some verification of paths in the tarfile.
 def extract(path):
     print 'Extracting ' + path
     tar = tarfile.open(path)
