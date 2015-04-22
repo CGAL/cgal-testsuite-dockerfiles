@@ -60,6 +60,8 @@ def extract(path):
     tar.close()
     os.remove(path)
 
+def launch_image(img):
+
 def main():
     parser = argparse.ArgumentParser(
         description='''This script launches docker containers which run the CGAL testsuite.''')
@@ -75,7 +77,7 @@ def main():
     parser.add_argument('--user', help='Username for CGAL Members')
     parser.add_argument('--passwd', help='Password for CGAL Members')
     # TODO Add the default by parsing docker ps
-    parser.add_argument('--containers', nargs='*', help='List of containers to launch, defaults to all prefixed with cgal-testsuite-dockerfiles')
+    parser.add_argument('--images', nargs='*', help='List of images to launch, defaults to all prefixed with cgal-testsuite')
 
     args = parser.parse_args()
     assert os.path.isabs(args.testsuite)
@@ -98,7 +100,8 @@ def main():
     else:
         print 'Using local CGAL'
 
-    # launch_containers
+    for img in args.images:
+        launch_image(img)
     # upload_results
 
 
