@@ -21,6 +21,7 @@ from os import path
 import sys
 import urllib2
 import tarfile
+import docker
 
 cgal_release_url='https://cgal.geometryfactory.com/CGAL/Members/Releases/'
 
@@ -60,7 +61,18 @@ def extract(path):
     tar.close()
     os.remove(path)
 
-def launch_image(img):
+def image_default():
+    images = []
+    client = docker.Client(base_url='unix://var/run/docker.sock')
+    for img in client.images():
+        # Find all images with a tag that has the prefix cgal-testsuite/ 
+        tag = next((x for x in img[u'RepoTags'] if x.startswith(u'cgal-testsuite/')), None)
+        if tag:
+            images.append(tag)
+    return images
+
+def launch_image(img, client):
+    return ''
 
 def main():
     parser = argparse.ArgumentParser(
@@ -83,6 +95,12 @@ def main():
     assert os.path.isabs(args.testsuite)
     assert os.path.isabs(args.testresults)
 
+    if not args.images: # no images, use default
+        args.images=image_default()
+    # TODO assert that the listed images actually exist
+
+    print 'Using images ' + ', '.join(args.images)
+
     # Prepare urllib to use the magic words
     if not args.use_local and args.user and args.passwd:
         print 'Setting up user and password for download.'
@@ -100,10 +118,10 @@ def main():
     else:
         print 'Using local CGAL'
 
-    for img in args.images:
-        launch_image(img)
+    client = docker.Client(base_url='unix://var/run/docker.sock')
+    # for img in args.images:
+    #     launch_image(img, client)
     # upload_results
-
 
 if __name__ == "__main__":
     main()
