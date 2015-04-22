@@ -143,7 +143,12 @@ def main():
 
     if not args.images: # no images, use default
         args.images=image_default()
-    assert(do_images_exist(args.images))
+    assert do_images_exist(args.images), 'Specified images could not be found.'
+
+    if args.upload_results:
+        assert args.tester, 'When uploading a --tester has to be given'
+        assert args.tester_name, 'When uploading a --tester-name has to be given'
+        assert args.tester_address, 'When uploading a --tester-name has to be given'
 
     print 'Using images ' + ', '.join(args.images)
 
