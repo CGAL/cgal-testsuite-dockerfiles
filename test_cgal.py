@@ -20,6 +20,7 @@ import os
 from os import path
 import sys
 import urllib2
+import tarfile
 
 cgal_release_url='https://cgal.geometryfactory.com/CGAL/Members/Releases/'
 
@@ -48,7 +49,11 @@ def get_cgal(latest, testsuite):
         sys.exit('Failure retrieving the CGAL specified by latest.' + e.reason)
 
 def extract(path):
-    return ''
+    print 'Extracting ' + path
+    tar = tarfile.open(path)
+    tar.extractall(os.dirname(path)) # extract to the download path
+    tar.close()
+    os.remove(path)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -84,7 +89,6 @@ def main():
         latest = get_latest()
         print 'LATEST is ' + latest
         path_to_release=get_cgal(latest, args.testsuite)
-        print 'Extracting latest release and cleaning up'
         extract(path_to_release)
     else:
         print 'Using local CGAL'
