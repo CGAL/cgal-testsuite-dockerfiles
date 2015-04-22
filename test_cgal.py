@@ -63,11 +63,13 @@ def main():
     assert os.path.isabs(args.testresults)
 
     # Prepare urllib to use the magic words
-    password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-    password_mgr.add_password(None, cgal_release_url, args.user, args.passwd)
-    handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-    opener = urllib2.build_opener(handler)
-    urllib2.install_opener(opener)
+    if not args.use_local and args.user and args.passwd:
+        print 'Setting up user and password for download.'
+        password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        password_mgr.add_password(None, cgal_release_url, args.user, args.passwd)
+        handler = urllib2.HTTPBasicAuthHandler(password_mgr)
+        opener = urllib2.build_opener(handler)
+        urllib2.install_opener(opener)
 
     if not args.use_local:
         print 'Trying to determine LATEST'
