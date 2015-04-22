@@ -16,8 +16,10 @@
 # Author(s)     : Philipp Moeller
 
 import argparse
+import getpass # getuser
 import os
 from os import path
+import socket # gethostname
 import sys
 import urllib2
 import tarfile
@@ -113,18 +115,27 @@ def start_container(container, client, testsuite, testresults):
 def main():
     parser = argparse.ArgumentParser(
         description='''This script launches docker containers which run the CGAL testsuite.''')
+
+    # Testing related arguments
+    parser.add_argument('--images', nargs='*', help='List of images to launch, defaults to all prefixed with cgal-testsuite')
     parser.add_argument('--testsuite', metavar='/path/to/testsuite',
                         help='Absolute path where the release is going to be stored.',
                         default=os.path.abspath('./testsuite'))
     parser.add_argument('--testresults', metavar='/path/to/testresults',
                         help='Absolute path where the testresults are going to be stored.',
                         default=os.path.abspath('./testresults'))
-    parser.add_argument('--upload-results', action='store_true', help='Actually upload the test results.')
+
+    # Download related arguments
     parser.add_argument('--use-local', action='store_true', help='Actually upload the test results.')
     # TODO make internal releases and latest public?
     parser.add_argument('--user', help='Username for CGAL Members')
     parser.add_argument('--passwd', help='Password for CGAL Members')
-    parser.add_argument('--images', nargs='*', help='List of images to launch, defaults to all prefixed with cgal-testsuite')
+
+    # Upload related arguments
+    parser.add_argument('--upload-results', action='store_true', help='Actually upload the test results.')
+    parser.add_argument('--tester', nargs=1, help='The tester', default=getpass.getuser())
+    parser.add_argument('--tester-name', nargs=1, help='The name of the tester', default=socket.gethostname())
+    parser.add_argument('--tester-address', nargs=1, help='The mail address of the tester')
 
     args = parser.parse_args()
     assert os.path.isabs(args.testsuite)
