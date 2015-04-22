@@ -27,7 +27,7 @@ def get_latest():
     print 'Trying to determine LATEST'
     try:
         response = urllib2.urlopen(cgal_release_url + 'LATEST')
-        return response.read()
+        return response.read().strip()
     except urllib2.URLError as e:
         if hasattr(e, 'code') and e.code == 401:
             print 'Did you forget to provide --username and --passwd?'
