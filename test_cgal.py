@@ -18,19 +18,28 @@
 import argparse
 import os
 from os import path
+import sys
 import urllib2
 
 cgal_release_url='https://cgal.geometryfactory.com/CGAL/Members/Releases/'
 
 def get_latest():
-    # Better error handling
-    response = urllib2.urlopen(cgal_release_url + 'LATEST')
-    return response.read()
+    try:
+        response = urllib2.urlopen(cgal_release_url + 'LATEST')
+        return response.read()
+    except urllib2.URLError as e:
+        if hasattr(e, 'code') and e.code == 401:
+            print 'Did you forget to provide --username and --passwd?'
+        sys.exit('Failure retrieving LATEST: ' +  e.reason)
 
 def get_cgal(latest):
-    # Better error handling
-    response = urllib2.urlopen(cgal_release_url + latest)
-    return ''
+    try:
+        response = urllib2.urlopen(cgal_release_url + latest)
+        return ''
+    except urllib2.URLError as e:
+        if hasattr(e, 'code') and e.code == 401:
+            print 'Did you forget to provide --username and --passwd?'
+        sys.exit('Failure retrieving the CGAL specified by latest.' + e.reason)
 
 def main():
     parser = argparse.ArgumentParser(
