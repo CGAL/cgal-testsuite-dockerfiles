@@ -66,7 +66,7 @@ def image_default():
     images = []
     client = docker.Client(base_url='unix://var/run/docker.sock')
     for img in client.images():
-        # Find all images with a tag that has the prefix cgal-testsuite/ 
+        # Find all images with a tag that has the prefix cgal-testsuite/
         tag = next((x for x in img[u'RepoTags'] if x.startswith(u'cgal-testsuite/')), None)
         if tag:
             images.append(tag)
@@ -89,8 +89,26 @@ def do_images_exist(images):
             return False
     return True
 
-def launch_image(img, client):
-    return ''
+def create_container(img, client):
+    return client.create_container(
+        image=img,
+        command='ls /mnt',
+        volumes=['/mnt/testsuite', '/mnt/testresults']
+    )
+
+def start_container(container, client, testsuite, testresults):
+    client.start(container, binds={
+        testsuite:
+        {
+            'bind': '/mnt/testsuite',
+            'ro': True
+        },
+        testresults:
+        {
+            'bind': '/mnt/testresults',
+            'ro': True
+        }
+    })
 
 def main():
     parser = argparse.ArgumentParser(
@@ -136,8 +154,16 @@ def main():
         print 'Using local CGAL'
 
     client = docker.Client(base_url='unix://var/run/docker.sock')
-    # for img in args.images:
-    #     launch_image(img, client)
+    container_ids = []
+    for img in args.images:
+        print 'Creating ' + img
+        container_ids.append(create_container(img, client))
+
+    print 'Created containers: ' + ', '.join(x[u'Id'] for x in container_ids)
+
+    for cont in container_ids:
+        start_container(cont, client, args.testsuite, args.testresults)
+
     # upload_results
 
 if __name__ == "__main__":
