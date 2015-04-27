@@ -8,7 +8,7 @@ CGAL_BINARY_DIR='/build'
 CGAL_SRC_DIR='/mnt/testsuite/src/'
 CGAL_TEST_DIR='/mnt/testsuite/test/'
 
-CGAL_LOG_FILE="$CGAL_TESTRESULTS${1}.log"
+CGAL_LOG_FILE="${CGAL_TESTRESULTS}${CGAL_TEST_PLATFORM}.log"
 
 # Create the binary directories
 if [ ! -d "$CGAL_BINARY_DIR" ]; then 

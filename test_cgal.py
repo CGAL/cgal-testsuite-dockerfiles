@@ -103,8 +103,13 @@ def create_container(img, client):
     return client.create_container(
         image=img,
         entrypoint='/mnt/testsuite/docker-entrypoint.sh',
-        command=img,
-        volumes=['/mnt/testsuite', '/mnt/testresults']
+        volumes=['/mnt/testsuite', '/mnt/testresults'],
+        # TODO
+        environment={"CGAL_TESTER" : "",
+                     "CGAL_TESTER_NAME" : "",
+                     "CGAL_TESTER_ADDRESS": "",
+                     "CGAL_TEST_PLATFORM": ""
+        }
     )
 
 def start_container(container, client, testsuite, testresults):
