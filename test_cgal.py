@@ -57,8 +57,11 @@ def get_cgal(latest, testsuite):
             print 'Did you forget to provide --user and --passwd?'
         sys.exit('Failure retrieving the CGAL specified by latest.' + e.reason)
 
-# We assume that paths in a CGAL tarball only have a single common prefix. 
 def extract(path):
+    """Extract the CGAL release tar ball specified by `path` into the
+    directory of `path`.  The tar ball can only contain a single
+    directory, which cannot be an absolute path. Returns the path to
+    the extracted directory."""
     print 'Extracting ' + path
     assert tarfile.is_tarfile(path), 'Path provided to extract is not a tarfile'
     tar = tarfile.open(path)
@@ -100,7 +103,7 @@ def create_container(img, client):
     return client.create_container(
         image=img,
         entrypoint='/mnt/testsuite/docker-entrypoint.sh',
-        # command='ls /mnt',
+        command=img,
         volumes=['/mnt/testsuite', '/mnt/testresults']
     )
 
