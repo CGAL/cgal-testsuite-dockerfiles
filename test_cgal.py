@@ -82,20 +82,13 @@ def image_default():
             images.append(tag)
     return images
 
-# TODO pythonize me
 def do_images_exist(images):
+    """Returns true if each image in the list `images` is actually a name
+    for a docker image."""
     client = docker.Client(base_url='unix://var/run/docker.sock')
-    dimages = client.images()
-    for img in images:
-        found = False
-        for dimg in dimages:
-            if any(x == img for x in dimg[u'RepoTags']):
-                found = True
-                break
-            else:
-                found = False
-        if not found:
-            print 'Could not find image: ' + img
+    for idx, val in enumerate((len(client.images(name=img)) != 0 for img in images)):
+        if not val:
+            print 'Could not find image: ' + images[idx]
             return False
     return True
 
