@@ -7,5 +7,5 @@ RUN pacman -Sy --noconfirm
 RUN pacman-key --refresh-keys
 RUN pacman -Su --noconfirm
 RUN pacman-db-upgrade
-RUN pacman -S cmake qt4 gmp mpfi mpfr boost zlib mesa glu eigen --noconfirm
+RUN pacman -S base-devel cmake qt4 gmp mpfi mpfr boost zlib mesa glu eigen --noconfirm
 RUN pacman -Scc --noconfirm # clean up
