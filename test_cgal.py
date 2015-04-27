@@ -19,6 +19,7 @@ import argparse
 import getpass # getuser
 import os
 from os import path
+import shutil
 import socket # gethostname
 import sys
 import urllib2
@@ -34,7 +35,7 @@ def get_latest():
         return response.read().strip()
     except urllib2.URLError as e:
         if hasattr(e, 'code') and e.code == 401:
-            print 'Did you forget to provide --username and --passwd?'
+            print 'Did you forget to provide --user and --passwd?'
         sys.exit('Failure retrieving LATEST: ' +  e.reason)
 
 def get_cgal(latest, testsuite):
@@ -53,16 +54,20 @@ def get_cgal(latest, testsuite):
         return download_to
     except urllib2.URLError as e:
         if hasattr(e, 'code') and e.code == 401:
-            print 'Did you forget to provide --username and --passwd?'
+            print 'Did you forget to provide --user and --passwd?'
         sys.exit('Failure retrieving the CGAL specified by latest.' + e.reason)
 
-# TODO This could do with some verification of paths in the tarfile.
+# We assume that paths in a CGAL tarball only have a single common prefix. 
 def extract(path):
     print 'Extracting ' + path
+    assert tarfile.is_tarfile(path), 'Path provided to extract is not a tarfile'
     tar = tarfile.open(path)
-    tar.extractall(os.dirname(path)) # extract to the download path
+    commonprefix = os.path.commonprefix(tar.getnames())
+    assert commonprefix != '.', 'Tarfile has no single common prefix'
+    assert not os.path.isabs(commonprefix), 'Common prefix is an absolute path'
+    tar.extractall(os.path.dirname(path)) # extract to the download path
     tar.close()
-    os.remove(path)
+    return os.path.join(os.path.dirname(path), commonprefix)
 
 def image_default():
     images = []
@@ -94,7 +99,8 @@ def do_images_exist(images):
 def create_container(img, client):
     return client.create_container(
         image=img,
-        command='ls /mnt',
+        entrypoint='/mnt/testsuite/docker-entrypoint.sh',
+        # command='ls /mnt',
         volumes=['/mnt/testsuite', '/mnt/testresults']
     )
 
@@ -108,7 +114,7 @@ def start_container(container, client, testsuite, testresults):
         testresults:
         {
             'bind': '/mnt/testresults',
-            'ro': True
+            'ro': False
         }
     })
 
@@ -165,9 +171,16 @@ def main():
         latest = get_latest()
         print 'LATEST is ' + latest
         path_to_release=get_cgal(latest, args.testsuite)
-        extract(path_to_release)
+        path_to_extracted_release=extract(path_to_release)
     else:
         print 'Using local CGAL'
+        path_to_extracted_release=args.testsuite
+
+    assert os.path.isdir(path_to_extracted_release)
+    print 'Extracted release is at: ' + path_to_extracted_release
+
+    # Copy the entrypoint to the testsuite volume
+    shutil.copy('./docker-entrypoint.sh', path_to_extracted_release)
 
     client = docker.Client(base_url='unix://var/run/docker.sock')
     container_ids = []
@@ -178,7 +191,7 @@ def main():
     print 'Created containers: ' + ', '.join(x[u'Id'] for x in container_ids)
 
     for cont in container_ids:
-        start_container(cont, client, args.testsuite, args.testresults)
+        start_container(cont, client, path_to_extracted_release, args.testresults)
 
     # upload_results
 
