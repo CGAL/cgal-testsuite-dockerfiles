@@ -24,8 +24,8 @@ fi
 
 # Build CGAL
 cd "$CGAL_BINARY_DIR/src"
-cmake -DRUNNING_CGAL_AUTO_TEST=TRUE VERBOSE=1 "$CGAL_DIR" >> "$CGAL_LOG_FILE" >&1
-make VERBOSE=ON -k -fMakefile >> "$CGAL_LOG_FILE"
+cmake -DRUNNING_CGAL_AUTO_TEST=TRUE VERBOSE=1 "$CGAL_DIR" 2>&1 | tee "$CGAL_LOG_FILE"
+make VERBOSE=ON -k -fMakefile 2>&1 | tee -a "$CGAL_LOG_FILE"
 
 # Build and Execute the Tests
 cd "$CGAL_BINARY_DIR/test"
