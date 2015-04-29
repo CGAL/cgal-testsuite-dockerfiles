@@ -133,7 +133,8 @@ def main():
                         default=os.path.abspath('./testresults'))
 
     # Download related arguments
-    parser.add_argument('--use-local', action='store_true', help='Actually upload the test results.')
+    parser.add_argument('--use-local', action='store_true',
+                        help='Use a local extracted CGAL release. testsuite must be set to that release.')
     # TODO make internal releases and latest public?
     parser.add_argument('--user', help='Username for CGAL Members')
     parser.add_argument('--passwd', help='Password for CGAL Members')
@@ -174,10 +175,11 @@ def main():
         path_to_release=get_cgal(latest, args.testsuite)
         path_to_extracted_release=extract(path_to_release)
     else:
-        print 'Using local CGAL'
+        print 'Using local CGAL release at ' + args.testsuite
+        assert os.path.exists(args.testsuite), args.testsuite + ' is not a valid path'
         path_to_extracted_release=args.testsuite
 
-    assert os.path.isdir(path_to_extracted_release)
+    assert os.path.isdir(path_to_extracted_release), path_to_extracted_release + ' is not a directory'
     print 'Extracted release is at: ' + path_to_extracted_release
 
     # Copy the entrypoint to the testsuite volume
