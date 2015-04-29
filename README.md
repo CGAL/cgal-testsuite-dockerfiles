@@ -1,12 +1,18 @@
-CGAL-testsuite-dockerfiles
+cgal-testsuite-dockerfiles
 ==========================
 
-Docker files for the automated CGAL test suite
+Dockerfiles and tools to run the CGAL testsuite inside containers.
 
-An example of use of the image `cgal.org:centos6-32`:
+Initially you need to build the images which you would like to use:
 
-    docker run -v /home/lrineau/CGAL/branches/local-master.git:/local-master.git:ro --rm -i -t cgal.org:centos6-32 /bin/bash -c 'mkdir /build; cd build; QTDIR=/usr/lib/qt-3.3 CXXFLAGS="-I/usr/include/c++/4.4.4/i686-redhat-linux -m32" CFLAGS=-m32 cmake /local-master.git; make -j6; ls lib'
+    cd CentOS-6
+    docker build -t cgal-testsuite/centos6
+    cd ..
 
-An example of use of the image `cgal.org:centos6`:
+To run the testsuite using this image:
 
-    docker run -v /home/lrineau/CGAL/branches/local-master.git:/local-master.git:ro --rm -i -t cgal.org:centos6 /bin/bash -c 'mkdir /build; cd build; QTDIR=/usr/lib64/qt-3.3 cmake /local-master.git; make -j6; ls lib'
+    ./test_cgal.py --username **** --passwd **** --images cgal-testsuite/centos6
+
+If you would like to use an already extraced internal release:
+
+    ./test_cgal.py --use-local --testsuite /path/to/release --images cgal-testsuite/centos6
