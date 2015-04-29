@@ -9,3 +9,5 @@ RUN pacman -Su --noconfirm
 RUN pacman-db-upgrade
 RUN pacman -S base-devel cmake qt4 gmp mpfi mpfr boost zlib mesa glu eigen --noconfirm
 RUN pacman -Scc --noconfirm # clean up
+
+ENV CGAL_TEST_PLATFORM="ArchLinux"
