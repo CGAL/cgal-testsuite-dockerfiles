@@ -21,3 +21,6 @@ RUN yum -y install cmake gcc-c++  \
                    /usr/lib64/libfreetype.so /usr/lib64/libfontconfig.so \
                    zlib-devel.x86_64
 RUN yum clean all
+
+ENV CGAL_TEST_PLATFORM="CentOS6"
+ENV CGAL_CMAKE_FLAGS=""
