@@ -129,6 +129,9 @@ def main():
     parser.add_argument('--testresults', metavar='/path/to/testresults',
                         help='Absolute path where the testresults are going to be stored.',
                         default=os.path.abspath('./testresults'))
+    # TODO
+    parser.add_argument('--packages', nargs='*',
+                        help='List of packages to run the tests for, e.g. AABB_tree AABB_tree_Examples')
 
     # Download related arguments
     parser.add_argument('--use-local', action='store_true',
