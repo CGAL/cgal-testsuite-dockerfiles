@@ -24,8 +24,7 @@ CGAL_LOG_FILE="${CGAL_TESTRESULTS}${CGAL_TEST_PLATFORM}"
 # The directory of the build tree.
 CGAL_DIR="/build/src"
 CGAL_SRC_BUILD_DIR="${CGAL_DIR}"
-CGAL_TEST_BUILD_DIR="/build/test"
-CGAL_DEMO_BUILD_DIR="/build/demo"
+CGAL_TEST_BUILD_DIR="/build/src/test"
 
 export CGAL_DIR
 export CGAL_TEST_PLATFORM
@@ -44,8 +43,8 @@ fi
 
 # Build CGAL
 cd "$CGAL_SRC_BUILD_DIR"
-cmake -DRUNNING_CGAL_AUTO_TEST=TRUE VERBOSE=1 "$CGAL_RELEASE_DIR" 2>&1 | tee "${CGAL_LOG_FILE}.build.log"
-make VERBOSE=ON -k -fMakefile 2>&1 | tee -a "${CGAL_LOG_FILE}.build.log"
+cmake -DRUNNING_CGAL_AUTO_TEST=TRUE VERBOSE=1 "$CGAL_RELEASE_DIR" 2>&1 | tee "installation.log"
+make VERBOSE=ON -k -fMakefile 2>&1 | tee -a "installation.log"
 
 # Build and Execute the Tests
 
