@@ -40,7 +40,9 @@ cmake -DRUNNING_CGAL_AUTO_TEST=TRUE VERBOSE=1 "$CGAL_RELEASE_DIR" 2>&1 | tee "$C
 make VERBOSE=ON -k -fMakefile 2>&1 | tee -a "$CGAL_LOG_FILE"
 
 # Build and Execute the Tests
+
+# We need to make a copy of the whole test dir because the current
+# scripts don't allow out of source builds.
+cp -r "${CGAL_TEST_DIR}/." "$CGAL_TEST_BUILD_DIR"
 cd "$CGAL_TEST_BUILD_DIR"
-
-
-# Build and Execute the Examples
+make -k -fmakefile2
