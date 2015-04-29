@@ -92,16 +92,15 @@ def do_images_exist(images):
             return False
     return True
 
-def create_container(img, client):
+def create_container(img, client, tester, tester_name, tester_address):
     return client.create_container(
         image=img,
         entrypoint='/mnt/testsuite/docker-entrypoint.sh',
         volumes=['/mnt/testsuite', '/mnt/testresults'],
-        # TODO
-        environment={"CGAL_TESTER" : "",
-                     "CGAL_TESTER_NAME" : "",
-                     "CGAL_TESTER_ADDRESS": "",
-                     "CGAL_TEST_PLATFORM": ""
+        environment={"CGAL_TESTER" : tester,
+                     "CGAL_TESTER_NAME" : tester_name,
+                     "CGAL_TESTER_ADDRESS": tester_address,
+                     "CGAL_TEST_PLATFORM": client.images(name=img)[0]['Id']
         }
     )
 
@@ -189,7 +188,9 @@ def main():
     container_ids = []
     for img in args.images:
         print 'Creating ' + img
-        container_ids.append(create_container(img, client))
+        container_ids.append(create_container(img, client, 
+                                              args.tester, args.tester_name,
+                                              args.tester_address))
 
     print 'Created containers: ' + ', '.join(x[u'Id'] for x in container_ids)
 
