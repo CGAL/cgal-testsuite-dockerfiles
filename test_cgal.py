@@ -99,8 +99,7 @@ def create_container(img, client, tester, tester_name, tester_address):
         volumes=['/mnt/testsuite', '/mnt/testresults'],
         environment={"CGAL_TESTER" : tester,
                      "CGAL_TESTER_NAME" : tester_name,
-                     "CGAL_TESTER_ADDRESS": tester_address,
-                     "CGAL_TEST_PLATFORM": client.images(name=img)[0]['Id']
+                     "CGAL_TESTER_ADDRESS": tester_address
         }
     )
 
