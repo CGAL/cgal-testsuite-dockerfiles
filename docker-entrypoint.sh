@@ -41,9 +41,11 @@ if [ ! -d "${CGAL_SRC_BUILD_DIR}" ]; then
 fi
 
 
-# Build CGAL
+# Build CGAL. The CGAL_CMAKE_FLAGS used here will affect all other
+# builds using this binary directory.
 cd "${CGAL_SRC_BUILD_DIR}"
-cmake -DRUNNING_CGAL_AUTO_TEST=TRUE VERBOSE=1 "${CGAL_RELEASE_DIR}" 2>&1 | tee "installation.log"
+cmake -DRUNNING_CGAL_AUTO_TEST=TRUE VERBOSE=1 \
+      ${CGAL_CMAKE_FLAGS} "${CGAL_RELEASE_DIR}" 2>&1 | tee "installation.log"
 make VERBOSE=ON -k -fMakefile 2>&1 | tee -a "installation.log"
 
 # Build and Execute the Tests
