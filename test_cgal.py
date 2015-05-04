@@ -19,6 +19,7 @@ import argparse
 import getpass # getuser
 import os
 from os import path
+import re
 import shutil
 import socket # gethostname
 import sys
@@ -127,7 +128,7 @@ def create_container(img, client, tester, tester_name, tester_address):
     # first if a container with the name we would like to use already
     # exists. If so, we check it's status. If it is Exited, we kill
     # it. Otherwise we fall over.
-    chosen_name = 'CGAL-' + img.split('/', 1)[1] + '-testsuite' # strip prefix up to / from the image name
+    chosen_name = 'CGAL-' + image_name_regex.search(img).group(2) + '-testsuite'
     existing = [cont for cont in client.containers(all=True) if '/' + chosen_name in cont[u'Names']]
     assert len(existing) == 0 or len(existing) == 1, 'Length of existing containers is odd'
 
@@ -161,6 +162,9 @@ def start_container(container, client, testsuite, testresults):
             'ro': False
         }
     })
+
+# A regex to decompose the name of an image into the groups ('user', 'name', 'tag')
+image_name_regex = re.compile('(.*/)?([^:]*)(:.*)?')
 
 def main():
     parser = CustomArgumentParser(
