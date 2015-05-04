@@ -72,7 +72,7 @@ def extract(path):
     tar.close()
     return os.path.join(os.path.dirname(path), commonprefix)
 
-def image_default():
+def default_images():
     images = []
     client = docker.Client(base_url='unix://var/run/docker.sock')
     for img in client.images():
@@ -151,7 +151,7 @@ def main():
     assert os.path.isabs(args.testresults)
 
     if not args.images: # no images, use default
-        args.images=image_default()
+        args.images=default_images()
     assert do_images_exist(args.images), 'Specified images could not be found.'
 
     if args.upload_results:
