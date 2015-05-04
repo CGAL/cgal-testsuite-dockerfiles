@@ -25,6 +25,19 @@ import sys
 import urllib2
 import tarfile
 import docker
+from xdg.BaseDirectory import load_first_config, xdg_config_home
+
+class CustomArgumentParser(argparse.ArgumentParser):
+    def __init__(self, *args, **kwargs):
+        super(CustomArgumentParser, self).__init__(*args, **kwargs)
+
+    def convert_arg_line_to_args(self, line):
+        for arg in line.split():
+            if not arg.strip():
+                continue
+            if arg[0] == '#':
+                break
+            yield arg
 
 class TestsuiteException(Exception):
     pass
@@ -150,8 +163,9 @@ def start_container(container, client, testsuite, testresults):
     })
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='''This script launches docker containers which run the CGAL testsuite.''')
+    parser = CustomArgumentParser(
+        description='''This script launches docker containers which run the CGAL testsuite.''',
+        fromfile_prefix_chars='@')
 
     # Testing related arguments
     parser.add_argument('--images', nargs='*', help='List of images to launch, defaults to all prefixed with cgal-testsuite')
@@ -177,6 +191,18 @@ def main():
     parser.add_argument('--tester', nargs=1, help='The tester', default=getpass.getuser())
     parser.add_argument('--tester-name', nargs=1, help='The name of the tester', default=socket.gethostname())
     parser.add_argument('--tester-address', nargs=1, help='The mail address of the tester')
+
+    if load_first_config('CGAL'):
+        default_arg_file = os.path.join(load_first_config('CGAL'), 'test_cgal_rc')
+    else:
+        default_arg_file = os.path.join(xdg_config_home, 'test_cgal_rc')
+
+    if os.path.isfile(default_arg_file):
+        print 'Using default arguments from: ' + default_arg_file
+        with open (default_arg_file, 'r') as f:
+            for line in f.readlines():
+                for arg in line.split():
+                    sys.argv.append(arg)
 
     args = parser.parse_args()
     assert os.path.isabs(args.testsuite)
