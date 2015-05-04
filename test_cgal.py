@@ -26,6 +26,23 @@ import urllib2
 import tarfile
 import docker
 
+class TestsuiteException(Exception):
+    pass
+
+class TestsuiteWarning(TestsuiteException):
+    """Warning exceptions thrown in this module."""
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return 'Testsuite Warning: ' + repr(self.value)
+
+class TestsuiteError(TestsuiteException):
+    """Error exceptions thrown in this module."""
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return 'Testsuite Error: ' + repr(self.value)
+
 cgal_release_url='https://cgal.geometryfactory.com/CGAL/Members/Releases/'
 
 def get_latest():
@@ -93,8 +110,23 @@ def do_images_exist(images):
     return True
 
 def create_container(img, client, tester, tester_name, tester_address):
+    # Since we cannot reliably inspect APIError, we need to check
+    # first if a container with the name we would like to use already
+    # exists. If so, we check it's status. If it is Exited, we kill
+    # it. Otherwise we fall over.
+    chosen_name = 'CGAL-' + img.split('/', 1)[1] + '-testsuite' # strip prefix up to / from the image name
+    existing = [cont for cont in client.containers(all=True) if '/' + chosen_name in cont[u'Names']]
+    assert len(existing) == 0 or len(existing) == 1, 'Length of existing containers is odd'
+
+    if len(existing) != 0 and u'Exited' in existing[0][u'Status']:
+        print 'An Exited container with name ' + chosen_name + ' already exists. Removing.'
+        client.remove_container(container=chosen_name)
+    elif len(existing) != 0:
+        raise TestsuiteWarning('A non-Exited container with name ' + chosen_name + ' already exists. Skipping.')
+
     return client.create_container(
         image=img,
+        name=chosen_name,
         entrypoint='/mnt/testsuite/docker-entrypoint.sh',
         volumes=['/mnt/testsuite', '/mnt/testresults'],
         environment={"CGAL_TESTER" : tester,
@@ -189,12 +221,19 @@ def main():
     client = docker.Client(base_url='unix://var/run/docker.sock')
     container_ids = []
     for img in args.images:
-        print 'Creating ' + img
-        container_ids.append(create_container(img, client, 
-                                              args.tester, args.tester_name,
-                                              args.tester_address))
+        try:
+            container_ids.append(create_container(img, client,
+                                                  args.tester, args.tester_name,
+                                                  args.tester_address))
+        except TestsuiteException as e:
+            print e
 
-    print 'Created containers: ' + ', '.join(x[u'Id'] for x in container_ids)
+    for cont_id in container_ids:
+        contlist = [cont for cont in client.containers(all=True) if cont_id[u'Id'] == cont[u'Id']]
+        assert len(contlist) == 1, "Created Id does not exist"
+        cont = contlist[0]
+        print 'Created container:\t' + ', '.join(cont[u'Names'])
+        print '\tfrom image:\t'  + cont[u'Image']
 
     for cont in container_ids:
         start_container(cont, client, path_to_extracted_release, args.testresults)
