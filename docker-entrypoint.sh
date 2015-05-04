@@ -2,7 +2,7 @@
 # This script is the entrypoint of a CGAL testsuite docker container.
 set -e
 
-if [ -z "$CGAL_TEST_PLATFORM"]; then
+if [ -z "${CGAL_TEST_PLATFORM}" ]; then
     export CGAL_TEST_PLATFORM="${HOSTNAME}"
     echo "CGAL_TEST_PLATFORM not set. Using HOSTNAME:${HOSTNAME}"
 else
