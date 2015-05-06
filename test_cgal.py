@@ -187,16 +187,15 @@ def main():
     parser.add_argument('--testresults', metavar='/path/to/testresults',
                         help='Absolute path where the testresults are going to be stored.',
                         default=os.path.abspath('./testresults'))
+    # TODO
+    parser.add_argument('--packages', nargs='*',
+                        help='List of packages to run the tests for, e.g. AABB_tree AABB_tree_Examples')
 
     # Docker related arguments
     parser.add_argument('--docker-url', metavar='protocol://hostname/to/docker.sock[:PORT]',
                         help='The protocol+hostname+port where the Docker server is hosted.', default='unix://var/run/docker.sock')
     parser.add_argument('--force-rm', action='store_true',
                         help='If a container with the same name already exists, force it to quit')
-
-    # TODO
-    parser.add_argument('--packages', nargs='*',
-                        help='List of packages to run the tests for, e.g. AABB_tree AABB_tree_Examples')
 
     # Download related arguments
     parser.add_argument('--use-local', action='store_true',
