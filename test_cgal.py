@@ -105,7 +105,6 @@ def extract(path):
 
 def default_images():
     images = []
-    client = docker.Client(base_url='unix://var/run/docker.sock')
     for img in client.images():
         # Find all images with a tag that has the prefix cgal-testsuite/
         tag = next((x for x in img[u'RepoTags'] if x.startswith(u'cgal-testsuite/')), None)
@@ -116,14 +115,13 @@ def default_images():
 def do_images_exist(images):
     """Returns true if each image in the list `images` is actually a name
     for a docker image."""
-    client = docker.Client(base_url='unix://var/run/docker.sock')
     for idx, val in enumerate((len(client.images(name=img)) != 0 for img in images)):
         if not val:
             print 'Could not find image: ' + images[idx]
             return False
     return True
 
-def create_container(img, client, tester, tester_name, tester_address):
+def create_container(img, tester, tester_name, tester_address):
     # Since we cannot reliably inspect APIError, we need to check
     # first if a container with the name we would like to use already
     # exists. If so, we check it's status. If it is Exited, we kill
@@ -149,7 +147,7 @@ def create_container(img, client, tester, tester_name, tester_address):
         }
     )
 
-def start_container(container, client, testsuite, testresults):
+def start_container(container, testsuite, testresults):
     client.start(container, binds={
         testsuite:
         {
@@ -212,6 +210,11 @@ def main():
     assert os.path.isabs(args.testsuite)
     assert os.path.isabs(args.testresults)
 
+    # Set-up a global docker client for convenience and easy
+    # refactoring to a class.
+    global client
+    client = docker.Client(base_url='unix://var/run/docker.sock')
+
     if not args.images: # no images, use default
         args.images=default_images()
     assert do_images_exist(args.images), 'Specified images could not be found.'
@@ -248,12 +251,10 @@ def main():
     # Copy the entrypoint to the testsuite volume
     shutil.copy('./docker-entrypoint.sh', path_to_extracted_release)
 
-    client = docker.Client(base_url='unix://var/run/docker.sock')
     container_ids = []
     for img in args.images:
         try:
-            container_ids.append(create_container(img, client,
-                                                  args.tester, args.tester_name,
+            container_ids.append(create_container(img, args.tester, args.tester_name,
                                                   args.tester_address))
         except TestsuiteException as e:
             print e
@@ -266,7 +267,7 @@ def main():
         print '\tfrom image:\t'  + cont[u'Image']
 
     for cont in container_ids:
-        start_container(cont, client, path_to_extracted_release, args.testresults)
+        start_container(cont, path_to_extracted_release, args.testresults)
 
     # upload_results
 
