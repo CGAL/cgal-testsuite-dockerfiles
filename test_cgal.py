@@ -157,9 +157,16 @@ def start_container(container, testsuite, testresults):
             'ro': False
         }
     })
+    return container
 
 # A regex to decompose the name of an image into the groups ('user', 'name', 'tag')
 image_name_regex = re.compile('(.*/)?([^:]*)(:.*)?')
+
+def container_by_id(Id):
+    contlist = [cont for cont in client.containers(all=True) if Id == cont[u'Id']]
+    if len(contlist) != 1:
+        raise TestsuiteError('Requested Container Id ' + Id + 'does not exist')
+    return contlist[0]
 
 def main():
     parser = CustomArgumentParser(
