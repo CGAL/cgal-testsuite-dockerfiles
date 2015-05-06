@@ -27,6 +27,7 @@ import urllib2
 import tarfile
 import time
 import docker
+import paramiko
 from datetime import datetime
 from xdg.BaseDirectory import load_first_config, xdg_config_home
 
@@ -164,6 +165,36 @@ def start_container(container, testsuite, testresults):
         }
     })
     return container
+
+def handle_results(cont_id, upload, testresult_dir):
+    # Try to recover the name of the resulting tar.gz from the container logs.
+    logs = client.logs(container=cont_id, tail=4)
+    res = re.search(r'([^ ]*)\.tar\.gz', logs)
+    if not res.group(0):
+        raise TestsuiteError('Could not identify resulting tar.gz file from logs of ' + cont_id)
+    tarf = os.path.join(testresult_dir, res.group(0))
+    txtf = os.path.join(testresult_dir, res.group(1) + '.txt')
+
+    if not os.path.isfile(tarf) or not os.path.isfile(txtf):
+        raise TestsuiteError('Result Files ' + tarf + ' or ' + txtf + ' do not exist.')
+
+    # Those are variables used by autotest_cgal:
+    # COMPILER=`printf "%s" "$2" | tr -c '[A-Za-z0-9]./[=-=]*_\'\''\":?() ' 'x'`
+    # FILENAME="${CGAL_RELEASE_ID}_${CGAL_TESTER}-test`datestr`-${COMPILER}-cmake.tar.gz"
+    # LOGFILENAME="${CGAL_RELEASE_ID}-log`datestr`-${HOST}.gz"
+
+    # There have to be two files: results_${CGAL_TESTER}_${PLATFORM}.tar.gz results_${CGAL_TESTER}_${PLATFORM}.txt
+    # which are tared into "test_results-${HOST}_${PLATFORM}.tar.gz"
+    # uploaded as FILENAME
+
+def upload_results(localpath, remotepath):
+    ssh = paramiko.SSHClient()
+    ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
+    ssh.connect(server)
+    sftp = ssh.open_sftp()
+    sftp.put(localpath, remotepath)
+    sftp.close()
+    ssh.close()
 
 # A regex to decompose the name of an image into the groups ('user', 'name', 'tag')
 image_name_regex = re.compile('(.*/)?([^:]*)(:.*)?')
@@ -311,6 +342,10 @@ def main():
         if ev[u'id'] in running_containers: # we care
             if ev[u'status'] in clean_death:
                 print 'Cleanly removing'
+                try:
+                    handle_results(ev[u'id'], args.upload_results, args.testresults)
+                except TestsuiteException as e:
+                    print e
                 running_containers.remove(ev[u'id'])
             elif ev[u'status'] in dirty_death:
                 print 'Dirty removing'
