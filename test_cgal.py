@@ -25,7 +25,9 @@ import socket # gethostname
 import sys
 import urllib2
 import tarfile
+import time
 import docker
+from datetime import datetime
 from xdg.BaseDirectory import load_first_config, xdg_config_home
 
 class CustomArgumentParser(argparse.ArgumentParser):
@@ -263,21 +265,46 @@ def main():
     # Copy the entrypoint to the testsuite volume
     shutil.copy('./docker-entrypoint.sh', path_to_extracted_release)
 
+    before_start = datetime.now()
     container_ids = []
     for img in args.images:
         try:
             container_ids.append(create_container(img, args.tester, args.tester_name,
                                                   args.tester_address))
-            contlist = [cont for cont in client.containers(all=True) if container_ids[-1][u'Id'] == cont[u'Id']]
-            assert len(contlist) == 1, "Created Id does not exist"
-            print 'Created container:\t' + ', '.join(contlist[0][u'Names']) + \
-                  '\n\tfrom image:\t'  + contlist[0][u'Image']
-        except TestsuiteException as e:
+            cont = container_by_id(container_ids[-1][u'Id'])
+            print 'Created container:\t' + ', '.join(cont[u'Names']) + \
+                '\n\twith id:\t' + cont[u'Id'] + \
+                '\n\tfrom image:\t'  + cont[u'Image']
+        except TestsuiteWarning as e:
             print e
+        except TestsuiteError as e:
+            sys.exit(e.value)
 
-    running_containers = [start_container(cont, path_to_extracted_release, args.testresults) for cont in container_ids]
+    running_containers = [start_container(cont, path_to_extracted_release, args.testresults)[u'Id'] for cont in container_ids]
 
-    # upload_results
+    if len(running_containers) == 0:
+        # Nothing to do. Go before we enter the blocking events call.
+        sys.exit('Exiting without starting any containers.')
+
+    # Possible events are: create, destroy, die, export, kill, pause,
+    # restart, start, stop, unpause.
+    clean_death = ['die']
+    dirty_death = ['kill', 'stop']
+    # Process events since starting our containers, so we don't miss
+    # any event that might have occured while we were still starting
+    # containers. BUG this does really work yet.
+    for ev in client.events(since=before_start):
+        print ev
+        if ev[u'id'] in running_containers: # we care
+            if ev[u'status'] in clean_death:
+                print 'Cleanly removing'
+                running_containers.remove(ev[u'id'])
+            elif ev[u'status'] in dirty_death:
+                print 'Dirty removing'
+                running_containers.remove(ev[u'id'])
+        if len(running_containers) == 0:
+            print 'All containers finished. Exiting.'
+            break
 
 if __name__ == "__main__":
     main()
