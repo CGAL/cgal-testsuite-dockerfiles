@@ -265,7 +265,7 @@ def main():
     # Copy the entrypoint to the testsuite volume
     shutil.copy('./docker-entrypoint.sh', path_to_extracted_release)
 
-    before_start = datetime.now()
+    before_start = int(time.time())
     container_ids = []
     for img in args.images:
         try:
@@ -292,8 +292,12 @@ def main():
     dirty_death = ['kill', 'stop']
     # Process events since starting our containers, so we don't miss
     # any event that might have occured while we were still starting
-    # containers. BUG this does really work yet.
+    # containers.
     for ev in client.events(since=before_start):
+        # See https://github.com/docker/docker-py/issues/585 for now
+        if isinstance(ev, str):
+            ev = eval(ev)
+
         print ev
         if ev[u'id'] in running_containers: # we care
             if ev[u'status'] in clean_death:
