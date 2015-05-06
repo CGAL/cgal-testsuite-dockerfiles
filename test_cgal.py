@@ -104,22 +104,19 @@ def extract(path):
     return os.path.join(os.path.dirname(path), commonprefix)
 
 def default_images():
+    """Returns a list of all image tags starting with cgal-testsuite/."""
     images = []
     for img in client.images():
-        # Find all images with a tag that has the prefix cgal-testsuite/
         tag = next((x for x in img[u'RepoTags'] if x.startswith(u'cgal-testsuite/')), None)
         if tag:
             images.append(tag)
     return images
 
-def do_images_exist(images):
-    """Returns true if each image in the list `images` is actually a name
-    for a docker image."""
-    for idx, val in enumerate((len(client.images(name=img)) != 0 for img in images)):
-        if not val:
-            print 'Could not find image: ' + images[idx]
-            return False
-    return True
+def not_existing_images(images):
+    """Checks if each image in the list `images` is actually a name
+    for a docker image. Returns a list of not existing names."""
+    # Since img might contain a :TAG we need to work it a little.
+    return [img for img in images if len(client.images(name=img.rsplit(':')[0])) == 0]
 
 def create_container(img, tester, tester_name, tester_address):
     # Since we cannot reliably inspect APIError, we need to check
@@ -222,7 +219,10 @@ def main():
 
     if not args.images: # no images, use default
         args.images=default_images()
-    assert do_images_exist(args.images), 'Specified images could not be found.'
+
+    not_existing = not_existing_images(args.images)
+    if len(not_existing) != 0:
+        raise TestsuiteError('Could not find specified images: ' + ', '.join(not_existing))
 
     if args.upload_results:
         assert args.tester, 'When uploading a --tester has to be given'
