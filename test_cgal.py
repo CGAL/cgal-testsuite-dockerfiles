@@ -294,6 +294,10 @@ def main():
 
     # Possible events are: create, destroy, die, export, kill, pause,
     # restart, start, stop, unpause.
+
+    # BUG When a container is killed it will first emmit die and then
+    # kill, which will lead us to handle killed containers as if they
+    # had a clean death, which is not the case.
     clean_death = ['die']
     dirty_death = ['kill', 'stop']
     # Process events since starting our containers, so we don't miss
