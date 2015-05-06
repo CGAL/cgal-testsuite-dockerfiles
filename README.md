@@ -17,6 +17,24 @@ If you would like to use an already extraced internal release:
 
     ./test_cgal.py --use-local --testsuite /path/to/release --images cgal-testsuite/centos6
 
+
+Default Arguments
+-----------------
+
+Default arguments can be provided through a `test_cgal_rc` file in
+`$XDG_CONFIG_HOME` or the config directory of the resource `CGAL`.
+
+
+Required Non-Standard Python Packages
+------------------------
+
+The code requires several non-standard python2 packages, which are
+available in all common distributions.
+
+- `docker-py`
+- `paramiko`
+- `xdg`
+
 SELinux issues
 --------------
 On Linux system using SELinux (such as the default setting for the recent
