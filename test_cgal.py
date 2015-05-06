@@ -177,13 +177,18 @@ def main():
     parser.add_argument('--testresults', metavar='/path/to/testresults',
                         help='Absolute path where the testresults are going to be stored.',
                         default=os.path.abspath('./testresults'))
+
+    # Docker related arguments
+    parser.add_argument('--docker-url', metavar='protocol://hostname/to/docker.sock[:PORT]',
+                        help='The protocol+hostname+port where the Docker server is hosted.', default='unix://var/run/docker.sock')
+
     # TODO
     parser.add_argument('--packages', nargs='*',
                         help='List of packages to run the tests for, e.g. AABB_tree AABB_tree_Examples')
 
     # Download related arguments
     parser.add_argument('--use-local', action='store_true',
-                        help='Use a local extracted CGAL release. testsuite must be set to that release.')
+                        help='Use a local extracted CGAL release. --testsuite must be set to that release.')
     # TODO make internal releases and latest public?
     parser.add_argument('--user', help='Username for CGAL Members')
     parser.add_argument('--passwd', help='Password for CGAL Members')
@@ -213,7 +218,7 @@ def main():
     # Set-up a global docker client for convenience and easy
     # refactoring to a class.
     global client
-    client = docker.Client(base_url='unix://var/run/docker.sock')
+    client = docker.Client(base_url=args.docker_url)
 
     if not args.images: # no images, use default
         args.images=default_images()
