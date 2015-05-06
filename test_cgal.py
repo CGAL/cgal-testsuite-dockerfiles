@@ -261,18 +261,14 @@ def main():
         try:
             container_ids.append(create_container(img, args.tester, args.tester_name,
                                                   args.tester_address))
+            contlist = [cont for cont in client.containers(all=True) if container_ids[-1][u'Id'] == cont[u'Id']]
+            assert len(contlist) == 1, "Created Id does not exist"
+            print 'Created container:\t' + ', '.join(contlist[0][u'Names']) + \
+                  '\n\tfrom image:\t'  + contlist[0][u'Image']
         except TestsuiteException as e:
             print e
 
-    for cont_id in container_ids:
-        contlist = [cont for cont in client.containers(all=True) if cont_id[u'Id'] == cont[u'Id']]
-        assert len(contlist) == 1, "Created Id does not exist"
-        cont = contlist[0]
-        print 'Created container:\t' + ', '.join(cont[u'Names'])
-        print '\tfrom image:\t'  + cont[u'Image']
-
-    for cont in container_ids:
-        start_container(cont, path_to_extracted_release, args.testresults)
+    running_containers = [start_container(cont, path_to_extracted_release, args.testresults) for cont in container_ids]
 
     # upload_results
 
