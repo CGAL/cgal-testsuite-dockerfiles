@@ -120,7 +120,7 @@ def not_existing_images(images):
     # Since img might contain a :TAG we need to work it a little.
     return [img for img in images if len(client.images(name=img.rsplit(':')[0])) == 0]
 
-def create_container(img, tester, tester_name, tester_address):
+def create_container(img, tester, tester_name, tester_address, force_rm):
     # Since we cannot reliably inspect APIError, we need to check
     # first if a container with the name we would like to use already
     # exists. If so, we check it's status. If it is Exited, we kill
@@ -131,6 +131,10 @@ def create_container(img, tester, tester_name, tester_address):
 
     if len(existing) != 0 and u'Exited' in existing[0][u'Status']:
         print 'An Exited container with name ' + chosen_name + ' already exists. Removing.'
+        client.remove_container(container=chosen_name)
+    elif len(existing) != 0 and force_rm:
+        print 'A non-Exited container with name ' + chosen_name + ' already exists. Forcing exit and removal.'
+        client.kill(container=chosen_name)
         client.remove_container(container=chosen_name)
     elif len(existing) != 0:
         raise TestsuiteWarning('A non-Exited container with name ' + chosen_name + ' already exists. Skipping.')
@@ -187,6 +191,8 @@ def main():
     # Docker related arguments
     parser.add_argument('--docker-url', metavar='protocol://hostname/to/docker.sock[:PORT]',
                         help='The protocol+hostname+port where the Docker server is hosted.', default='unix://var/run/docker.sock')
+    parser.add_argument('--force-rm', action='store_true',
+                        help='If a container with the same name already exists, force it to quit')
 
     # TODO
     parser.add_argument('--packages', nargs='*',
@@ -270,7 +276,7 @@ def main():
     for img in args.images:
         try:
             container_ids.append(create_container(img, args.tester, args.tester_name,
-                                                  args.tester_address))
+                                                  args.tester_address, args.force_rm))
             cont = container_by_id(container_ids[-1][u'Id'])
             print 'Created container:\t' + ', '.join(cont[u'Names']) + \
                 '\n\twith id:\t' + cont[u'Id'] + \
