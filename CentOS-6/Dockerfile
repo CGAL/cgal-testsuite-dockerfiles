@@ -2,7 +2,7 @@ FROM centos:centos6
 MAINTAINER Laurent Rineau <laurent.rineau@cgal.org>
 
 RUN yum -y update; yum clean all
-RUN yum -y install cmake gcc-c++  \
+RUN yum -y install cmake gcc-c++ tar \
                    glibc-devel.x86_64 libstdc++-devel.x86_64 \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    boost-devel.x86_64 \
