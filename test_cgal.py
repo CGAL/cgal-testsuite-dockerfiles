@@ -318,21 +318,20 @@ def main():
     print 'Running a maximum of %i containers in parallel each using %i CPUs' % (nb_parallel_containers, args.container_cpus)
 
     before_start = int(time.time())
-    container_ids = []
+    running_containers = []
     for img in args.images:
         try:
-            container_ids.append(create_container(img, args.tester, args.tester_name,
-                                                  args.tester_address, args.force_rm))
-            cont = container_by_id(container_ids[-1])
+            container_id = create_container(img, args.tester, args.tester_name,
+                                            args.tester_address, args.force_rm)
+            cont = container_by_id(container_id)
             print 'Created container:\t' + ', '.join(cont[u'Names']) + \
                 '\n\twith id:\t' + cont[u'Id'] + \
                 '\n\tfrom image:\t'  + cont[u'Image']
+            running_containers.append(start_container(container_id, path_to_extracted_release, args.testresults))
         except TestsuiteWarning as e:
             print e
         except TestsuiteError as e:
             sys.exit(e.value)
-
-    running_containers = [start_container(cont, path_to_extracted_release, args.testresults) for cont in container_ids]
 
     if len(running_containers) == 0:
         # Nothing to do. Go before we enter the blocking events call.
