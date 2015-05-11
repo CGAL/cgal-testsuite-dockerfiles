@@ -332,11 +332,11 @@ def main():
     dirty_death = ['kill', 'stop']
     # Process events since starting our containers, so we don't miss
     # any event that might have occured while we were still starting
-    # containers.
-    for ev in client.events(since=before_start):
-        # See https://github.com/docker/docker-py/issues/585 for now
-        if isinstance(ev, str):
-            ev = eval(ev)
+    # containers. The decode parameter has been documented as a
+    # resolution to this issue
+    # https://github.com/docker/docker-py/issues/585
+    for ev in client.events(since=before_start, decode=True):
+        assert isinstance(ev, dict)
 
         print ev
         if ev[u'id'] in running_containers: # we care
