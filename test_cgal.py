@@ -369,11 +369,16 @@ def main():
     # Possible events are: create, destroy, die, export, kill, pause,
     # restart, start, stop, unpause.
 
-    # BUG When a container is killed it will first emmit die and then
-    # kill, which will lead us to handle killed containers as if they
-    # had a clean death, which is not the case.
-    clean_death = ['die']
-    dirty_death = ['kill', 'stop']
+    # We only care for die events. The problem is that a killing or
+    # stopping a container will also result in a die event before
+    # emitting a kill/stop event. So, when a container dies, we cannot
+    # know if it got stopped, killed or exited regularly. Waiting for
+    # the next event with a timeout is very flaky and error
+    # prone. This is a known design flaw of the docker event API. To
+    # work around it, we parse the Exit Status of the container and
+    # base our decision on the error code.
+    status_code_regex = re.compile(r'Exited \((.*)\)')
+
     # Process events since starting our containers, so we don't miss
     # any event that might have occured while we were still starting
     # containers. The decode parameter has been documented as a
@@ -384,16 +389,23 @@ def main():
 
         print ev
         if ev[u'id'] in running_containers: # we care
-            if ev[u'status'] in clean_death:
-                print 'Cleanly removing'
-                try:
-                    handle_results(ev[u'id'], args.upload_results, args.testresults)
-                except TestsuiteException as e:
-                    print e
+            container_info = container_by_id(ev[u'id'])
+            if ev[u'status'] == u'die' and status_code_regex.search(container_info[u'Status']):
+                res = status_code_regex.search(container_info[u'Status'])
+                if not res:
+                    print 'Could not parse exit status: '  + container_info[u'Status']
+                    print 'Assuming dirty death of the container'
+                elif res.group(1) != '0':
+                    print 'Container exited with Error Code: ' + res.group(1)
+                    print 'Assuming dirty death of the container'
+                else:
+                    print 'Container died cleanly, handling results'
+                    try:
+                        handle_results(ev[u'id'], args.upload_results, args.testresults)
+                    except TestsuiteException as e:
+                        print e
                 running_containers.remove(ev[u'id'])
-            elif ev[u'status'] in dirty_death:
-                print 'Dirty removing'
-                running_containers.remove(ev[u'id'])
+
         if len(running_containers) == 0:
             print 'All containers finished. Exiting.'
             break
