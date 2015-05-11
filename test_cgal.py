@@ -15,6 +15,8 @@
 #
 # Author(s)     : Philipp Moeller
 
+from __future__ import division
+
 import argparse
 import getpass # getuser
 import os
@@ -28,6 +30,7 @@ import tarfile
 import time
 import docker
 import paramiko
+from multiprocessing import cpu_count
 from datetime import datetime
 from xdg.BaseDirectory import load_first_config, xdg_config_home
 
@@ -227,6 +230,10 @@ def main():
                         help='The protocol+hostname+port where the Docker server is hosted.', default='unix://var/run/docker.sock')
     parser.add_argument('--force-rm', action='store_true',
                         help='If a container with the same name already exists, force it to quit')
+    parser.add_argument('--max-cpus', metavar='N', default=cpu_count(), type=int,
+                        help='The maximum number of CPUs the testsuite is allowed to use at a single time. Defaults to all available cpus.')
+    parser.add_argument('--container-cpus', metavar='N', default=1, type=int,
+                        help='The number of CPUs a single container should have. Defaults to one.')
 
     # Download related arguments
     parser.add_argument('--use-local', action='store_true',
@@ -300,6 +307,10 @@ def main():
 
     # Copy the entrypoint to the testsuite volume
     shutil.copy('./docker-entrypoint.sh', path_to_extracted_release)
+
+    # Explicit floor division from future
+    nb_parallel_containers = args.max_cpus // args.container_cpus
+    print 'Running a maximum of %i containers in parallel each using %i CPUs' % (nb_parallel_containers, args.container_cpus)
 
     before_start = int(time.time())
     container_ids = []
