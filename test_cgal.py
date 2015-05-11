@@ -355,6 +355,7 @@ def main():
             args.images.pop()
             cpu_sets.pop()
         except TestsuiteWarning as e:
+            # BUG This leaves an unused cpuset for the rest of the run.
             # We are skipping this image.
             args.images.pop()
             cpu_sets.pop()
