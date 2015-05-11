@@ -188,7 +188,7 @@ def handle_results(cont_id, upload, testresult_dir):
     # Try to recover the name of the resulting tar.gz from the container logs.
     logs = client.logs(container=cont_id, tail=4)
     res = re.search(r'([^ ]*)\.tar\.gz', logs)
-    if not res.group(0):
+    if not res:
         raise TestsuiteError('Could not identify resulting tar.gz file from logs of ' + cont_id)
     tarf = os.path.join(testresult_dir, res.group(0))
     txtf = os.path.join(testresult_dir, res.group(1) + '.txt')
