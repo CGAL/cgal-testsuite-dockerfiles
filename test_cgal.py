@@ -143,7 +143,7 @@ def create_container(img, tester, tester_name, tester_address, force_rm):
     elif len(existing) != 0:
         raise TestsuiteWarning('A non-Exited container with name ' + chosen_name + ' already exists. Skipping.')
 
-    return client.create_container(
+    container = client.create_container(
         image=img,
         name=chosen_name,
         entrypoint='/mnt/testsuite/docker-entrypoint.sh',
@@ -153,6 +153,11 @@ def create_container(img, tester, tester_name, tester_address, force_rm):
                      "CGAL_TESTER_ADDRESS": tester_address
         }
     )
+
+    if container[u'Warnings']:
+        print 'Container of image %s got created with warnings: %s' % (img, container[u'Warnings'])
+
+    return container[u'Id']
 
 def start_container(container, testsuite, testresults):
     client.start(container, binds={
@@ -318,7 +323,7 @@ def main():
         try:
             container_ids.append(create_container(img, args.tester, args.tester_name,
                                                   args.tester_address, args.force_rm))
-            cont = container_by_id(container_ids[-1][u'Id'])
+            cont = container_by_id(container_ids[-1])
             print 'Created container:\t' + ', '.join(cont[u'Names']) + \
                 '\n\twith id:\t' + cont[u'Id'] + \
                 '\n\tfrom image:\t'  + cont[u'Image']
@@ -327,7 +332,7 @@ def main():
         except TestsuiteError as e:
             sys.exit(e.value)
 
-    running_containers = [start_container(cont, path_to_extracted_release, args.testresults)[u'Id'] for cont in container_ids]
+    running_containers = [start_container(cont, path_to_extracted_release, args.testresults) for cont in container_ids]
 
     if len(running_containers) == 0:
         # Nothing to do. Go before we enter the blocking events call.
