@@ -124,7 +124,7 @@ def not_existing_images(images):
     # Since img might contain a :TAG we need to work it a little.
     return [img for img in images if len(client.images(name=img.rsplit(':')[0])) == 0]
 
-def create_container(img, tester, tester_name, tester_address, force_rm):
+def create_container(img, tester, tester_name, tester_address, force_rm, cpu_set):
     # Since we cannot reliably inspect APIError, we need to check
     # first if a container with the name we would like to use already
     # exists. If so, we check it's status. If it is Exited, we kill
@@ -148,6 +148,7 @@ def create_container(img, tester, tester_name, tester_address, force_rm):
         name=chosen_name,
         entrypoint='/mnt/testsuite/docker-entrypoint.sh',
         volumes=['/mnt/testsuite', '/mnt/testresults'],
+        cpuset=cpu_set,
         environment={"CGAL_TESTER" : tester,
                      "CGAL_TESTER_NAME" : tester_name,
                      "CGAL_TESTER_ADDRESS": tester_address
@@ -173,6 +174,15 @@ def start_container(container, testsuite, testresults):
         }
     })
     return container
+
+def run_container(img, tester, tester_name, tester_address, force_rm, cpu_set, testsuite, testresults):
+    container_id = create_container(img, tester, tester_name, tester_address, force_rm, cpu_set)
+    cont = container_by_id(container_id)
+    print 'Created container:\t' + ', '.join(cont[u'Names']) + \
+        '\n\twith id:\t' + cont[u'Id'] + \
+        '\n\tfrom image:\t'  + cont[u'Image']
+    start_container(container_id, testsuite, testresults)
+    return container_id
 
 def handle_results(cont_id, upload, testresult_dir):
     # Try to recover the name of the resulting tar.gz from the container logs.
@@ -334,17 +344,20 @@ def main():
     print 'Running a maximum of %i containers in parallel each using %i CPUs' % (nb_parallel_containers, args.container_cpus)
 
     before_start = int(time.time())
+
     running_containers = []
-    for img in args.images:
+    for img, cpu_set in zip(reversed(args.images), reversed(cpu_sets)):
         try:
-            container_id = create_container(img, args.tester, args.tester_name,
-                                            args.tester_address, args.force_rm)
-            cont = container_by_id(container_id)
-            print 'Created container:\t' + ', '.join(cont[u'Names']) + \
-                '\n\twith id:\t' + cont[u'Id'] + \
-                '\n\tfrom image:\t'  + cont[u'Image']
-            running_containers.append(start_container(container_id, path_to_extracted_release, args.testresults))
+            running_containers.append(
+                run_container(img, args.tester, args.tester_name,
+                              args.tester_address, args.force_rm,
+                              cpu_set, path_to_extracted_release, args.testresults))
+            args.images.pop()
+            cpu_sets.pop()
         except TestsuiteWarning as e:
+            # We are skipping this image.
+            args.images.pop()
+            cpu_sets.pop()
             print e
         except TestsuiteError as e:
             sys.exit(e.value)
