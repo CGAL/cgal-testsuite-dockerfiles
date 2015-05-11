@@ -273,9 +273,9 @@ def main():
 
     # Upload related arguments
     parser.add_argument('--upload-results', action='store_true', help='Actually upload the test results.')
-    parser.add_argument('--tester', nargs=1, help='The tester', default=getpass.getuser())
-    parser.add_argument('--tester-name', nargs=1, help='The name of the tester', default=socket.gethostname())
-    parser.add_argument('--tester-address', nargs=1, help='The mail address of the tester')
+    parser.add_argument('--tester', help='The tester', default=getpass.getuser())
+    parser.add_argument('--tester-name', help='The name of the tester', default=socket.gethostname())
+    parser.add_argument('--tester-address', help='The mail address of the tester')
 
     if load_first_config('CGAL'):
         default_arg_file = os.path.join(load_first_config('CGAL'), 'test_cgal_rc')
