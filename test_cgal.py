@@ -346,12 +346,14 @@ def main():
     before_start = int(time.time())
 
     running_containers = []
+    running_cpu_sets = []
     for img, cpu_set in zip(reversed(args.images), reversed(cpu_sets)):
         try:
             running_containers.append(
                 run_container(img, args.tester, args.tester_name,
                               args.tester_address, args.force_rm,
                               cpu_set, path_to_extracted_release, args.testresults))
+            running_cpu_sets.append(cpu_set)
             args.images.pop()
             cpu_sets.pop()
         except TestsuiteWarning as e:
@@ -388,8 +390,12 @@ def main():
     for ev in client.events(since=before_start, decode=True):
         assert isinstance(ev, dict)
 
-        print ev
-        if ev[u'id'] in running_containers: # we care
+        try:
+            index = running_containers.index(ev[u'id'])
+        except ValueError:
+            index = -1
+
+        if index != -1: # we care
             container_info = container_by_id(ev[u'id'])
             if ev[u'status'] == u'die' and status_code_regex.search(container_info[u'Status']):
                 res = status_code_regex.search(container_info[u'Status'])
@@ -405,10 +411,20 @@ def main():
                         handle_results(ev[u'id'], args.upload_results, args.testresults)
                     except TestsuiteException as e:
                         print e
-                running_containers.remove(ev[u'id'])
+                # The freed up cpu_set.
+                cpu_set = running_cpu_sets[index]
+                del running_containers[index]
+                del running_cpu_sets[index]
+                if len(args.images) != 0:
+                    running_containers.append(
+                        run_container(args.images[-1], args.tester, args.tester_name,
+                                      args.tester_address, args.force_rm,
+                                      cpu_set, path_to_extracted_release, args.testresults))
+                    running_cpu_sets.append(cpu_set)
+                    args.images.pop()
 
         if len(running_containers) == 0:
-            print 'All containers finished. Exiting.'
+            print 'All images handled. Exiting.'
             break
 
 if __name__ == "__main__":
