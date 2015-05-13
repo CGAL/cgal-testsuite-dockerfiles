@@ -21,10 +21,14 @@ CGAL_TESTRESULTS="/mnt/testresults/"
 # The actual logfile.
 CGAL_LOG_FILE="${CGAL_TESTRESULTS}${CGAL_TEST_PLATFORM}"
 
-# The directory of the build tree.
-CGAL_DIR="/build/src"
+# The directory of the build tree. The layout is so convoluted so
+# satisfy collect_cgal_testresults_from_cmake.
+#
+# It assumes the build directory containing CMakeCache.txt,
+# include/CGAL/compiler_config.h, etc. to be the parent directory.
+CGAL_DIR="/build/src/cmake/platforms/${CGAL_TEST_PLATFORM}/"
 CGAL_SRC_BUILD_DIR="${CGAL_DIR}"
-CGAL_TEST_BUILD_DIR="/build/src/cmake/platforms/${CGAL_TEST_PLATFORM}/test"
+CGAL_TEST_BUILD_DIR="/build/src/cmake/platforms/${CGAL_TEST_PLATFORM}/test/"
 
 export CGAL_DIR
 export CGAL_TEST_PLATFORM
@@ -36,10 +40,6 @@ fi
 if [ ! -d "${CGAL_TEST_BUILD_DIR}" ]; then
     mkdir -p "${CGAL_TEST_BUILD_DIR}"
 fi
-if [ ! -d "${CGAL_SRC_BUILD_DIR}" ]; then
-    mkdir - "${CGAL_SRC_BUILD_DIR}"
-fi
-
 
 # Build CGAL. The CGAL_CMAKE_FLAGS used here will affect all other
 # builds using this binary directory.
@@ -47,6 +47,9 @@ cd "${CGAL_SRC_BUILD_DIR}"
 cmake -DRUNNING_CGAL_AUTO_TEST=TRUE VERBOSE=1 \
       ${CGAL_CMAKE_FLAGS} "${CGAL_RELEASE_DIR}" 2>&1 | tee "installation.log"
 make VERBOSE=ON -k -fMakefile 2>&1 | tee -a "installation.log"
+
+# collect_cgal_testresults_from_cmake expects installation.log in ../../
+cp "installation.log" "../installation.log"
 
 # Build and Execute the Tests
 
