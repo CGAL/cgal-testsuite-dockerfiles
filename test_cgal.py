@@ -18,12 +18,11 @@
 from __future__ import division
 
 import argparse
-import getpass # getuser
-import os
+from getpass import getuser
 from os import path
 import re
 import shutil
-import socket # gethostname
+from socket import gethostname
 import sys
 import urllib2
 import tarfile
@@ -31,7 +30,6 @@ import time
 import docker
 import paramiko
 from multiprocessing import cpu_count
-from datetime import datetime
 from xdg.BaseDirectory import load_first_config, xdg_config_home
 
 class CustomArgumentParser(argparse.ArgumentParser):
@@ -77,10 +75,10 @@ def get_latest():
 
 def get_cgal(latest, testsuite):
     download_from=cgal_release_url + latest
-    download_to=os.path.join(testsuite, os.path.basename(download_from))
+    download_to=path.join(testsuite, path.basename(download_from))
     print 'Trying to download latest release to ' + download_to
 
-    if os.path.exists(download_to):
+    if path.exists(download_to):
         print download_to + ' already exists, reusing'
         return download_to
 
@@ -102,12 +100,12 @@ def extract(path):
     print 'Extracting ' + path
     assert tarfile.is_tarfile(path), 'Path provided to extract is not a tarfile'
     tar = tarfile.open(path)
-    commonprefix = os.path.commonprefix(tar.getnames())
+    commonprefix = path.commonprefix(tar.getnames())
     assert commonprefix != '.', 'Tarfile has no single common prefix'
-    assert not os.path.isabs(commonprefix), 'Common prefix is an absolute path'
-    tar.extractall(os.path.dirname(path)) # extract to the download path
+    assert not path.isabs(commonprefix), 'Common prefix is an absolute path'
+    tar.extractall(path.dirname(path)) # extract to the download path
     tar.close()
-    return os.path.join(os.path.dirname(path), commonprefix)
+    return path.join(path.dirname(path), commonprefix)
 
 def default_images():
     """Returns a list of all image tags starting with cgal-testsuite/."""
@@ -191,10 +189,10 @@ def handle_results(cont_id, upload, testresult_dir):
     res = re.search(r'([^ ]*)\.tar\.gz', logs)
     if not res:
         raise TestsuiteError('Could not identify resulting tar.gz file from logs of ' + cont_id)
-    tarf = os.path.join(testresult_dir, res.group(0))
-    txtf = os.path.join(testresult_dir, res.group(1) + '.txt')
+    tarf = path.join(testresult_dir, res.group(0))
+    txtf = path.join(testresult_dir, res.group(1) + '.txt')
 
-    if not os.path.isfile(tarf) or not os.path.isfile(txtf):
+    if not path.isfile(tarf) or not path.isfile(txtf):
         raise TestsuiteError('Result Files ' + tarf + ' or ' + txtf + ' do not exist.')
 
     # Those are variables used by autotest_cgal:
@@ -208,7 +206,7 @@ def handle_results(cont_id, upload, testresult_dir):
 
 def upload_results(localpath, remotepath):
     ssh = paramiko.SSHClient()
-    ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
+    ssh.load_host_keys(path.expanduser(path.join("~", ".ssh", "known_hosts")))
     ssh.connect(server)
     sftp = ssh.open_sftp()
     sftp.put(localpath, remotepath)
@@ -247,10 +245,10 @@ def main():
     parser.add_argument('--images', nargs='*', help='List of images to launch, defaults to all prefixed with cgal-testsuite')
     parser.add_argument('--testsuite', metavar='/path/to/testsuite',
                         help='Absolute path where the release is going to be stored.',
-                        default=os.path.abspath('./testsuite'))
+                        default=path.abspath('./testsuite'))
     parser.add_argument('--testresults', metavar='/path/to/testresults',
                         help='Absolute path where the testresults are going to be stored.',
-                        default=os.path.abspath('./testresults'))
+                        default=path.abspath('./testresults'))
     # TODO
     parser.add_argument('--packages', nargs='*',
                         help='List of packages to run the tests for, e.g. AABB_tree AABB_tree_Examples')
@@ -276,16 +274,16 @@ def main():
 
     # Upload related arguments
     parser.add_argument('--upload-results', action='store_true', help='Actually upload the test results.')
-    parser.add_argument('--tester', help='The tester', default=getpass.getuser())
-    parser.add_argument('--tester-name', help='The name of the tester', default=socket.gethostname())
+    parser.add_argument('--tester', help='The tester', default=getuser())
+    parser.add_argument('--tester-name', help='The name of the tester', default=gethostname())
     parser.add_argument('--tester-address', help='The mail address of the tester')
 
     if load_first_config('CGAL'):
-        default_arg_file = os.path.join(load_first_config('CGAL'), 'test_cgal_rc')
+        default_arg_file = path.join(load_first_config('CGAL'), 'test_cgal_rc')
     else:
-        default_arg_file = os.path.join(xdg_config_home, 'test_cgal_rc')
+        default_arg_file = path.join(xdg_config_home, 'test_cgal_rc')
 
-    if os.path.isfile(default_arg_file):
+    if path.isfile(default_arg_file):
         print 'Using default arguments from: ' + default_arg_file
         with open (default_arg_file, 'r') as f:
             for line in f.readlines():
@@ -293,8 +291,8 @@ def main():
                     sys.argv.append(arg)
 
     args = parser.parse_args()
-    assert os.path.isabs(args.testsuite)
-    assert os.path.isabs(args.testresults)
+    assert path.isabs(args.testsuite)
+    assert path.isabs(args.testresults)
 
     if not args.jobs:
         args.jobs = args.container_cpus
@@ -334,10 +332,10 @@ def main():
         path_to_extracted_release=extract(path_to_release)
     else:
         print 'Using local CGAL release at ' + args.testsuite
-        assert os.path.exists(args.testsuite), args.testsuite + ' is not a valid path'
+        assert path.exists(args.testsuite), args.testsuite + ' is not a valid path'
         path_to_extracted_release=args.testsuite
 
-    assert os.path.isdir(path_to_extracted_release), path_to_extracted_release + ' is not a directory'
+    assert path.isdir(path_to_extracted_release), path_to_extracted_release + ' is not a directory'
     print 'Extracted release is at: ' + path_to_extracted_release
 
     # Copy the entrypoint to the testsuite volume
