@@ -27,6 +27,7 @@ import sys
 import urllib2
 import tarfile
 import time
+import tempfile
 import docker
 import paramiko
 from multiprocessing import cpu_count
@@ -195,13 +196,21 @@ def handle_results(cont_id, upload, testresult_dir):
     if not path.isfile(tarf) or not path.isfile(txtf):
         raise TestsuiteError('Result Files ' + tarf + ' or ' + txtf + ' do not exist.')
 
+    # Tar the tesresults results_${CGAL_TESTER}_${PLATFORM}.tar.gz results_${CGAL_TESTER}_${PLATFORM}.txt
+    # into results_${CGAL_TESTER}_${PLATFORM}.tar.gz
+    tmpd = tempfile.mkdtemp()
+    shutil.move(tarf, tmpd)
+    shutil.move(txtf, tmpd)
+    # Double splitext, to handle tar.gz
+    archive_name = path.join(testresult_dir, path.splitext(path.splitext(path.basename(tarf))[0])[0])
+    archive_name = shutil.make_archive(archive_name, 'gztar', tmpd)
+    print 'Created the archive ' + archive_name
+
     # Those are variables used by autotest_cgal:
     # COMPILER=`printf "%s" "$2" | tr -c '[A-Za-z0-9]./[=-=]*_\'\''\":?() ' 'x'`
     # FILENAME="${CGAL_RELEASE_ID}_${CGAL_TESTER}-test`datestr`-${COMPILER}-cmake.tar.gz"
     # LOGFILENAME="${CGAL_RELEASE_ID}-log`datestr`-${HOST}.gz"
 
-    # There have to be two files: results_${CGAL_TESTER}_${PLATFORM}.tar.gz results_${CGAL_TESTER}_${PLATFORM}.txt
-    # which are tared into "test_results-${HOST}_${PLATFORM}.tar.gz"
     # uploaded as FILENAME
 
 def upload_results(localpath, remotepath):
@@ -313,6 +322,7 @@ def main():
         assert args.tester, 'When uploading a --tester has to be given'
         assert args.tester_name, 'When uploading a --tester-name has to be given'
         assert args.tester_address, 'When uploading a --tester-name has to be given'
+        assert 'gztar' in shutil.get_archive_formats(), 'When uploading results, gztar needs to be available'
 
     print 'Using images ' + ', '.join(args.images)
 
