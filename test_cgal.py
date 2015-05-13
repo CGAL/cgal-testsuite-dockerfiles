@@ -124,7 +124,7 @@ def not_existing_images(images):
     # Since img might contain a :TAG we need to work it a little.
     return [img for img in images if len(client.images(name=img.rsplit(':')[0])) == 0]
 
-def create_container(img, tester, tester_name, tester_address, force_rm, cpu_set):
+def create_container(img, tester, tester_name, tester_address, force_rm, cpu_set, nb_jobs):
     # Since we cannot reliably inspect APIError, we need to check
     # first if a container with the name we would like to use already
     # exists. If so, we check it's status. If it is Exited, we kill
@@ -151,7 +151,8 @@ def create_container(img, tester, tester_name, tester_address, force_rm, cpu_set
         cpuset=cpu_set,
         environment={"CGAL_TESTER" : tester,
                      "CGAL_TESTER_NAME" : tester_name,
-                     "CGAL_TESTER_ADDRESS": tester_address
+                     "CGAL_TESTER_ADDRESS": tester_address,
+                     "CGAL_NUMBER_OF_JOBS" : nb_jobs
         }
     )
 
@@ -175,8 +176,8 @@ def start_container(container, testsuite, testresults):
     })
     return container
 
-def run_container(img, tester, tester_name, tester_address, force_rm, cpu_set, testsuite, testresults):
-    container_id = create_container(img, tester, tester_name, tester_address, force_rm, cpu_set)
+def run_container(img, tester, tester_name, tester_address, force_rm, cpu_set, nb_jobs, testsuite, testresults):
+    container_id = create_container(img, tester, tester_name, tester_address, force_rm, cpu_set, nb_jobs)
     cont = container_by_id(container_id)
     print 'Created container:\t' + ', '.join(cont[u'Names']) + \
         '\n\twith id:\t' + cont[u'Id'] + \
@@ -263,6 +264,8 @@ def main():
                         help='The maximum number of CPUs the testsuite is allowed to use at a single time. Defaults to all available cpus.')
     parser.add_argument('--container-cpus', metavar='N', default=1, type=int,
                         help='The number of CPUs a single container should have. Defaults to one.')
+    parser.add_argument('--jobs', metavar='N', default=None, type=int,
+                        help='The number of jobs a single container is going to launch. Defaults to --container-cpus.')
 
     # Download related arguments
     parser.add_argument('--use-local', action='store_true',
@@ -292,6 +295,9 @@ def main():
     args = parser.parse_args()
     assert os.path.isabs(args.testsuite)
     assert os.path.isabs(args.testresults)
+
+    if not args.jobs:
+        args.jobs = args.container_cpus
 
     # Set-up a global docker client for convenience and easy
     # refactoring to a class.
@@ -341,7 +347,7 @@ def main():
     cpu_sets = calculate_cpu_sets(args.max_cpus, args.container_cpus)
     nb_parallel_containers = len(cpu_sets)
 
-    print 'Running a maximum of %i containers in parallel each using %i CPUs' % (nb_parallel_containers, args.container_cpus)
+    print 'Running a maximum of %i containers in parallel each using %i CPUs and using %i jobs' % (nb_parallel_containers, args.container_cpus, args.jobs)
 
     before_start = int(time.time())
 
@@ -352,7 +358,7 @@ def main():
             running_containers.append(
                 run_container(img, args.tester, args.tester_name,
                               args.tester_address, args.force_rm,
-                              cpu_set, path_to_extracted_release, args.testresults))
+                              cpu_set, args.jobs, path_to_extracted_release, args.testresults))
             running_cpu_sets.append(cpu_set)
             args.images.pop()
             cpu_sets.pop()
@@ -419,7 +425,7 @@ def main():
                     running_containers.append(
                         run_container(args.images[-1], args.tester, args.tester_name,
                                       args.tester_address, args.force_rm,
-                                      cpu_set, path_to_extracted_release, args.testresults))
+                                      cpu_set, args.jobs, path_to_extracted_release, args.testresults))
                     running_cpu_sets.append(cpu_set)
                     args.images.pop()
 

@@ -9,6 +9,13 @@ else
     echo "CGAL_TEST_PLATFORM is ${CGAL_TEST_PLATFORM}"
 fi
 
+if [ -z "${CGAL_NUMBER_OF_JOBS}" ]; then
+    CGAL_NUMBER_OF_JOBS=1
+    echo "CGAL_NUMBER_OF_JOBS not set. Defaulting to 1."
+else
+    echo "CGAL_NUMBER_OF_JOBS is ${CGAL_NUMBER_OF_JOBS}."
+fi
+
 # The directory where the release is stored.
 CGAL_RELEASE_DIR="/mnt/testsuite/"
 # Directory where CGAL sources are stored.
@@ -29,6 +36,7 @@ CGAL_LOG_FILE="${CGAL_TESTRESULTS}${CGAL_TEST_PLATFORM}"
 CGAL_DIR="/build/src/cmake/platforms/${CGAL_TEST_PLATFORM}/"
 CGAL_SRC_BUILD_DIR="${CGAL_DIR}"
 CGAL_TEST_BUILD_DIR="/build/src/cmake/platforms/${CGAL_TEST_PLATFORM}/test/"
+
 
 export CGAL_DIR
 export CGAL_TEST_PLATFORM
@@ -57,7 +65,7 @@ cp "installation.log" "../installation.log"
 # scripts don't allow out of source builds.
 cp -r "${CGAL_TEST_DIR}/." "${CGAL_TEST_BUILD_DIR}"
 cd "${CGAL_TEST_BUILD_DIR}"
-make -k -fmakefile2
+make -j ${CGAL_NUMBER_OF_JOBS} -k -fmakefile2
 
 # Copy version.h, so thhat collect_cgal_testresults_from_cmake can find it.
 mkdir -p "${CGAL_DIR}/include/CGAL"
