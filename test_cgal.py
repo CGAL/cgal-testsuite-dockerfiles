@@ -219,6 +219,15 @@ def handle_results(cont_id, upload, testresult_dir, testsuite_dir, tester):
         # TODO exceptions
         upload_results(archive_name)
 
+
+# This code could use paramiko as well. This would have the benefit of
+# not relying on the user configuration of ssh/scp and we could
+# provide clearer error messages. Paramiko although has some
+# drawbacks: it does not support the same set of keys and so it will
+# not find cgaltest.geometryfactory.com in the known_hosts file if it
+# has been added there with OpenSSH. A workaround would be to add the
+# host manually (very surprising to new users) or to auto-accept new
+# hosts (security issue).
 def upload_results(local_path):
     """Upload the file at `local_path` to the incoming directory of the
     cgal test server."""
