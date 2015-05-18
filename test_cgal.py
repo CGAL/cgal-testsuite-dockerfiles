@@ -29,7 +29,7 @@ import tarfile
 import time
 import tempfile
 import docker
-import paramiko
+import subprocess
 from multiprocessing import cpu_count
 from xdg.BaseDirectory import load_first_config, xdg_config_home
 
@@ -219,18 +219,19 @@ def handle_results(cont_id, upload, testresult_dir, testsuite_dir, tester):
     archive_name = path.join(testresult_dir, 'CGAL-{0}_{1}-test-{2}'.format(release_id, tester, platform))
     archive_name = shutil.make_archive(archive_name, 'gztar', tmpd)
     print 'Created the archive ' + archive_name
-    # if upload:
-    #     upload_results(archive_name, )
-    # uploaded as FILENAME
+    if upload:
+        # TODO exceptions
+        upload_results(archive_name)
 
-def upload_results(localpath, remotepath):
-    ssh = paramiko.SSHClient()
-    ssh.load_host_keys(path.expanduser(path.join("~", ".ssh", "known_hosts")))
-    ssh.connect(server)
-    sftp = ssh.open_sftp()
-    sftp.put(localpath, remotepath)
-    sftp.close()
-    ssh.close()
+def upload_results(localpath):
+    """Upload the file at `localpath` to the incoming directory of the
+    cgal test server."""
+    try:
+        subprocess.check_call(['scp',
+                               localpath,
+                               'cgaltest@cgaltest.geometryfactory.com:incoming/{}'.format(path.basename(localpath)) ])
+    except subprocess.CalledProcessError as e:
+        print 'Could not upload result file. SCP failed with error code {}'.format(e.returncode)
 
 # A regex to decompose the name of an image into the groups ('user', 'name', 'tag')
 image_name_regex = re.compile('(.*/)?([^:]*)(:.*)?')
