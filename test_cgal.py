@@ -234,6 +234,7 @@ def container_by_id(Id):
 def calculate_cpu_sets(max_cpus, cpus_per_container):
     """Returns a list with strings specifying the CPU sets used for
     execution of this testsuite."""
+    # Explicit floor division from future
     nb_parallel_containers = max_cpus // cpus_per_container
     cpu = 0
     cpu_sets = []
@@ -351,7 +352,6 @@ def main():
     # Copy the entrypoint to the testsuite volume
     shutil.copy('./docker-entrypoint.sh', path_to_extracted_release)
 
-    # Explicit floor division from future
     cpu_sets = calculate_cpu_sets(args.max_cpus, args.container_cpus)
     nb_parallel_containers = len(cpu_sets)
 
