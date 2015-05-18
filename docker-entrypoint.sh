@@ -5,9 +5,11 @@ set -e
 if [ -z "${CGAL_TEST_PLATFORM}" ]; then
     export CGAL_TEST_PLATFORM="${HOSTNAME}"
     echo "CGAL_TEST_PLATFORM not set. Using HOSTNAME:${HOSTNAME}"
-else
-    echo "CGAL_TEST_PLATFORM is ${CGAL_TEST_PLATFORM}"
 fi
+
+# HACK: We depend on this line to easily extract the platform name
+# from the logs.
+echo "CGAL_TEST_PLATFORM=${CGAL_TEST_PLATFORM}"
 
 if [ -z "${CGAL_NUMBER_OF_JOBS}" ]; then
     CGAL_NUMBER_OF_JOBS=1

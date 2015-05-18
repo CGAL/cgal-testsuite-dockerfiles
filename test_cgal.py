@@ -184,7 +184,7 @@ def run_container(img, tester, tester_name, tester_address, force_rm, cpu_set, n
     start_container(container_id, testsuite, testresults)
     return container_id
 
-def handle_results(cont_id, upload, testresult_dir):
+def handle_results(cont_id, upload, testresult_dir, testsuite_dir, tester):
     # Try to recover the name of the resulting tar.gz from the container logs.
     logs = client.logs(container=cont_id, tail=4)
     res = re.search(r'([^ ]*)\.tar\.gz', logs)
@@ -201,16 +201,26 @@ def handle_results(cont_id, upload, testresult_dir):
     tmpd = tempfile.mkdtemp()
     shutil.move(tarf, tmpd)
     shutil.move(txtf, tmpd)
-    # Double splitext, to handle tar.gz
-    archive_name = path.join(testresult_dir, path.splitext(path.splitext(path.basename(tarf))[0])[0])
+
+    # Build the filename according to:
+    # CGAL-4.7-Ic-29_lrineau-test-ArchLinux.tar.gz
+    release_id='NO_VERSION_FILE'
+    try:
+        version_file = path.join(testsuite_dir, 'VERSION')
+        fp = open(version_file)
+    except IOError:
+        print 'Error opening VERSION file'
+    else:
+        with fp:
+            release_id=fp.read().replace('\n', '')
+
+    platform=platform_from_container(cont_id)
+
+    archive_name = path.join(testresult_dir, 'CGAL-{0}_{1}-test-{2}'.format(release_id, tester, platform))
     archive_name = shutil.make_archive(archive_name, 'gztar', tmpd)
     print 'Created the archive ' + archive_name
-
-    # Those are variables used by autotest_cgal:
-    # COMPILER=`printf "%s" "$2" | tr -c '[A-Za-z0-9]./[=-=]*_\'\''\":?() ' 'x'`
-    # FILENAME="${CGAL_RELEASE_ID}_${CGAL_TESTER}-test`datestr`-${COMPILER}-cmake.tar.gz"
-    # LOGFILENAME="${CGAL_RELEASE_ID}-log`datestr`-${HOST}.gz"
-
+    # if upload:
+    #     upload_results(archive_name, )
     # uploaded as FILENAME
 
 def upload_results(localpath, remotepath):
@@ -224,6 +234,16 @@ def upload_results(localpath, remotepath):
 
 # A regex to decompose the name of an image into the groups ('user', 'name', 'tag')
 image_name_regex = re.compile('(.*/)?([^:]*)(:.*)?')
+
+def platform_from_container(cont_id):
+    # We assume that the container is already dead and that this will not loop
+    # forever.
+    platform_regex = re.compile('^CGAL_TEST_PLATFORM=(.*)$')
+    for line in client.logs(container=cont_id, stream=True):
+        res = platform_regex.search(line)
+        if res:
+            return res.group(1)
+    return 'NO_TEST_PLATFORM'
 
 def container_by_id(Id):
     contlist = [cont for cont in client.containers(all=True) if Id == cont[u'Id']]
@@ -422,7 +442,8 @@ def main():
                 else:
                     print 'Container died cleanly, handling results'
                     try:
-                        handle_results(ev[u'id'], args.upload_results, args.testresults)
+                        handle_results(ev[u'id'], args.upload_results, args.testresults,
+                                       args.testsuite, args.tester)
                     except TestsuiteException as e:
                         print e
                 # The freed up cpu_set.
