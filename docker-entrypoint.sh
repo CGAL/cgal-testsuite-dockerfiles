@@ -69,9 +69,9 @@ cp -r "${CGAL_TEST_DIR}/." "${CGAL_TEST_BUILD_DIR}"
 cd "${CGAL_TEST_BUILD_DIR}"
 make -j ${CGAL_NUMBER_OF_JOBS} -k -fmakefile2
 
-# Copy version.h, so thhat collect_cgal_testresults_from_cmake can find it.
-mkdir -p "${CGAL_DIR}/include/CGAL"
-cp "${CGAL_RELEASE_DIR}/include/CGAL/version.h" "${CGAL_DIR}/include/CGAL/"
+# Copy version.h, so that collect_cgal_testresults_from_cmake can find it.
+mkdir -p "/build/src/include/CGAL"
+cp "${CGAL_RELEASE_DIR}/include/CGAL/version.h" "/build/src/include/CGAL"
 
 ./collect_cgal_testresults_from_cmake
 
