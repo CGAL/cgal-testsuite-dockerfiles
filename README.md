@@ -32,7 +32,6 @@ The code requires several non-standard python2 packages, which are
 available in all common distributions.
 
 - `docker-py`
-- `paramiko`
 - `xdg`
 
 SELinux issues
