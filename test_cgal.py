@@ -448,7 +448,7 @@ def main():
                     print 'Container died cleanly, handling results'
                     try:
                         handle_results(ev[u'id'], args.upload_results, args.testresults,
-                                       args.testsuite, args.tester)
+                                       path_to_extracted_release, args.tester)
                     except TestsuiteException as e:
                         print e
                 # The freed up cpu_set.
