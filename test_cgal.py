@@ -223,15 +223,17 @@ def handle_results(cont_id, upload, testresult_dir, testsuite_dir, tester):
         # TODO exceptions
         upload_results(archive_name)
 
-def upload_results(localpath):
-    """Upload the file at `localpath` to the incoming directory of the
+def upload_results(local_path):
+    """Upload the file at `local_path` to the incoming directory of the
     cgal test server."""
     try:
+        print 'Uploading ' + local_path
         subprocess.check_call(['scp',
-                               localpath,
-                               'cgaltest@cgaltest.geometryfactory.com:incoming/{}'.format(path.basename(localpath)) ])
+                               local_path,
+                               'cgaltest@cgaltest.geometryfactory.com:incoming/{}'.format(path.basename(local_path)) ])
     except subprocess.CalledProcessError as e:
         print 'Could not upload result file. SCP failed with error code {}'.format(e.returncode)
+    print 'Done uploading ' + local_path
 
 # A regex to decompose the name of an image into the groups ('user', 'name', 'tag')
 image_name_regex = re.compile('(.*/)?([^:]*)(:.*)?')
