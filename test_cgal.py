@@ -30,6 +30,7 @@ import time
 import tempfile
 import docker
 import subprocess
+import shlex
 from multiprocessing import cpu_count
 from xdg.BaseDirectory import load_first_config, xdg_config_home
 
@@ -38,12 +39,7 @@ class CustomArgumentParser(argparse.ArgumentParser):
         super(CustomArgumentParser, self).__init__(*args, **kwargs)
 
     def convert_arg_line_to_args(self, line):
-        for arg in line.split():
-            if not arg.strip():
-                continue
-            if arg[0] == '#':
-                break
-            yield arg
+        return shlex.split(line, comments=True)
 
 class TestsuiteException(Exception):
     pass
@@ -318,10 +314,7 @@ def main():
 
     if path.isfile(default_arg_file):
         print 'Using default arguments from: ' + default_arg_file
-        with open (default_arg_file, 'r') as f:
-            for line in f.readlines():
-                for arg in line.split():
-                    sys.argv.append(arg)
+        sys.argv.insert(1, '@' + default_arg_file)
 
     args = parser.parse_args()
     assert path.isabs(args.testsuite)
