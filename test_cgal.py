@@ -322,7 +322,7 @@ def main():
         assert args.tester, 'When uploading a --tester has to be given'
         assert args.tester_name, 'When uploading a --tester-name has to be given'
         assert args.tester_address, 'When uploading a --tester-name has to be given'
-        assert 'gztar' in shutil.get_archive_formats(), 'When uploading results, gztar needs to be available'
+        assert 'gztar' in (item[0] for item in shutil.get_archive_formats()), 'When uploading results, gztar needs to be available'
 
     print 'Using images ' + ', '.join(args.images)
 
