@@ -93,20 +93,20 @@ def get_cgal(latest, testsuite):
             print 'Did you forget to provide --user and --passwd?'
         sys.exit('Failure retrieving the CGAL specified by latest.' + e.reason)
 
-def extract(path):
-    """Extract the CGAL release tar ball specified by `path` into the
-    directory of `path`.  The tar ball can only contain a single
+def extract(path_to_release_tar):
+    """Extract the CGAL release tar ball specified by `path_to_release_tar` into the
+    directory of `path_to_release_tar`.  The tar ball can only contain a single
     directory, which cannot be an absolute path. Returns the path to
     the extracted directory."""
-    print 'Extracting ' + path
-    assert tarfile.is_tarfile(path), 'Path provided to extract is not a tarfile'
-    tar = tarfile.open(path)
+    print 'Extracting ' + path_to_release_tar
+    assert tarfile.is_tarfile(path_to_release_tar), 'Path provided to extract is not a tarfile'
+    tar = tarfile.open(path_to_release_tar)
     commonprefix = path.commonprefix(tar.getnames())
     assert commonprefix != '.', 'Tarfile has no single common prefix'
     assert not path.isabs(commonprefix), 'Common prefix is an absolute path'
-    tar.extractall(path.dirname(path)) # extract to the download path
+    tar.extractall(path.dirname(path_to_release_tar)) # extract to the download path
     tar.close()
-    return path.join(path.dirname(path), commonprefix)
+    return path.join(path.dirname(path_to_release_tar), commonprefix)
 
 def default_images():
     """Returns a list of all image tags starting with cgal-testsuite/."""
