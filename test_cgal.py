@@ -76,21 +76,6 @@ def extract(path_to_release_tar):
     tar.close()
     return path.join(path.dirname(path_to_release_tar), commonprefix)
 
-def default_images():
-    """Returns a list of all image tags starting with cgal-testsuite/."""
-    images = []
-    for img in client.images():
-        tag = next((x for x in img[u'RepoTags'] if x.startswith(u'cgal-testsuite/')), None)
-        if tag:
-            images.append(tag)
-    return images
-
-def not_existing_images(images):
-    """Checks if each image in the list `images` is actually a name
-    for a docker image. Returns a list of not existing names."""
-    # Since img might contain a :TAG we need to work it a little.
-    return [img for img in images if len(client.images(name=img.rsplit(':')[0])) == 0]
-
 def handle_results(cont_id, upload, testresult_dir, testsuite_dir, tester):
     # Try to recover the name of the resulting tar.gz from the container logs.
     logs = client.logs(container=cont_id, tail=4)
@@ -180,23 +165,17 @@ def main():
     parser = cgal_docker_args.parser()
     args = parser.parse_args()
 
+    # If no jobs are specified, use as many as we use cpus per
+    # container.
     if not args.jobs:
         args.jobs = args.container_cpus
-
-    global use_fedora_selinux_policy
-    use_fedora_selinux_policy = args.use_fedora_selinux_policy
 
     # Set-up a global docker client for convenience and easy
     # refactoring to a class.
     global client
     client = docker.Client(base_url=args.docker_url)
 
-    if not args.images: # no images, use default
-        args.images=default_images()
-
-    not_existing = not_existing_images(args.images)
-    if len(not_existing) != 0:
-        raise TestsuiteError('Could not find specified images: ' + ', '.join(not_existing))
+    args.images = images(client, args.images)
 
     if args.upload_results:
         assert args.tester, 'When uploading a --tester has to be given'

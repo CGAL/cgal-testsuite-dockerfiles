@@ -27,32 +27,32 @@ def container_by_id(docker_client, Id):
         raise TestsuiteError('Requested Container Id ' + Id + 'does not exist')
     return contlist[0]
 
-class Containers:
-    def __init__(self, docker_client, images=None):
-        self.docker_client = docker_client
-        
-        if not images:
-            self.images = _default_images()
+def images(docker_client, images):
+    """If `images` is `None`, returns a list of default images, else
+    validates the list of images and returns it. Raises an exception
+    if an invalid image is found.
+    """
+    if not images:
+        return _default_images(docker_client)
+    not_existing = _not_existing_images(docker_client, images)
+    if len(not_existing) != 0:
+        raise TestsuiteError('Could not find specified images: ' + ', '.join(not_existing))
 
-        not_existing = self._not_existing_images(images)
-        if len(not_existing) != 0:
-            raise TestsuiteError('Could not find specified images: ' + ', '.join(not_existing))
+    return images
 
-        self.images = images
+def _default_images(docker_client):
+    images = []
+    for img in docker_client.images():
+        tag = next((x for x in img[u'RepoTags'] if x.startswith(u'cgal-testsuite/')), None)
+        if tag:
+            images.append(tag)
+    return images
 
-    def _default_images():
-        images = []
-        for img in docker_client.images():
-            tag = next((x for x in img[u'RepoTags'] if x.startswith(u'cgal-testsuite/')), None)
-            if tag:
-                images.append(tag)
-        return images
-
-    def _not_existing_images(self, images):
-        """Checks if each image in the list `images` is actually a name
-        for a docker image. Returns a list of not existing names."""
-        # Since img might contain a :TAG we need to work it a little.
-        return [img for img in images if len(self.docker_client.images(name=img.rsplit(':')[0])) == 0]
+def _not_existing_images(docker_client, images):
+    """Checks if each image in the list `images` is actually a name
+    for a docker image. Returns a list of not existing names."""
+    # Since img might contain a :TAG we need to work it a little.
+    return [img for img in images if len(docker_client.images(name=img.rsplit(':')[0])) == 0]
 
 class ContainerRunner:
     # A regex to decompose the name of an image into the groups
