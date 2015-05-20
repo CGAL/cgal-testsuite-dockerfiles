@@ -91,70 +91,6 @@ def not_existing_images(images):
     # Since img might contain a :TAG we need to work it a little.
     return [img for img in images if len(client.images(name=img.rsplit(':')[0])) == 0]
 
-def create_container(img, tester, tester_name, tester_address, force_rm, cpu_set, nb_jobs, testsuite, testresults):
-    # Since we cannot reliably inspect APIError, we need to check
-    # first if a container with the name we would like to use already
-    # exists. If so, we check it's status. If it is Exited, we kill
-    # it. Otherwise we fall over.
-    chosen_name = 'CGAL-' + image_name_regex.search(img).group(2) + '-testsuite'
-    existing = [cont for cont in client.containers(all=True) if '/' + chosen_name in cont[u'Names']]
-    assert len(existing) == 0 or len(existing) == 1, 'Length of existing containers is odd'
-
-    if len(existing) != 0 and u'Exited' in existing[0][u'Status']:
-        print 'An Exited container with name ' + chosen_name + ' already exists. Removing.'
-        client.remove_container(container=chosen_name)
-    elif len(existing) != 0 and force_rm:
-        print 'A non-Exited container with name ' + chosen_name + ' already exists. Forcing exit and removal.'
-        client.kill(container=chosen_name)
-        client.remove_container(container=chosen_name)
-    elif len(existing) != 0:
-        raise TestsuiteWarning('A non-Exited container with name ' + chosen_name + ' already exists. Skipping.')
-
-    config = docker.utils.create_host_config(binds={
-        testsuite:
-        {
-            'bind': '/mnt/testsuite',
-            'ro': True
-        },
-        testresults:
-        {
-            'bind': '/mnt/testresults',
-            'ro': False
-        }
-    })
-
-    if use_fedora_selinux_policy:
-        config['Binds'][0] += 'z'
-        config['Binds'][1] += 'z'
-
-    container = client.create_container(
-        image=img,
-        name=chosen_name,
-        entrypoint='/mnt/testsuite/docker-entrypoint.sh',
-        volumes=['/mnt/testsuite', '/mnt/testresults'],
-        cpuset=cpu_set,
-        environment={"CGAL_TESTER" : tester,
-                     "CGAL_TESTER_NAME" : tester_name,
-                     "CGAL_TESTER_ADDRESS": tester_address,
-                     "CGAL_NUMBER_OF_JOBS" : nb_jobs
-        },
-        host_config=config
-    )
-
-    if container[u'Warnings']:
-        print 'Container of image %s got created with warnings: %s' % (img, container[u'Warnings'])
-
-    return container[u'Id']
-
-def run_container(img, tester, tester_name, tester_address, force_rm, cpu_set, nb_jobs, testsuite, testresults):
-    container_id = create_container(img, tester, tester_name, tester_address, force_rm, cpu_set, nb_jobs, testsuite, testresults)
-    cont = container_by_id(container_id)
-    print 'Created container:\t' + ', '.join(cont[u'Names']) + \
-        '\n\twith id:\t' + cont[u'Id'] + \
-        '\n\tfrom image:\t'  + cont[u'Image']
-    client.start(container_id)
-    return container_id
-
 def handle_results(cont_id, upload, testresult_dir, testsuite_dir, tester):
     # Try to recover the name of the resulting tar.gz from the container logs.
     logs = client.logs(container=cont_id, tail=4)
@@ -215,9 +151,6 @@ def upload_results(local_path):
         print 'Could not upload result file. SCP failed with error code {}'.format(e.returncode)
     print 'Done uploading ' + local_path
 
-# A regex to decompose the name of an image into the groups ('user', 'name', 'tag')
-image_name_regex = re.compile('(.*/)?([^:]*)(:.*)?')
-
 def platform_from_container(cont_id):
     # We assume that the container is already dead and that this will not loop
     # forever.
@@ -227,12 +160,6 @@ def platform_from_container(cont_id):
         if res:
             return res.group(1)
     return 'NO_TEST_PLATFORM'
-
-def container_by_id(Id):
-    contlist = [cont for cont in client.containers(all=True) if Id == cont[u'Id']]
-    if len(contlist) != 1:
-        raise TestsuiteError('Requested Container Id ' + Id + 'does not exist')
-    return contlist[0]
 
 def calculate_cpu_sets(max_cpus, cpus_per_container):
     """Returns a list with strings specifying the CPU sets used for
@@ -252,10 +179,6 @@ def calculate_cpu_sets(max_cpus, cpus_per_container):
 def main():
     parser = cgal_docker_args.parser()
     args = parser.parse_args()
-
-    args = parser.parse_args()
-    assert path.isabs(args.testsuite)
-    assert path.isabs(args.testresults)
 
     if not args.jobs:
         args.jobs = args.container_cpus
@@ -317,12 +240,13 @@ def main():
 
     running_containers = []
     running_cpu_sets = []
+    runner = ContainerRunner(client, args.tester, args.tester_name, 
+                             args.tester_address, args.force_rm, args.jobs,
+                             path_to_extracted_release, args.testresults, 
+                             args.use_fedora_selinux_policy)
     for img, cpu_set in zip(reversed(args.images), reversed(cpu_sets)):
         try:
-            running_containers.append(
-                run_container(img, args.tester, args.tester_name,
-                              args.tester_address, args.force_rm,
-                              cpu_set, args.jobs, path_to_extracted_release, args.testresults))
+            running_containers.append(runner.run(img, cpu_set))
             running_cpu_sets.append(cpu_set)
             args.images.pop()
             cpu_sets.pop()
@@ -366,7 +290,7 @@ def main():
             index = -1
 
         if index != -1: # we care
-            container_info = container_by_id(ev[u'id'])
+            container_info = container_by_id(client, ev[u'id'])
             if ev[u'status'] == u'die' and status_code_regex.search(container_info[u'Status']):
                 res = status_code_regex.search(container_info[u'Status'])
                 if not res:
@@ -387,10 +311,7 @@ def main():
                 del running_containers[index]
                 del running_cpu_sets[index]
                 if len(args.images) != 0:
-                    running_containers.append(
-                        run_container(args.images[-1], args.tester, args.tester_name,
-                                      args.tester_address, args.force_rm,
-                                      cpu_set, args.jobs, path_to_extracted_release, args.testresults))
+                    running_containers.append(runner.run(args.images[-1], cpu_set))
                     running_cpu_sets.append(cpu_set)
                     args.images.pop()
 
