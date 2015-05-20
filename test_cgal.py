@@ -119,7 +119,7 @@ def not_existing_images(images):
     # Since img might contain a :TAG we need to work it a little.
     return [img for img in images if len(client.images(name=img.rsplit(':')[0])) == 0]
 
-def create_container(img, tester, tester_name, tester_address, force_rm, cpu_set, nb_jobs):
+def create_container(img, tester, tester_name, tester_address, force_rm, cpu_set, nb_jobs, testsuite, testresults):
     # Since we cannot reliably inspect APIError, we need to check
     # first if a container with the name we would like to use already
     # exists. If so, we check it's status. If it is Exited, we kill
@@ -138,26 +138,7 @@ def create_container(img, tester, tester_name, tester_address, force_rm, cpu_set
     elif len(existing) != 0:
         raise TestsuiteWarning('A non-Exited container with name ' + chosen_name + ' already exists. Skipping.')
 
-    container = client.create_container(
-        image=img,
-        name=chosen_name,
-        entrypoint='/mnt/testsuite/docker-entrypoint.sh',
-        volumes=['/mnt/testsuite', '/mnt/testresults'],
-        cpuset=cpu_set,
-        environment={"CGAL_TESTER" : tester,
-                     "CGAL_TESTER_NAME" : tester_name,
-                     "CGAL_TESTER_ADDRESS": tester_address,
-                     "CGAL_NUMBER_OF_JOBS" : nb_jobs
-        }
-    )
-
-    if container[u'Warnings']:
-        print 'Container of image %s got created with warnings: %s' % (img, container[u'Warnings'])
-
-    return container[u'Id']
-
-def start_container(container, testsuite, testresults):
-    client.start(container, binds={
+    config = docker.utils.create_host_config(binds={
         testsuite:
         {
             'bind': '/mnt/testsuite',
@@ -169,15 +150,33 @@ def start_container(container, testsuite, testresults):
             'ro': False
         }
     })
-    return container
+
+    container = client.create_container(
+        image=img,
+        name=chosen_name,
+        entrypoint='/mnt/testsuite/docker-entrypoint.sh',
+        volumes=['/mnt/testsuite', '/mnt/testresults'],
+        cpuset=cpu_set,
+        environment={"CGAL_TESTER" : tester,
+                     "CGAL_TESTER_NAME" : tester_name,
+                     "CGAL_TESTER_ADDRESS": tester_address,
+                     "CGAL_NUMBER_OF_JOBS" : nb_jobs
+        },
+        host_config=config
+    )
+
+    if container[u'Warnings']:
+        print 'Container of image %s got created with warnings: %s' % (img, container[u'Warnings'])
+
+    return container[u'Id']
 
 def run_container(img, tester, tester_name, tester_address, force_rm, cpu_set, nb_jobs, testsuite, testresults):
-    container_id = create_container(img, tester, tester_name, tester_address, force_rm, cpu_set, nb_jobs)
+    container_id = create_container(img, tester, tester_name, tester_address, force_rm, cpu_set, nb_jobs, testsuite, testresults)
     cont = container_by_id(container_id)
     print 'Created container:\t' + ', '.join(cont[u'Names']) + \
         '\n\twith id:\t' + cont[u'Id'] + \
         '\n\tfrom image:\t'  + cont[u'Image']
-    start_container(container_id, testsuite, testresults)
+    client.start(container_id)
     return container_id
 
 def handle_results(cont_id, upload, testresult_dir, testsuite_dir, tester):
