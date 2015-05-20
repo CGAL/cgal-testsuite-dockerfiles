@@ -17,6 +17,7 @@
 
 from __future__ import division
 
+from cgal_docker import *
 import cgal_docker_args
 from os import path
 import re
@@ -28,23 +29,6 @@ import time
 import tempfile
 import docker
 import subprocess
-
-class TestsuiteException(Exception):
-    pass
-
-class TestsuiteWarning(TestsuiteException):
-    """Warning exceptions thrown in this module."""
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return 'Testsuite Warning: ' + repr(self.value)
-
-class TestsuiteError(TestsuiteException):
-    """Error exceptions thrown in this module."""
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return 'Testsuite Error: ' + repr(self.value)
 
 cgal_release_url='https://cgal.geometryfactory.com/CGAL/Members/Releases/'
 
