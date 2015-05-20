@@ -151,6 +151,10 @@ def create_container(img, tester, tester_name, tester_address, force_rm, cpu_set
         }
     })
 
+    if use_fedora_selinux_policy:
+        config['Binds'][0] += 'z'
+        config['Binds'][1] += 'z'
+
     container = client.create_container(
         image=img,
         name=chosen_name,
@@ -301,6 +305,7 @@ def main():
                         help='The number of CPUs a single container should have. Defaults to one.')
     parser.add_argument('--jobs', metavar='N', default=None, type=int,
                         help='The number of jobs a single container is going to launch. Defaults to --container-cpus.')
+    parser.add_argument('--use-fedora-selinux-policy', action='store_true', help='Mount volumes with z option to accomodate SELinux on Fedora.')
 
     # Download related arguments
     parser.add_argument('--use-local', action='store_true',
@@ -330,6 +335,9 @@ def main():
 
     if not args.jobs:
         args.jobs = args.container_cpus
+
+    global use_fedora_selinux_policy
+    use_fedora_selinux_policy = args.use_fedora_selinux_policy
 
     # Set-up a global docker client for convenience and easy
     # refactoring to a class.
