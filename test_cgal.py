@@ -76,7 +76,7 @@ def extract(path_to_release_tar):
     tar.close()
     return path.join(path.dirname(path_to_release_tar), commonprefix)
 
-def handle_results(cont_id, upload, testresult_dir, testsuite_dir, tester):
+def handle_results(client, cont_id, upload, testresult_dir, testsuite_dir, tester):
     # Try to recover the name of the resulting tar.gz from the container logs.
     logs = client.logs(container=cont_id, tail=4)
     res = re.search(r'([^ ]*)\.tar\.gz', logs)
@@ -106,7 +106,7 @@ def handle_results(cont_id, upload, testresult_dir, testsuite_dir, tester):
         with fp:
             release_id=fp.read().replace('\n', '')
 
-    platform=platform_from_container(cont_id)
+    platform=platform_from_container(client, cont_id)
 
     archive_name = path.join(testresult_dir, 'CGAL-{0}_{1}-test-{2}'.format(release_id, tester, platform))
     archive_name = shutil.make_archive(archive_name, 'gztar', tmpd)
@@ -136,7 +136,7 @@ def upload_results(local_path):
         print 'Could not upload result file. SCP failed with error code {}'.format(e.returncode)
     print 'Done uploading ' + local_path
 
-def platform_from_container(cont_id):
+def platform_from_container(client, cont_id):
     # We assume that the container is already dead and that this will not loop
     # forever.
     platform_regex = re.compile('^CGAL_TEST_PLATFORM=(.*)$')
@@ -170,11 +170,7 @@ def main():
     if not args.jobs:
         args.jobs = args.container_cpus
 
-    # Set-up a global docker client for convenience and easy
-    # refactoring to a class.
-    global client
     client = docker.Client(base_url=args.docker_url)
-
     args.images = images(client, args.images)
 
     if args.upload_results:
@@ -281,7 +277,7 @@ def main():
                 else:
                     print 'Container died cleanly, handling results'
                     try:
-                        handle_results(ev[u'id'], args.upload_results, args.testresults,
+                        handle_results(client, ev[u'id'], args.upload_results, args.testresults,
                                        path_to_extracted_release, args.tester)
                     except TestsuiteException as e:
                         print e
