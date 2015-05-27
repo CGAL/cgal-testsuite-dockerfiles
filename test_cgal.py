@@ -35,12 +35,12 @@ def handle_results(client, cont_id, upload, testresult_dir, release, tester):
     logs = client.logs(container=cont_id, tail=4)
     res = re.search(r'([^ ]*)\.tar\.gz', logs)
     if not res:
-        raise TestsuiteError('Could not identify resulting tar.gz file from logs of ' + cont_id)
+        raise TestsuiteError('Could not identify resulting tar.gz file from logs of {}'.format(cont_id))
     tarf = path.join(testresult_dir, res.group(0))
     txtf = path.join(testresult_dir, res.group(1) + '.txt')
 
     if not path.isfile(tarf) or not path.isfile(txtf):
-        raise TestsuiteError('Result Files ' + tarf + ' or ' + txtf + ' do not exist.')
+        raise TestsuiteError('Result Files {} or {} do not exist.'.format(tarf, txtf))
 
     # Tar the tesresults results_${CGAL_TESTER}_${PLATFORM}.tar.gz results_${CGAL_TESTER}_${PLATFORM}.txt
     # into results_${CGAL_TESTER}_${PLATFORM}.tar.gz
@@ -59,7 +59,7 @@ def handle_results(client, cont_id, upload, testresult_dir, release, tester):
 
     archive_name = path.join(testresult_dir, 'CGAL-{0}_{1}-test-{2}'.format(release_id, tester, platform))
     archive_name = shutil.make_archive(archive_name, 'gztar', tmpd)
-    print 'Created the archive ' + archive_name
+    logging.info('Created the archive {}'.format(archive_name))
     if upload:
         # TODO exceptions
         upload_results(archive_name)
@@ -76,14 +76,15 @@ def handle_results(client, cont_id, upload, testresult_dir, release, tester):
 def upload_results(local_path):
     """Upload the file at `local_path` to the incoming directory of the
     cgal test server."""
+    logging.info('Uploading {}'.format(local_path))
     try:
-        print 'Uploading ' + local_path
         subprocess.check_call(['scp',
                                local_path,
                                'cgaltest@cgaltest.geometryfactory.com:incoming/{}'.format(path.basename(local_path)) ])
     except subprocess.CalledProcessError as e:
-        print 'Could not upload result file. SCP failed with error code {}'.format(e.returncode)
-    print 'Done uploading ' + local_path
+        logging.error('Could not upload result file. SCP failed with error code {}'.format(e.returncode))
+    else:
+        logging.info('Done uploading {}'.format(local_path))
 
 def platform_from_container(client, cont_id):
     # We assume that the container is already dead and that this will not loop
@@ -129,10 +130,10 @@ def main():
         assert args.tester_address, 'When uploading a --tester-address has to be given'
         assert 'gztar' in (item[0] for item in shutil.get_archive_formats()), 'When uploading results, gztar needs to be available'
 
-    print 'Using images ' + ', '.join(args.images)
+    logging.info('Using images {}'.format(', '.join(args.images)))
 
     release = Release(args.testsuite, args.use_local, args.user, args.passwd)
-    print 'Extracted release {} is at {}'.format(release.version, release.path)
+    logging.info('Extracted release {} is at {}'.format(release.version, release.path))
 
     # Copy the entrypoint to the testsuite volume
     shutil.copy('./docker-entrypoint.sh', release.path)
@@ -140,7 +141,7 @@ def main():
     cpu_sets = calculate_cpu_sets(args.max_cpus, args.container_cpus)
     nb_parallel_containers = len(cpu_sets)
 
-    print 'Running a maximum of %i containers in parallel each using %i CPUs and using %i jobs' % (nb_parallel_containers, args.container_cpus, args.jobs)
+    logging.info('Running a maximum of %i containers in parallel each using %i CPUs and using %i jobs' % (nb_parallel_containers, args.container_cpus, args.jobs))
 
     before_start = int(time.time())
 
@@ -160,7 +161,7 @@ def main():
             # We are skipping this image.
             args.images.pop()
             cpu_sets.pop()
-            print e
+            logging.exception(str(e))
         except TestsuiteError as e:
             sys.exit(e.value)
 
@@ -199,18 +200,18 @@ def main():
             if ev[u'status'] == u'die' and status_code_regex.search(container_info[u'Status']):
                 res = status_code_regex.search(container_info[u'Status'])
                 if not res:
-                    print 'Could not parse exit status: '  + container_info[u'Status']
-                    print 'Assuming dirty death of the container'
+                    logging.warning('Could not parse exit status: {}. Assuming dirty death of the container.'
+                                    .format(container_info[u'Status']))
                 elif res.group(1) != '0':
-                    print 'Container exited with Error Code: ' + res.group(1)
-                    print 'Assuming dirty death of the container'
+                    logging.warning('Container exited with Error Code: {}. Assuming dirty death of the container.'
+                                    .format(res.group(1)))
                 else:
-                    print 'Container died cleanly, handling results'
+                    logging.info('Container died cleanly, handling results.')
                     try:
                         handle_results(client, ev[u'id'], args.upload_results, args.testresults,
                                        release, args.tester)
                     except TestsuiteException as e:
-                        print e
+                        logging.exception(str(e))
                 # The freed up cpu_set.
                 cpu_set = running_cpu_sets[index]
                 del running_containers[index]
@@ -221,7 +222,7 @@ def main():
                     args.images.pop()
 
         if len(running_containers) == 0:
-            print 'All images handled. Exiting.'
+            logging.info('All images handled. Exiting.')
             break
 
 if __name__ == "__main__":
