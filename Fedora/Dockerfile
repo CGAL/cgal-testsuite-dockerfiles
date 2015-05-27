@@ -2,7 +2,7 @@ FROM fedora:latest
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN yum -y update; yum clean all
-RUN yum -y install cmake gcc-c++ tar \
+RUN yum -y install make cmake gcc-c++ tar \
                    glibc-devel.x86_64 libstdc++-devel.x86_64 \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    boost-devel.x86_64 \
