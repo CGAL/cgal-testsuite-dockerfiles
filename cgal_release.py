@@ -1,6 +1,7 @@
 import urllib2
 import os
 import tarfile
+import logging
 
 class Release:
     """The path of this release."""
@@ -13,7 +14,7 @@ class Release:
 
     def __init__(self, testsuite, use_local, user, passwd):
         if not use_local and user and passwd:
-            print 'Setting up user and password for download.'
+            logging.info('Setting up user and password for download.')
             password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
             password_mgr.add_password(None, Release._release_url, user, passwd)
             handler = urllib2.HTTPBasicAuthHandler(password_mgr)
@@ -21,13 +22,14 @@ class Release:
             urllib2.install_opener(opener)
 
         if use_local:
-            print 'Using local CGAL release at {}'.format(testsuite)
+            logging.info('Using local CGAL release at {}'.format(testsuite))
             self.path = testsuite
         else:
+            logging.info('Trying to determine LATEST')
             latest = Release._get_latest()
-            print 'LATEST is {}'.format(latest)
+            logging.info('LATEST is {}'.format(latest))
             path_to_tar = Release._get_cgal(latest, testsuite)
-            print 'Extracting {}'.format(path_to_tar)
+            logging.info('Extracting {}'.format(path_to_tar))
             self.path = Release._extract_release(path_to_tar)
 
         assert os.path.isdir(self.path), '{} is not a directory'.format(self.path)
@@ -38,7 +40,6 @@ class Release:
 
     @staticmethod
     def _get_latest():
-        print 'Trying to determine LATEST'
         try:
             response = urllib2.urlopen(Release._latest_url)
             return response.read().strip()
@@ -51,10 +52,10 @@ class Release:
     def _get_cgal(latest, testsuite):
         download_from=os.path.join(Release._release_url, latest)
         download_to=os.path.join(testsuite, os.path.basename(download_from))
-        print 'Trying to download from {} to {}'.format(download_from, download_to)
+        logging.info('Trying to download from {} to {}'.format(download_from, download_to))
 
         if os.path.exists(download_to):
-            print 'Path {} already exists, reusing'.format(download_to)
+            logging.warning('Path {} already exists, reusing it.'.format(download_to))
             return download_to
 
         try:
@@ -88,7 +89,7 @@ class Release:
             version_file = os.path.join(self.path, 'VERSION')
             fp = open(version_file)
         except IOError:
-            print 'Error opening VERSION file'
+            logging.warning('Could not read VERSION file {}'.format(version_file))
         else:
             with fp:
                 release_id = fp.read().replace('\n', '')
