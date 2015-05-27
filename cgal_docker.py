@@ -129,5 +129,51 @@ class ContainerRunner:
 
         return container[u'Id']
 
+class ContainerScheduler:
+    def __init__(self, runner, images, cpusets):
+        self.runner = runner
+        self.images = images
+        self.available_cpusets = cpusets
+        self.running_containers = {}
+
+    def launch(self):
+        """Launch as many containers as possible. Returns `False` if all
+        images have been scheduled, `True` otherwise."""
+
+        if len(self.images) == 0:
+            return False
+
+        while len(self.available_cpusets) != 0 and len(self.images) != 0:
+            # Remove the image but not the cpuset before
+            # running. Should run throw, the image is dropped, but the
+            # cpuset is kept.
+            image_to_launch = self.images.pop()
+            try:
+                cont_id = self.runner.run(image_to_launch, self.available_cpusets[-1])
+            except TestsuiteWarning as e:
+                logging.warning(e.value)
+
+            self.running_containers[cont_id] = self.available_cpusets.pop()
+
+        return True
+
+    def container_finished(self, container_id):
+        """Indicate that a container has finished and its cpuset is available again."""
+        cpuset = self.running_containers.pop(container_id, None)
+        if not cpuset:
+            logging.warning('Container ID {} never launched by scheduler.'.format(container_id))
+            return
+        self.available_cpusets.append(cpuset)
+
+    def is_ours(self, container_id):
+        """Return `True` if the container specified by `container_id` has been
+        launched by this scheduler, `False` otherwise."""
+        return container_id in self.running_containers
+
+    def containers_running(self):
+        """Return `True` if there are still containers running, that have been
+        launched by this scheduler, `False` otherwise."""
+        return len(self.running_containers) != 0
+
 if __name__ == "__main__":
     pass

@@ -21,7 +21,6 @@ import logging
 from cgal_docker import *
 from cgal_release import *
 import cgal_docker_args
-from os import path
 import re
 import shutil
 import sys
@@ -143,30 +142,16 @@ def main():
 
     logging.info('Running a maximum of %i containers in parallel each using %i CPUs and using %i jobs' % (nb_parallel_containers, args.container_cpus, args.jobs))
 
-    before_start = int(time.time())
 
-    running_containers = []
-    running_cpu_sets = []
     runner = ContainerRunner(client, args.tester, args.tester_name, 
                              args.tester_address, args.force_rm, args.jobs,
                              release, args.testresults, args.use_fedora_selinux_policy)
-    for img, cpu_set in zip(reversed(args.images), reversed(cpu_sets)):
-        try:
-            running_containers.append(runner.run(img, cpu_set))
-            running_cpu_sets.append(cpu_set)
-            args.images.pop()
-            cpu_sets.pop()
-        except TestsuiteWarning as e:
-            # BUG This leaves an unused cpuset for the rest of the run.
-            # We are skipping this image.
-            args.images.pop()
-            cpu_sets.pop()
-            logging.exception(str(e))
-        except TestsuiteError as e:
-            sys.exit(e.value)
+    scheduler = ContainerScheduler(runner, args.images, cpu_sets)
 
-    if len(running_containers) == 0:
-        # Nothing to do. Go before we enter the blocking events call.
+    before_start = int(time.time())
+    launch_result = scheduler.launch()
+    if not launch_result:
+        logging.error('Exiting without starting any containers.')
         sys.exit('Exiting without starting any containers.')
 
     # Possible events are: create, destroy, die, export, kill, pause,
@@ -189,14 +174,10 @@ def main():
     # https://github.com/docker/docker-py/issues/585
     for ev in client.events(since=before_start, decode=True):
         assert isinstance(ev, dict)
+        event_id = ev[u'id']
 
-        try:
-            index = running_containers.index(ev[u'id'])
-        except ValueError:
-            index = -1
-
-        if index != -1: # we care
-            container_info = container_by_id(client, ev[u'id'])
+        if scheduler.is_ours(event_id): # we care
+            container_info = container_by_id(client, event_id)
             if ev[u'status'] == u'die' and status_code_regex.search(container_info[u'Status']):
                 res = status_code_regex.search(container_info[u'Status'])
                 if not res:
@@ -208,22 +189,17 @@ def main():
                 else:
                     logging.info('Container died cleanly, handling results.')
                     try:
-                        handle_results(client, ev[u'id'], args.upload_results, args.testresults,
+                        handle_results(client, event_id, args.upload_results, args.testresults,
                                        release, args.tester)
                     except TestsuiteException as e:
                         logging.exception(str(e))
                 # The freed up cpu_set.
-                cpu_set = running_cpu_sets[index]
-                del running_containers[index]
-                del running_cpu_sets[index]
-                if len(args.images) != 0:
-                    running_containers.append(runner.run(args.images[-1], cpu_set))
-                    running_cpu_sets.append(cpu_set)
-                    args.images.pop()
-
-        if len(running_containers) == 0:
-            logging.info('All images handled. Exiting.')
-            break
+                scheduler.container_finished(event_id)
+                if not scheduler.launch():
+                    logging.info('No more images to launch.')
+                if not scheduler.containers_running():
+                    logging.info('Handled all images.')
+                    break
 
 if __name__ == "__main__":
     main()
