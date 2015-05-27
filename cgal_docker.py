@@ -62,7 +62,7 @@ class ContainerRunner:
     def __init__(self, docker_client, tester, tester_name, 
                  tester_address, force_rm, nb_jobs, testsuite, 
                  testresults, use_fedora_selinux_policy):
-        assert path.isabs(testsuite), 'testsuite needs to be an absolute path'
+        assert path.isabs(testsuite.path), 'testsuite needs to be an absolute path'
         assert path.isabs(testresults), 'testresults needs to be an absolute path'
         self.docker_client = docker_client
         self.force_rm = force_rm
@@ -72,7 +72,7 @@ class ContainerRunner:
                           "CGAL_NUMBER_OF_JOBS" : nb_jobs
         }
         self.host_config = docker.utils.create_host_config(binds={
-            testsuite:
+            testsuite.path:
             {
                 'bind': '/mnt/testsuite',
                 'ro': True

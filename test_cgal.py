@@ -18,65 +18,18 @@
 from __future__ import division
 
 from cgal_docker import *
+from cgal_release import *
 import cgal_docker_args
 from os import path
 import re
 import shutil
 import sys
-import urllib2
-import tarfile
 import time
 import tempfile
 import docker
 import subprocess
 
-cgal_release_url='https://cgal.geometryfactory.com/CGAL/Members/Releases/'
-
-def get_latest():
-    print 'Trying to determine LATEST'
-    try:
-        response = urllib2.urlopen(cgal_release_url + 'LATEST')
-        return response.read().strip()
-    except urllib2.URLError as e:
-        if hasattr(e, 'code') and e.code == 401:
-            print 'Did you forget to provide --user and --passwd?'
-        sys.exit('Failure retrieving LATEST: ' +  e.reason)
-
-def get_cgal(latest, testsuite):
-    download_from=cgal_release_url + latest
-    download_to=path.join(testsuite, path.basename(download_from))
-    print 'Trying to download latest release to ' + download_to
-
-    if path.exists(download_to):
-        print download_to + ' already exists, reusing'
-        return download_to
-
-    try:
-        response = urllib2.urlopen(download_from)
-        with open(download_to, "wb") as local_file:
-            local_file.write(response.read())
-        return download_to
-    except urllib2.URLError as e:
-        if hasattr(e, 'code') and e.code == 401:
-            print 'Did you forget to provide --user and --passwd?'
-        sys.exit('Failure retrieving the CGAL specified by latest.' + e.reason)
-
-def extract(path_to_release_tar):
-    """Extract the CGAL release tar ball specified by `path_to_release_tar` into the
-    directory of `path_to_release_tar`.  The tar ball can only contain a single
-    directory, which cannot be an absolute path. Returns the path to
-    the extracted directory."""
-    print 'Extracting ' + path_to_release_tar
-    assert tarfile.is_tarfile(path_to_release_tar), 'Path provided to extract is not a tarfile'
-    tar = tarfile.open(path_to_release_tar)
-    commonprefix = path.commonprefix(tar.getnames())
-    assert commonprefix != '.', 'Tarfile has no single common prefix'
-    assert not path.isabs(commonprefix), 'Common prefix is an absolute path'
-    tar.extractall(path.dirname(path_to_release_tar)) # extract to the download path
-    tar.close()
-    return path.join(path.dirname(path_to_release_tar), commonprefix)
-
-def handle_results(client, cont_id, upload, testresult_dir, testsuite_dir, tester):
+def handle_results(client, cont_id, upload, testresult_dir, release, tester):
     # Try to recover the name of the resulting tar.gz from the container logs.
     logs = client.logs(container=cont_id, tail=4)
     res = re.search(r'([^ ]*)\.tar\.gz', logs)
@@ -96,15 +49,10 @@ def handle_results(client, cont_id, upload, testresult_dir, testsuite_dir, teste
 
     # Build the filename according to:
     # CGAL-4.7-Ic-29_lrineau-test-ArchLinux.tar.gz
-    release_id='NO_VERSION_FILE'
-    try:
-        version_file = path.join(testsuite_dir, 'VERSION')
-        fp = open(version_file)
-    except IOError:
-        print 'Error opening VERSION file'
+    if release.version:
+        release_id = release.version
     else:
-        with fp:
-            release_id=fp.read().replace('\n', '')
+        release_id = 'NO_VERSION_FILE'
 
     platform=platform_from_container(client, cont_id)
 
@@ -181,30 +129,11 @@ def main():
 
     print 'Using images ' + ', '.join(args.images)
 
-    # Prepare urllib to use the magic words
-    if not args.use_local and args.user and args.passwd:
-        print 'Setting up user and password for download.'
-        password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-        password_mgr.add_password(None, cgal_release_url, args.user, args.passwd)
-        handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-        opener = urllib2.build_opener(handler)
-        urllib2.install_opener(opener)
-
-    if not args.use_local:
-        latest = get_latest()
-        print 'LATEST is ' + latest
-        path_to_release=get_cgal(latest, args.testsuite)
-        path_to_extracted_release=extract(path_to_release)
-    else:
-        print 'Using local CGAL release at ' + args.testsuite
-        assert path.exists(args.testsuite), args.testsuite + ' is not a valid path'
-        path_to_extracted_release=args.testsuite
-
-    assert path.isdir(path_to_extracted_release), path_to_extracted_release + ' is not a directory'
-    print 'Extracted release is at: ' + path_to_extracted_release
+    release = Release(args.testsuite, args.use_local, args.user, args.passwd)
+    print 'Extracted release {} is at {}'.format(release.version, release.path)
 
     # Copy the entrypoint to the testsuite volume
-    shutil.copy('./docker-entrypoint.sh', path_to_extracted_release)
+    shutil.copy('./docker-entrypoint.sh', release.path)
 
     cpu_sets = calculate_cpu_sets(args.max_cpus, args.container_cpus)
     nb_parallel_containers = len(cpu_sets)
@@ -217,8 +146,7 @@ def main():
     running_cpu_sets = []
     runner = ContainerRunner(client, args.tester, args.tester_name, 
                              args.tester_address, args.force_rm, args.jobs,
-                             path_to_extracted_release, args.testresults, 
-                             args.use_fedora_selinux_policy)
+                             release, args.testresults, args.use_fedora_selinux_policy)
     for img, cpu_set in zip(reversed(args.images), reversed(cpu_sets)):
         try:
             running_containers.append(runner.run(img, cpu_set))
@@ -278,7 +206,7 @@ def main():
                     print 'Container died cleanly, handling results'
                     try:
                         handle_results(client, ev[u'id'], args.upload_results, args.testresults,
-                                       path_to_extracted_release, args.tester)
+                                       release, args.tester)
                     except TestsuiteException as e:
                         print e
                 # The freed up cpu_set.
