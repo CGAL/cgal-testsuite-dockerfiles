@@ -1,3 +1,4 @@
+import logging
 import argparse
 import sys
 import shlex
@@ -67,7 +68,7 @@ def parser():
         default_arg_file = path.join(xdg_config_home, 'test_cgal_rc')
 
     if path.isfile(default_arg_file):
-        print 'Using default arguments from: ' + default_arg_file
+        logging.info('Using default arguments from: {}'.format(default_arg_file))
         sys.argv.insert(1, '@' + default_arg_file)
 
     return parser
