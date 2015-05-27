@@ -94,8 +94,8 @@ class ContainerRunner:
 
         container_id = self._create_container(image, cpuset)
         cont = container_by_id(self.docker_client, container_id)
-        logging.info('Created container: {} with id: {} from image: {}'
-                     .format(', '.join(cont[u'Names']), cont[u'Id'], cont[u'Image']))
+        logging.info('Created container: {0} with id {1[Id]} from image {1[Image]} on cpus {2}'
+                     .format(', '.join(cont[u'Names']), cont, cpuset))
         self.docker_client.start(container_id)
         return container_id
 
