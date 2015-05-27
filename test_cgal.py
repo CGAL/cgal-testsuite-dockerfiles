@@ -111,9 +111,9 @@ def calculate_cpu_sets(max_cpus, cpus_per_container):
     return cpu_sets
 
 def main():
+    logging.basicConfig(level=logging.INFO)
     parser = cgal_docker_args.parser()
     args = parser.parse_args()
-    logging.basicConfig(level=logging.INFO)
 
     # If no jobs are specified, use as many as we use cpus per
     # container.
