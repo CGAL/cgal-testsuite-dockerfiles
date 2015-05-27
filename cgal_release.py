@@ -39,6 +39,7 @@ class Release:
 
         assert os.path.isdir(self.path), '{} is not a directory'.format(self.path)
         self.version = self._extract_version()
+        assert self.version, 'Could not detect VERSION of release'
 
     def __str__(self):
         return self.path
