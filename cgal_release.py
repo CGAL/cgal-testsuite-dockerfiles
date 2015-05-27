@@ -25,12 +25,17 @@ class Release:
             logging.info('Using local CGAL release at {}'.format(testsuite))
             self.path = testsuite
         else:
-            logging.info('Trying to determine LATEST')
-            latest = Release._get_latest()
-            logging.info('LATEST is {}'.format(latest))
-            path_to_tar = Release._get_cgal(latest, testsuite)
-            logging.info('Extracting {}'.format(path_to_tar))
-            self.path = Release._extract_release(path_to_tar)
+            try:
+                logging.info('Trying to determine LATEST')
+                latest = Release._get_latest()
+                logging.info('LATEST is {}'.format(latest))
+                path_to_tar = Release._get_cgal(latest, testsuite)
+                logging.info('Extracting {}'.format(path_to_tar))
+                self.path = Release._extract_release(path_to_tar)
+            except urllib2.URLError as e:
+                if hasattr(e, 'code') and e.code == 401:
+                    logging.warning('URLError 401: Did you forget to provide --user and --passwd?')
+                raise
 
         assert os.path.isdir(self.path), '{} is not a directory'.format(self.path)
         self.version = self._extract_version()
@@ -40,13 +45,8 @@ class Release:
 
     @staticmethod
     def _get_latest():
-        try:
-            response = urllib2.urlopen(Release._latest_url)
-            return response.read().strip()
-        except urllib2.URLError as e:
-            if hasattr(e, 'code') and e.code == 401:
-                print 'Did you forget to provide --user and --passwd?'
-            sys.exit('Failure retrieving LATEST: ' +  e.reason)
+        response = urllib2.urlopen(Release._latest_url)
+        return response.read().strip()
 
     @staticmethod
     def _get_cgal(latest, testsuite):
@@ -58,15 +58,10 @@ class Release:
             logging.warning('Path {} already exists, reusing it.'.format(download_to))
             return download_to
 
-        try:
-            response = urllib2.urlopen(download_from)
-            with open(download_to, "wb") as local_file:
-                local_file.write(response.read())
-                return download_to
-        except urllib2.URLError as e:
-            if hasattr(e, 'code') and e.code == 401:
-                print 'Did you forget to provide --user and --passwd?'
-                sys.exit('Failure retrieving the CGAL specified by latest.' + e.reason)
+        response = urllib2.urlopen(download_from)
+        with open(download_to, "wb") as local_file:
+            local_file.write(response.read())
+            return download_to
 
     @staticmethod
     def _extract_release(path_to_release_tar):
