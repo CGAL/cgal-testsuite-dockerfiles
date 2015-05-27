@@ -1,4 +1,5 @@
 from os import path
+import logging
 import docker
 import re
 
@@ -93,9 +94,8 @@ class ContainerRunner:
 
         container_id = self._create_container(image, cpuset)
         cont = container_by_id(self.docker_client, container_id)
-        print 'Created container:\t' + ', '.join(cont[u'Names']) + \
-            '\n\twith id:\t' + cont[u'Id'] + \
-            '\n\tfrom image:\t'  + cont[u'Image']
+        logging.info('Created container: {} with id: {} from image: {}'
+                     .format(', '.join(cont[u'Names']), cont[u'Id'], cont[u'Image']))
         self.docker_client.start(container_id)
         return container_id
 
@@ -105,14 +105,14 @@ class ContainerRunner:
         assert len(existing) == 0 or len(existing) == 1, 'Length of existing containers is odd'
 
         if len(existing) != 0 and u'Exited' in existing[0][u'Status']:
-            print 'An Exited container with name ' + chosen_name + ' already exists. Removing.'
+            logging.info('An Exited container with name {} already exists. Removing.'.format(chosen_name))
             self.docker_client.remove_container(container=chosen_name)
         elif len(existing) != 0 and self.force_rm:
-            print 'A non-Exited container with name ' + chosen_name + ' already exists. Forcing exit and removal.'
+            logging.info('A non-Exited container with name {} already exists. Forcing exit and removal.'.format(chosen_name))
             self.docker_client.kill(container=chosen_name)
             self.docker_client.remove_container(container=chosen_name)
         elif len(existing) != 0:
-            raise TestsuiteWarning('A non-Exited container with name ' + chosen_name + ' already exists. Skipping.')
+            raise TestsuiteWarning('A non-Exited container with name {} already exists. Skipping.'.format(chosen_name))
         
         container = self.docker_client.create_container(
             image=img,
@@ -125,7 +125,7 @@ class ContainerRunner:
         )
 
         if container[u'Warnings']:
-            print 'Container of image %s got created with warnings: %s' % (img, container[u'Warnings'])
+            logging.warning('Container of image {} got created with warnings: {}'.format(img, container[u'Warnings']))
 
         return container[u'Id']
 
