@@ -2,11 +2,11 @@ FROM centos:centos5
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN yum -y update; yum clean all
-RUN yum -y install make cmake gcc-c++ tar \
+RUN yum -y install make cmake gcc-c++ tar wget \
                    glibc-devel.x86_64 libstdc++-devel.x86_64 \
                    gmp-devel.x86_64 \
-                   boost-devel.x86_64 \
                    qt-devel.x86_64 qt4-devel.x86_64 \
+                   bzip2-devel.x86_64 \
                    /usr/lib64/libX11.so /usr/lib64/libSM.so \
                    /usr/lib64/libpng.so /usr/lib64/libICE.so \
                    /usr/lib64/libGL.so /usr/lib64/libGLU.so \
@@ -21,6 +21,9 @@ RUN yum -y install make cmake gcc-c++ tar \
                    /usr/lib64/libfreetype.so /usr/lib64/libfontconfig.so \
                    zlib-devel.x86_64
 RUN yum clean all
+
+RUN wget http://sourceforge.net/projects/boost/files/boost/1.48.0/boost_1_48_0.tar.gz && tar -xzvf boost_1_48_0.tar.gz
+RUN cd boost_1_48_0 && ./bootstrap.sh && ./b2 --prefix=/usr/local/ --without-python -j4 install
 
 ENV CGAL_TEST_PLATFORM="CentOS5"
 ENV CGAL_CMAKE_FLAGS=""
