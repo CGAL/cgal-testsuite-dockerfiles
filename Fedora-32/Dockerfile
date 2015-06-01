@@ -2,7 +2,7 @@ FROM fedora:latest
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN yum -y update; yum clean all
-RUN yum -y install make cmake gcc-c++ tar \
+RUN yum -y install make cmake gcc-c++.i686 tar \
                    glibc-devel.i686 libstdc++-devel.i686 \
                    gmp-devel.i686 mpfr-devel.i686 \
                    boost-devel.i686 \
@@ -23,4 +23,4 @@ RUN yum -y install make cmake gcc-c++ tar \
 RUN yum clean all
 
 ENV CGAL_TEST_PLATFORM="Fedora-32"
-ENV CGAL_CMAKE_FLAGS="-m32"
+ENV CGAL_CMAKE_FLAGS="-DCMAKE_CXX_FLAGS=-m32 -DCMAKE_SHARED_LINKER_FLAGS=-m32 -DCGAL_CXX_FLAGS=-m32"
