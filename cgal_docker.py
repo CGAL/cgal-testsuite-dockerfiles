@@ -143,7 +143,7 @@ class ContainerScheduler:
         if len(self.images) == 0:
             return False
 
-        while len(self.available_cpusets) != 0 and len(self.images) != 0:
+        while self.available_cpusets and self.images:
             # Remove the image but not the cpuset before
             # running. Should run throw, the image is dropped, but the
             # cpuset is kept.
