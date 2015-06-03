@@ -2,7 +2,7 @@ FROM centos:centos6
 MAINTAINER Laurent Rineau <laurent.rineau@cgal.org>
 
 RUN yum -y update; yum clean all
-RUN yum -y install cmake gcc-c++ tar \
+RUN yum -y install cmake.i686 gcc-c++.i686 tar.i686 \
                    glibc-devel.i686 libstdc++-devel.i686 \
                    gmp-devel.i686 mpfr-devel.i686 \
                    boost-devel.i686 \
