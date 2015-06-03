@@ -18,6 +18,9 @@ else
     echo "CGAL_NUMBER_OF_JOBS is ${CGAL_NUMBER_OF_JOBS}."
 fi
 
+declare -a "CGAL_CMAKE_FLAGS=${CGAL_CMAKE_FLAGS}"
+echo "CGAL_CMAKE_FLAGS is ${CGAL_CMAKE_FLAGS[@]}."
+
 # The directory where the release is stored.
 CGAL_RELEASE_DIR="/mnt/testsuite/"
 # Directory where CGAL sources are stored.
@@ -55,7 +58,7 @@ fi
 # builds using this binary directory.
 cd "${CGAL_SRC_BUILD_DIR}"
 cmake -DRUNNING_CGAL_AUTO_TEST=TRUE VERBOSE=1 \
-      ${CGAL_CMAKE_FLAGS} "${CGAL_RELEASE_DIR}" 2>&1 | tee "installation.log"
+      ${CGAL_CMAKE_FLAGS[@]} "${CGAL_RELEASE_DIR}" 2>&1 | tee "installation.log"
 make VERBOSE=ON -k -fMakefile 2>&1 | tee -a "installation.log"
 
 # collect_cgal_testresults_from_cmake expects installation.log in ../../
