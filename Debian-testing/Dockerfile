@@ -11,4 +11,4 @@ RUN apt-get update && apt-get install -y \
     libmpfi-dev libqglviewer-dev libqt4-opengl-dev qt4-dev-tools 
 
 ENV CGAL_TEST_PLATFORM="Debian-Testing"
-ENV CGAL_CMAKE_FLAGS=""
+ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"
