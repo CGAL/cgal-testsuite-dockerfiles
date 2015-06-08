@@ -31,4 +31,4 @@ WORKDIR /tmp/makepkg/libc++-svn
 RUN pacman --noconfirm -U *.tar.xz
 
 ENV CGAL_TEST_PLATFORM="ArchLinux-clang-svn"
-ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-Wall -Wextra -std=c++14 -stdlib=libc++\")"
+ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-Wall -Wextra -std=c++14 -stdlib=libc++\" \"-DWITH_CGAL_Qt3:BOOL=OFF\")"
