@@ -2,11 +2,13 @@ FROM fedora:latest
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN yum -y update; yum clean all
-RUN yum -y install make cmake gcc-c++.i686 tar \
+RUN yum -y install make cmake gcc-c++.x86_64 gcc-c++.i686 tar \
                    glibc-devel.i686 libstdc++-devel.i686 \
+                   libstdc++-devel.x86_64 \
                    gmp-devel.i686 mpfr-devel.i686 \
                    boost-devel.i686 \
                    qt3-devel.i686 qt-devel.i686 \
+                   libQGLViewer-devel.i686 \
                    /usr/lib/libX11.so /usr/lib/libSM.so \
                    /usr/lib/libpng.so /usr/lib/libICE.so \
                    /usr/lib/libGL.so /usr/lib/libGLU.so \
@@ -23,4 +25,4 @@ RUN yum -y install make cmake gcc-c++.i686 tar \
 RUN yum clean all
 
 ENV CGAL_TEST_PLATFORM="Fedora-32"
-ENV CGAL_CMAKE_FLAGS="(\"-DCMAKE_CXX_FLAGS=-m32\" \"-DCMAKE_SHARED_LINKER_FLAGS=-m32\" \"-DCGAL_CXX_FLAGS=-m32\")"
+ENV CGAL_CMAKE_FLAGS="(\"-DCMAKE_C_FLAGS=-m32\" \"-DCMAKE_CXX_FLAGS=-m32\" \"-DCMAKE_SHARED_LINKER_FLAGS=-m32\" \"-DCGAL_CXX_FLAGS=-m32\")"
