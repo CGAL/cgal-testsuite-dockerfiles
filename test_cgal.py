@@ -132,6 +132,8 @@ def main():
     logging.info('Using images {}'.format(', '.join(args.images)))
 
     release = Release(args.testsuite, args.use_local, args.user, args.passwd)
+    release.scrub(args.packages)
+
     logging.info('Extracted release {} is at {}'.format(release.version, release.path))
 
     # Copy the entrypoint to the testsuite volume
