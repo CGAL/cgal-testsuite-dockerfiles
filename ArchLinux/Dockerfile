@@ -11,4 +11,4 @@ RUN pacman -S base-devel cmake qt4 gmp mpfi mpfr boost zlib mesa glu eigen --noc
 RUN pacman -Scc --noconfirm # clean up
 
 ENV CGAL_TEST_PLATFORM="ArchLinux"
-ENV CGAL_CMAKE_FLAGS=""
+ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"

@@ -7,6 +7,7 @@ RUN yum -y install make cmake gcc-c++ tar \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    boost-devel.x86_64 \
                    qt3-devel.x86_64 qt-devel.x86_64 \
+                   libQGLViewer-devel.x86_64 \
                    /usr/lib64/libX11.so /usr/lib64/libSM.so \
                    /usr/lib64/libpng.so /usr/lib64/libICE.so \
                    /usr/lib64/libGL.so /usr/lib64/libGLU.so \
@@ -21,6 +22,10 @@ RUN yum -y install make cmake gcc-c++ tar \
                    /usr/lib64/libfreetype.so /usr/lib64/libfontconfig.so \
                    zlib-devel.x86_64
 RUN yum clean all
+
+ENV QTDIR=/usr/lib/qt-3.3/
+ENV QTINC=/usr/lib/qt-3.3/include/
+ENV QTLIB=/usr/lib/qt-3.3/lib/
 
 ENV CGAL_TEST_PLATFORM="Fedora"
 ENV CGAL_CMAKE_FLAGS=""

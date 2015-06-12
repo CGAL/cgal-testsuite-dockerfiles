@@ -1,6 +1,7 @@
 import urllib2
 import os
 import tarfile
+import shutil
 import logging
 
 class Release:
@@ -90,6 +91,21 @@ class Release:
             with fp:
                 release_id = fp.read().replace('\n', '')
         return release_id
+
+    @staticmethod
+    def _expand_packages(packages):
+        ret = ['Installation']
+        for p in packages:
+            ret.extend([p, p + '_Demo', p + '_Examples'])
+        return ret
+
+    def scrub(self, packages):
+        test_dir = os.path.join(self.path, 'test')
+        assert os.path.isdir(test_dir), 'test is no a sub-directory of the release'
+        new_packages = self._expand_packages(packages)
+        for path in (os.path.join(test_dir, p) for p in os.listdir(test_dir)
+                     if os.path.isdir(os.path.join(test_dir, p)) and p not in new_packages):
+            shutil.rmtree(path)
 
 if __name__ == "__main__":
     pass

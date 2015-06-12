@@ -30,9 +30,9 @@ def parser():
     parser.add_argument('--testresults', metavar='/path/to/testresults',
                         help='Absolute path where the testresults are going to be stored.',
                         default=path.abspath('./testresults'))
-    # TODO
     parser.add_argument('--packages', nargs='*',
-                        help='List of packages to run the tests for, e.g. AABB_tree AABB_tree_Examples')
+                        help='List of package base names to run the tests for. Will always include Installation.'
+                        'e.g. AABB_tree will run AABB_tree, AABB_tree_Examples, and AABB_tree_Demo.')
 
     # Docker related arguments
     parser.add_argument('--docker-url', metavar='protocol://hostname/to/docker.sock[:PORT]',
