@@ -23,5 +23,9 @@ RUN yum -y install make cmake gcc-c++ tar \
                    zlib-devel.x86_64
 RUN yum clean all
 
+ENV QTDIR=/usr/lib/qt-3.3/
+ENV QTINC=/usr/lib/qt-3.3/include/
+ENV QTLIB=/usr/lib/qt-3.3/lib/
+
 ENV CGAL_TEST_PLATFORM="Fedora"
 ENV CGAL_CMAKE_FLAGS=""
