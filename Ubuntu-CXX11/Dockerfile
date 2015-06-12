@@ -1,4 +1,4 @@
-FROM cgal-testsuite/ubuntu
+FROM cgal/testsuite-docker:ubuntu
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest-CXX11"

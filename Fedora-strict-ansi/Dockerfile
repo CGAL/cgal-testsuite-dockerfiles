@@ -1,4 +1,4 @@
-FROM cgal-testsuite/fedora
+FROM cgal/testsuite-docker:fedora
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 ENV CGAL_TEST_PLATFORM="Fedora-strict-ansi"

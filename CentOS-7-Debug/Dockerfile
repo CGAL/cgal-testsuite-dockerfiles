@@ -1,4 +1,4 @@
-FROM cgal-testsuite/centos7
+FROM cgal/testsuite-docker:centos7
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 ENV CGAL_TEST_PLATFORM="CentOS7-Debug"
