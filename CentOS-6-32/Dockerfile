@@ -2,11 +2,12 @@ FROM centos:centos6
 MAINTAINER Laurent Rineau <laurent.rineau@cgal.org>
 
 RUN yum -y update; yum clean all
-RUN yum -y install cmake.i686 gcc-c++.i686 tar.i686 \
+RUN yum -y install make cmake gcc-c++ tar \
                    glibc-devel.i686 libstdc++-devel.i686 \
                    gmp-devel.i686 mpfr-devel.i686 \
                    boost-devel.i686 \
-                   qt3-devel.i686 qt-devel.i686 \
+                   qt-devel.i686 \
+                   libQGLViewer-devel.i686 \
                    /usr/lib/libX11.so /usr/lib/libSM.so \
                    /usr/lib/libpng.so /usr/lib/libICE.so \
                    /usr/lib/libGL.so /usr/lib/libGLU.so \
@@ -23,4 +24,4 @@ RUN yum -y install cmake.i686 gcc-c++.i686 tar.i686 \
 RUN yum clean all
 
 ENV CGAL_TEST_PLATFORM="CentOS6-32"
-ENV CGAL_CMAKE_FLAGS=""
+ENV CGAL_CMAKE_FLAGS="(\"-DCMAKE_CXX_FLAGS=-m32\" \"-DCMAKE_SHARED_LINKER_FLAGS=-m32\" \"-DCGAL_CXX_FLAGS=-m32\" \"-DWITH_CGAL_Qt3:BOOL=OFF\")"

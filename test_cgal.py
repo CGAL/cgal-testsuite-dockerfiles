@@ -132,12 +132,14 @@ def main():
     logging.info('Using images {}'.format(', '.join(args.images)))
 
     release = Release(args.testsuite, args.use_local, args.user, args.passwd)
-    release.scrub(args.packages)
+    if args.packages:
+        release.scrub(args.packages)
 
     logging.info('Extracted release {} is at {}'.format(release.version, release.path))
 
     # Copy the entrypoint to the testsuite volume
     shutil.copy('./docker-entrypoint.sh', release.path)
+    shutil.copy('./run-testsuite.sh', release.path)
 
     cpu_sets = calculate_cpu_sets(args.max_cpus, args.container_cpus)
     nb_parallel_containers = len(cpu_sets)
