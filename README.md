@@ -3,11 +3,20 @@ cgal-testsuite-dockerfiles
 
 Dockerfiles and tools to run the CGAL testsuite inside containers.
 
-Initially you need to build the images which you would like to use:
+It is recommended to get the images directly from Docker Hub instead
+of building them locally:
 
-    cd CentOS-6
-    docker build -t cgal-testsuite/centos6
-    cd ..
+    docker pull cgal/testsuite-docker:TAG # replace TAG with a specific platform
+
+A list of available tags can [be found here](https://registry.hub.docker.com/u/cgal/testsuite-docker/tags/manage/).
+
+Building Images locally
+-----------------------
+
+To build images locally see the help of `build_images.py`.
+
+Running the testsuite
+---------------------
 
 To run the testsuite using this image:
 
@@ -17,12 +26,18 @@ If you would like to use an already extraced internal release:
 
     ./test_cgal.py --use-local --testsuite /path/to/release --images cgal-testsuite/centos6
 
+It is also possible to only test specific packages, but keep in mind that this will alter the release:
+
+    ./test_cgal.py --use-local --testsuite /path/to/release --images cgal-testsuite/centos6 \
+                   --packages Core Mesh_2 Mesh_3
+
 
 Default Arguments
 -----------------
 
 Default arguments can be provided through a `test_cgal_rc` file in
-`$XDG_CONFIG_HOME` or the config directory of the resource `CGAL`.
+`$XDG_CONFIG_HOME` (typically `$HOME/.config`) or the config directory
+of the resource `CGAL`.
 
 Modifying the build environment
 -------------------------------
