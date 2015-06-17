@@ -40,6 +40,28 @@ Default arguments can be provided through a `test_cgal_rc` file in
 `$XDG_CONFIG_HOME` (typically `$HOME/.config`) or the config directory
 of the resource `CGAL`.
 
+Cron Job
+--------
+
+To set up a machine for submission of the whole testsuite via a
+cronjob the following configuration could be used:
+
+    --user xxxxxxx
+    --passwd xxxxxx
+    --force-rm
+    --upload-results
+    --tester-name="My Name"
+    --tester-address joe@example.com
+    --testsuite /path/to/testsuite
+    --testresults /path/to/testresults
+    --images docker.io/cgal/testsuite-docker:centos5
+             docker.io/cgal/testsuite-docker:centos6
+             docker.io/cgal/testsuite-docker:archlinux
+
+The names of the images depend on how they have been obtained. The
+example shows the names that will typically be used when obtaining the
+images through Docker Hub.
+
 Modifying the build environment
 -------------------------------
 
