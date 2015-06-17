@@ -22,8 +22,8 @@ import os
 def main():
     parser = argparse.ArgumentParser(
         description='This script launches build the cgal-testsuite images.'
-        'Unless any directories are specified this will process all immediate child directories'
-        'of the current working directory that contain a Dockerfile.')
+        ' Unless any directories are specified this will process all immediate child directories'
+        ' of the current working directory that contain a Dockerfile.')
 
     parser.add_argument('dirs', metavar='DIRNAME', nargs='*',
                         help='Directory to process.')
