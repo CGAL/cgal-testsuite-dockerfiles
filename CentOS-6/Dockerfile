@@ -7,6 +7,7 @@ RUN yum -y install cmake gcc-c++ tar wget \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    qt-devel.x86_64 \
                    libQGLViewer-devel.x86_64 \
+                   bzip2-devel.x86_64 \
                    /usr/lib64/libX11.so /usr/lib64/libSM.so \
                    /usr/lib64/libpng.so /usr/lib64/libICE.so \
                    /usr/lib64/libGL.so /usr/lib64/libGLU.so \
