@@ -100,7 +100,16 @@ class ContainerRunner:
         return container_id
 
     def _create_container(self, img, cpuset):
-        chosen_name = 'CGAL-{}-testsuite'.format(self._image_name_regex.search(img).group(2))
+        # This is a bit wacky since names can be basically anything but we expect two kinds of names:
+        # (docker.io/)cgal-testsuite/PLATFORM or cgal/testsuite-docker:PLATFORM
+        res = self._image_name_regex.search(img)
+        if 'testsuite-docker' in res.group(2):
+            chosen_name = 'CGAL-{}-testsuite'.format(res.group(3)[1:])
+        elif res.group(3):
+            chosen_name = 'CGAL-{}-{}-testsuite'.format(res.group(2), res.group(3)[1:])
+        else:
+            chosen_name = 'CGAL-{}-testsuite'.format(res.group(2))
+
         existing = [cont for cont in self.docker_client.containers(all=True) if '/' + chosen_name in cont[u'Names']]
         assert len(existing) == 0 or len(existing) == 1, 'Length of existing containers is odd'
 
