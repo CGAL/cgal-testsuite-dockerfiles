@@ -21,15 +21,17 @@ def parser():
         description='''This script launches docker containers which run the CGAL testsuite.''',
         fromfile_prefix_chars='@')
 
+    local_dir = path.dirname(path.realpath(__file__))
+
     # Testing related arguments
     parser.add_argument('--images', nargs='*', 
                         help='List of images to launch, defaults to all prefixed with cgal-testsuite')
     parser.add_argument('--testsuite', metavar='/path/to/testsuite',
                         help='Absolute path where the release is going to be stored.',
-                        default=path.abspath('./testsuite'))
+                        default=path.abspath(path.join(local_dir, 'testsuite/')))
     parser.add_argument('--testresults', metavar='/path/to/testresults',
                         help='Absolute path where the testresults are going to be stored.',
-                        default=path.abspath('./testresults'))
+                        default=path.abspath(path.join(local_dir, 'testresults/')))
     parser.add_argument('--packages', nargs='*',
                         help='List of package base names to run the tests for. Will always include Installation.'
                         'e.g. AABB_tree will run AABB_tree, AABB_tree_Examples, and AABB_tree_Demo.')

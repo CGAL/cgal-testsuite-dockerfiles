@@ -21,6 +21,7 @@ import logging
 from cgal_docker import *
 from cgal_release import *
 import cgal_docker_args
+import os
 import re
 import shutil
 import sys
@@ -137,9 +138,10 @@ def main():
 
     logging.info('Extracted release {} is at {}'.format(release.version, release.path))
 
+    local_dir = os.path.dirname(os.path.realpath(__file__))
     # Copy the entrypoint to the testsuite volume
-    shutil.copy('./docker-entrypoint.sh', release.path)
-    shutil.copy('./run-testsuite.sh', release.path)
+    shutil.copy(os.path.join(local_dir, 'docker-entrypoint.sh'), release.path)
+    shutil.copy(os.path.join(local_dir, 'run-testsuite.sh'), release.path)
 
     cpu_sets = calculate_cpu_sets(args.max_cpus, args.container_cpus)
     nb_parallel_containers = len(cpu_sets)
