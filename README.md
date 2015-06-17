@@ -6,7 +6,7 @@ Dockerfiles and tools to run the CGAL testsuite inside containers.
 It is recommended to get the images directly from Docker Hub instead
 of building them locally:
 
-    docker pull --all cgal/testsuite-docker # get all images
+    docker pull --all-tags cgal/testsuite-docker # get all images
     docker pull cgal/testsuite-docker:TAG # get a specific image by replacing TAG with some tag
 
 A list of available tags can [be found here](https://registry.hub.docker.com/u/cgal/testsuite-docker/tags/manage/).
