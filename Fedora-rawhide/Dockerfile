@@ -38,5 +38,5 @@ ENV QTDIR=/usr/lib/qt-3.3/
 ENV QTINC=/usr/lib/qt-3.3/include/
 ENV QTLIB=/usr/lib/qt-3.3/lib/
 
-ENV CGAL_TEST_PLATFORM="Fedora"
+ENV CGAL_TEST_PLATFORM="Fedora-rawhide"
 ENV CGAL_CMAKE_FLAGS=""
