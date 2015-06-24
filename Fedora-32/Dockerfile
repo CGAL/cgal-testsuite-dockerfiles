@@ -10,7 +10,9 @@ RUN yum -y install make cmake gcc-c++.x86_64 gcc-c++.i686 tar \
                    qt3-devel.i686 qt-devel.i686 \
                    libQGLViewer-devel.i686 \
                    eigen3-devel.noarch \
-                   libQGLViewer-devel.i686 \
+                   qt5-qtbase-devel.i686 \
+                   qt5-qtscript-devel.i686 \
+                   qt5-qtsvg-devel.i686 \
                    /usr/lib/libX11.so /usr/lib/libSM.so \
                    /usr/lib/libpng.so /usr/lib/libICE.so \
                    /usr/lib/libGL.so /usr/lib/libGLU.so \
@@ -24,6 +26,10 @@ RUN yum -y install make cmake gcc-c++.x86_64 gcc-c++.i686 tar \
                    /usr/lib/libxcb.so /usr/lib/libdrm.so \
                    /usr/lib/libfreetype.so /usr/lib/libfontconfig.so \
                    zlib-devel.i686
+# Enable lrineau's copr repo to get libQGLViewer for Qt5.
+RUN yum install -y yum-plugin-copr.noarch
+RUN yum -y copr enable rineau/libQGLViewer-qt5 && yum -y install libQGLViewer-qt5-devel.x86_64
+
 RUN yum clean all
 
 ENV QTDIR=/usr/lib/qt-3.3/
