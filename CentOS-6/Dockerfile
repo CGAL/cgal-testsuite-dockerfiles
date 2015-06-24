@@ -2,11 +2,13 @@ FROM centos:centos6
 MAINTAINER Laurent Rineau <laurent.rineau@cgal.org>
 
 RUN yum -y update; yum clean all
-RUN yum -y install cmake gcc-c++ tar wget \
+RUN yum -y install epel-release.noarch
+RUN yum -y update; yum -y install cmake gcc-c++ tar wget \
                    glibc-devel.x86_64 libstdc++-devel.x86_64 \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    qt-devel.x86_64 \
                    libQGLViewer-devel.x86_64 \
+                   eigen3-devel.noarch \
                    bzip2-devel.x86_64 \
                    /usr/lib64/libX11.so /usr/lib64/libSM.so \
                    /usr/lib64/libpng.so /usr/lib64/libICE.so \
