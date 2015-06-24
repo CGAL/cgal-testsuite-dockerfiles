@@ -56,7 +56,7 @@ fi
 # builds using this binary directory.
 cd "${CGAL_SRC_BUILD_DIR}"
 cmake -DRUNNING_CGAL_AUTO_TEST=TRUE VERBOSE=1 \
-      ${CGAL_CMAKE_FLAGS[@]} "${CGAL_RELEASE_DIR}" 2>&1 | tee "installation.log"
+      "${CGAL_CMAKE_FLAGS[@]}" "${CGAL_RELEASE_DIR}" 2>&1 | tee "installation.log"
 make VERBOSE=ON -k -fMakefile 2>&1 | tee -a "installation.log"
 
 # collect_cgal_testresults_from_cmake expects installation.log in ../../
