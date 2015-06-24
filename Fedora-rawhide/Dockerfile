@@ -9,6 +9,7 @@ RUN dnf -y install make cmake gcc-c++ \
                    boost-devel.x86_64 \
                    qt3-devel.x86_64 qt-devel.x86_64 \
                    libQGLViewer-devel.x86_64 \
+                   eigen3-devel.noarch \
                    qt5-qtbase-devel.x86_64 \
                    qt5-qtscript-devel.x86_64 \
                    qt5-qtsvg-devel.x86_64 \

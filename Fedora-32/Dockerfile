@@ -9,6 +9,8 @@ RUN yum -y install make cmake gcc-c++.x86_64 gcc-c++.i686 tar \
                    boost-devel.i686 \
                    qt3-devel.i686 qt-devel.i686 \
                    libQGLViewer-devel.i686 \
+                   eigen3-devel.noarch \
+                   libQGLViewer-devel.i686 \
                    /usr/lib/libX11.so /usr/lib/libSM.so \
                    /usr/lib/libpng.so /usr/lib/libICE.so \
                    /usr/lib/libGL.so /usr/lib/libGLU.so \
