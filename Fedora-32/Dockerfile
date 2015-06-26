@@ -9,6 +9,7 @@ RUN yum -y install make cmake gcc-c++.x86_64 gcc-c++.i686 tar \
                    boost-devel.i686 \
                    qt3-devel.i686 qt-devel.i686 \
                    libQGLViewer-devel.i686 \
+                   glew-devel.i686 \
                    eigen3-devel.noarch \
                    qt5-qtbase-devel.i686 \
                    qt5-qtscript-devel.i686 \

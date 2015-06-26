@@ -9,6 +9,7 @@ RUN yum -y update; yum -y install make cmake gcc-c++ tar \
                    boost-devel.x86_64 \
                    qt3-devel.x86_64 qt-devel.x86_64 \
                    libQGLViewer-devel.x86_64 \
+                   glew-devel.x86_64 \
                    eigen3-devel.noarch \
                    /usr/lib64/libX11.so /usr/lib64/libSM.so \
                    /usr/lib64/libpng.so /usr/lib64/libICE.so \

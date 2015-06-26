@@ -8,6 +8,7 @@ RUN yum -y update; yum -y install make cmake gcc-c++ tar \
                    gmp-devel.i686 mpfr-devel.i686 \
                    qt-devel.i686 \
                    libQGLViewer-devel.i686 \
+                   glew-devel.i686 \
                    eigen3-devel.noarch \
                    bzip2-devel.i686 \
                    /usr/lib/libX11.so /usr/lib/libSM.so \
