@@ -8,11 +8,6 @@ RUN pacman -S wget subversion python2 \
               ocaml-ctypes ocaml-findlib \
               python-sphinx chrpath --noconfirm
 
-RUN groupadd -r makepkg
-RUN useradd -r -g makepkg makepkg
-RUN mkdir /tmp/makepkg
-RUN chown -R makepkg:makepkg /tmp/makepkg
-
 USER makepkg
 WORKDIR /tmp/makepkg
 
