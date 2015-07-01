@@ -26,7 +26,8 @@ RUN yum -y update; yum -y install make cmake gcc-c++ tar \
                    zlib-devel.i686
 RUN yum clean all
 
-RUN wget http://sourceforge.net/projects/boost/files/boost/1.48.0/boost_1_48_0.tar.gz && tar -xzvf boost_1_48_0.tar.gz
+ADD http://sourceforge.net/projects/boost/files/boost/1.48.0/boost_1_48_0.tar.gz /boost_1_48_0.tar.gz
+RUN tar -xzvf boost_1_48_0.tar.gz
 RUN cd boost_1_48_0 && ./bootstrap.sh && ./b2 cflags=-m32 \
   cxxflags=-m32        \
   address-model=32     \
