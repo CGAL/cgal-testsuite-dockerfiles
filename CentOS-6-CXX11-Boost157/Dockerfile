@@ -5,8 +5,13 @@ MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 RUN rm -rf /usr/local/include/boost
 RUN rm -f /usr/local/lib/libboost_*
 
-RUN wget http://sourceforge.net/projects/boost/files/boost/1.57.0/boost_1_57_0.tar.gz && tar -xzvf boost_1_57_0.tar.gz
-RUN cd boost_1_57_0 && ./bootstrap.sh && ./b2 cxxflags="-std=c++0x" linkflags="-std=c++0x" --prefix=/usr/local/ --without-python --without-wave --without-signals -j4 install
+ENV BOOST_MAJOR=1
+ENV BOOST_MINOR=57
+ENV BOOST_PATH=0
+RUN curl -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}.${BOOST_MINOR}.${BOOST_PATCH}/boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH}.tar.gz | tar xzv
+RUN cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
+    ./bootstrap.sh --without-libraries=filesystem,graph_parallel,python,iostreams,locale,mpi,serialization,signals,wave && \
+    ./b2 cxxflags="-std=c++0x" linkflags="-std=c++0x" --prefix=/usr/local/ install
 
 ENV CGAL_TEST_PLATFORM="CentOS6-CXX11-Boost157"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DCGAL_CXX_FLAGS=-Wall -std=c++0x\")"

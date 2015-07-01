@@ -3,14 +3,13 @@ MAINTAINER Laurent Rineau <laurent.rineau@cgal.org>
 
 RUN yum -y update; yum clean all
 RUN yum -y install epel-release.noarch
-RUN yum -y update; yum -y install cmake gcc-c++ tar wget \
+RUN yum -y update; yum -y install cmake gcc-c++ tar \
                    glibc-devel.x86_64 libstdc++-devel.x86_64 \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    qt-devel.x86_64 \
                    libQGLViewer-devel.x86_64 \
                    glew-devel.x86_64 \
                    eigen3-devel.noarch \
-                   bzip2-devel.x86_64 \
                    /usr/lib64/libX11.so /usr/lib64/libSM.so \
                    /usr/lib64/libpng.so /usr/lib64/libICE.so \
                    /usr/lib64/libGL.so /usr/lib64/libGLU.so \
@@ -26,8 +25,13 @@ RUN yum -y update; yum -y install cmake gcc-c++ tar wget \
                    zlib-devel.x86_64
 RUN yum clean all
 
-RUN wget http://sourceforge.net/projects/boost/files/boost/1.48.0/boost_1_48_0.tar.gz && tar -xzvf boost_1_48_0.tar.gz
-RUN cd boost_1_48_0 && ./bootstrap.sh && ./b2 --prefix=/usr/local/ --without-python -j4 install
+ENV BOOST_MAJOR=1
+ENV BOOST_MINOR=48
+ENV BOOST_PATH=0
+RUN curl -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}.${BOOST_MINOR}.${BOOST_PATCH}/boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH}.tar.gz | tar xzv
+RUN cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
+    ./bootstrap.sh --without-libraries=filesystem,graph_parallel,python,iostreams,locale,mpi,serialization,signals,wave && \
+    ./b2 --prefix=/usr/local/ install
 
 ENV CGAL_TEST_PLATFORM="CentOS6"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"

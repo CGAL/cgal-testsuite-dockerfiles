@@ -6,7 +6,6 @@ RUN yum -y install make cmake gcc-c++ tar wget \
                    glibc-devel.x86_64 libstdc++-devel.x86_64 \
                    gmp-devel.x86_64 \
                    qt-devel.x86_64 qt4-devel.x86_64 \
-                   bzip2-devel.x86_64 \
                    /usr/lib64/libX11.so /usr/lib64/libSM.so \
                    /usr/lib64/libpng.so /usr/lib64/libICE.so \
                    /usr/lib64/libGL.so /usr/lib64/libGLU.so \
@@ -22,8 +21,13 @@ RUN yum -y install make cmake gcc-c++ tar wget \
                    zlib-devel.x86_64
 RUN yum clean all
 
-RUN wget http://sourceforge.net/projects/boost/files/boost/1.48.0/boost_1_48_0.tar.gz && tar -xzvf boost_1_48_0.tar.gz
-RUN cd boost_1_48_0 && ./bootstrap.sh && ./b2 --prefix=/usr/local/ --without-python -j4 install
+ENV BOOST_MAJOR=1
+ENV BOOST_MINOR=48
+ENV BOOST_PATH=0
+RUN curl -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}.${BOOST_MINOR}.${BOOST_PATCH}/boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH}.tar.gz | tar xzv
+RUN cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
+    ./bootstrap.sh --without-libraries=filesystem,graph_parallel,python,iostreams,locale,mpi,serialization,signals,wave && \
+    ./b2 --prefix=/usr/local/ install
 
 ENV CGAL_TEST_PLATFORM="CentOS5"
 ENV CGAL_CMAKE_FLAGS=""
