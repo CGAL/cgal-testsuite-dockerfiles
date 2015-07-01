@@ -21,6 +21,13 @@ RUN yum -y install make cmake gcc-c++ tar wget \
                    zlib-devel.x86_64
 RUN yum clean all
 
+RUN curl -SL http://bitbucket.org/eigen/eigen/get/3.2.5.tar.gz | tar xz
+RUN mkdir -p /usr/local/include/eigen3
+RUN cd eigen-eigen-bdd17ee3b1b3 && \
+    cp -R Eigen/ /usr/local/include/eigen3 && \
+    cp -R unsupported /usr/local/include/eigen3 && \
+    cp -R signature_of_eigen3_matrix_library /usr/local/include/eigen3
+
 ENV BOOST_MAJOR=1
 ENV BOOST_MINOR=48
 ENV BOOST_PATCH=0
