@@ -1,8 +1,8 @@
 FROM fedora:latest
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
-RUN yum -y update; yum clean all
-RUN yum -y install make cmake gcc-c++ tar \
+RUN dnf -y update; dnf clean all
+RUN dnf -y install make cmake gcc-c++ tar \
                    glibc-devel.x86_64 libstdc++-devel.x86_64 \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    boost-devel.x86_64 \
@@ -26,11 +26,12 @@ RUN yum -y install make cmake gcc-c++ tar \
                    /usr/lib64/libxcb.so /usr/lib64/libdrm.so \
                    /usr/lib64/libfreetype.so /usr/lib64/libfontconfig.so \
                    zlib-devel.x86_64
-# Enable lrineau's copr repo to get libQGLViewer for Qt5.
-RUN yum install -y yum-plugin-copr.noarch
-RUN yum -y copr enable rineau/libQGLViewer-qt5 && yum -y install libQGLViewer-qt5-devel.x86_64
 
-RUN yum clean all
+RUN dnf -y install 'dnf-command(copr)'
+RUN rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg
+RUN dnf -y copr enable rineau/libQGLViewer-qt5 && dnf -y install libQGLViewer-qt5-devel.x86_64
+
+RUN dnf clean all
 
 ENV QTDIR=/usr/lib/qt-3.3/
 ENV QTINC=/usr/lib/qt-3.3/include/
