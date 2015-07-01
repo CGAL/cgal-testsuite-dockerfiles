@@ -25,5 +25,11 @@ RUN yum -y update; yum -y install make cmake gcc-c++ tar \
                    zlib-devel.x86_64
 RUN yum clean all
 
+ADD http://www.libqglviewer.com/src/libQGLViewer-2.6.1.tar.gz /libQGLViewer-2.6.1.tar.gz
+RUN tar xvzf libQGLViewer-2.6.1.tar.gz && \
+    cd libQGLViewer-2.6.1 && \
+    qmake-qt4 -o Makefile libQGLViewer-2.6.1.pro && \
+    make install
+
 ENV CGAL_TEST_PLATFORM="CentOS7"
 ENV CGAL_CMAKE_FLAGS=""
