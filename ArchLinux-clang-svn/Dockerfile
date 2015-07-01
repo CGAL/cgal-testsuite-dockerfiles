@@ -3,6 +3,7 @@ FROM cgal/testsuite-docker:archlinux
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 # Tools needed to build llvm
+RUN pacman -Syyu --no-confirm
 RUN pacman -S wget subversion python2 \
               ocaml-ctypes ocaml-findlib \
               python-sphinx chrpath --noconfirm
