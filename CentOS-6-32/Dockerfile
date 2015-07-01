@@ -4,6 +4,7 @@ MAINTAINER Laurent Rineau <laurent.rineau@cgal.org>
 RUN yum -y update; yum clean all
 RUN yum -y install epel-release.noarch
 RUN yum -y update; yum -y install make cmake gcc-c++ tar \
+                   glibc-devel.x86_64 \
                    glibc-devel.i686 libstdc++-devel.i686 \
                    gmp-devel.i686 mpfr-devel.i686 \
                    qt-devel.i686 \
