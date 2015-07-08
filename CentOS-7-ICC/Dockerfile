@@ -1,4 +1,4 @@
-# FROM cgal/testsuite-docker:centos7
+FROM cgal/testsuite-docker:centos7
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN yum -y update; yum clean all
