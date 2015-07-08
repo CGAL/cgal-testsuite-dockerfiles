@@ -16,7 +16,7 @@ RUN curl -SL http://registrationcenter-download.intel.com/akdlm/irc_nas/7538/par
     intel-mkl-*.rpm && \ 
     cd / && rm -rf parallel_studio_xe_2015_update3
 
-RUN source /opt/intel/composer_xe_2015.3.187/pkg_bin/compilervars.sh intel64 && source /opt/intel/composer_xe_2015.3.187/mkl/bin/mklvars.sh intel64
-ENV CC=icc CXX=icpc
+RUN echo "source /opt/intel/composer_xe_2015.3.187/pkg_bin/compilervars.sh intel64 \&\& source /opt/intel/composer_xe_2015.3.187/mkl/bin/mklvars.sh intel64" > /etc/profile.d/intel.sh
+ENV CC=icc CXX=icpc BASH_ENV=/etc/profile.d/intel.sh
 ENV CGAL_TEST_PLATFORM="CentOS7-ICC"
 ENV CGAL_CMAKE_FLAGS=""
