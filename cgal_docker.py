@@ -126,7 +126,7 @@ class ContainerRunner:
         container = self.docker_client.create_container(
             image=img,
             name=chosen_name,
-            entrypoint='/mnt/testsuite/docker-entrypoint.sh',
+            entrypoint=['/mnt/testsuite/docker-entrypoint.sh'],
             volumes=['/mnt/testsuite', '/mnt/testresults'],
             cpuset=cpuset,
             environment=self.environment,
