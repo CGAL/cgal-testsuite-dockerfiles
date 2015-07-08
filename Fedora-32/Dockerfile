@@ -28,9 +28,9 @@ RUN dnf -y install make cmake gcc-c++.x86_64 gcc-c++.i686 tar \
                    /usr/lib/libfreetype.so /usr/lib/libfontconfig.so \
                    zlib-devel.i686
 
-RUN dnf -y install 'dnf-command(copr)'
-RUN rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg
-RUN dnf -y copr enable rineau/libQGLViewer-qt5 && dnf -y install libQGLViewer-qt5-devel.i386
+# RUN dnf -y install 'dnf-command(copr)'
+# RUN rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg
+# RUN dnf -y copr enable rineau/libQGLViewer-qt5 && dnf -y install libQGLViewer-qt5-devel.i386
 
 RUN dnf clean all
 
