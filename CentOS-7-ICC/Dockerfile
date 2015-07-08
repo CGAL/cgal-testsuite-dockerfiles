@@ -1,24 +1,22 @@
-FROM centos:centos7
+# FROM cgal/testsuite-docker:centos7
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN yum -y update; yum clean all
-RUN yum -y install gcc-c++ glibc-devel.x86_64 libstdc++-devel.x86_64 wget tar hostname man-db
+RUN yum -y install \
+    gcc-c++ \
+    glibc-devel.x86_64 \
+    libstdc++-devel.x86_64 \
+    tar
 
-# RUN wget http://registrationcenter-download.intel.com/akdlm/irc_nas/7538/parallel_studio_xe_2015_update3.tgz && tar -xzvf parallel_studio_xe_2015_update3.tgz
-ADD parallel_studio_xe_2015_update3.tgz / # This automatically extracts
-WORKDIR /parallel_studio_xe_2015_update3/rpm
-RUN rpm -ivh --nodeps --ignorearch --exclude-docs \
+RUN curl -SL http://registrationcenter-download.intel.com/akdlm/irc_nas/7538/parallel_studio_xe_2015_update3.tgz | tar xzv && \
+    cd /parallel_studio_xe_2015_update3/rpm && \
+    rpm -ivh --nodeps --ignorearch --excludedocs \
     intel-compilerpro-*.rpm \
     intel-compilerproc-*.rpm \
-    intel-mkl-*.rpm
+    intel-mkl-*.rpm && \ 
+    cd / && rm -rf parallel_studio_xe_2015_update3
 
-# install.sh requires this variable set and will segfault if it is empty
-# https://software.intel.com/es-es/forums/topic/539798
-# WORKDIR /parallel_studio_xe_2015_update3/rpm
-# ADD silent.cfg /tmp/silent.cfg
-# ADD license.lic /tmp/license.lic
-# ENV USER="root"
-# RUN ./install.sh --silent /tmp/silent.cfg
-
+RUN source /opt/intel/composer_xe_2015.3.187/pkg_bin/compilervars.sh intel64 && source /opt/intel/composer_xe_2015.3.187/mkl/bin/mklvars.sh intel64
+ENV CC=icc CXX=icpc
 ENV CGAL_TEST_PLATFORM="CentOS7-ICC"
 ENV CGAL_CMAKE_FLAGS=""
