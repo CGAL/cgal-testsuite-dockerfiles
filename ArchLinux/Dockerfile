@@ -3,14 +3,26 @@ MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 # base/archlinux is really old and we need to perform some manual
 # magic when updating
-RUN pacman -Sy --noconfirm
-RUN pacman-key --refresh-keys
-RUN pacman -Su --noconfirm
-RUN pacman-db-upgrade
+RUN pacman -Sy --noconfirm && \
+    pacman-key --refresh-keys && \
+    pacman -Su --noconfirm && \
+    pacman-db-upgrade
 RUN pacman -S --noconfirm \
-              base-devel cmake qt4 \
-              qt5-base qt5-script qt5-svg \
-              gmp mpfi mpfr boost zlib mesa glew glu eigen
+              base-devel \
+              boost \
+              cmake \
+              eigen \
+              glew \
+              glu \
+              gmp \
+              mesa \
+              mpfi \
+              mpfr \
+              qt4 \
+              qt5-base \
+              qt5-script \
+              qt5-svg \
+              zlib
 RUN pacman -Scc --noconfirm # clean up
 
 RUN groupadd -r makepkg
@@ -25,7 +37,7 @@ RUN curl -SL https://aur.archlinux.org/packages/li/libqglviewer-qt4/libqglviewer
     cd libqglviewer-qt4 && makepkg --noconfirm
 
 USER root
-RUN pacman -U --noconfirm libqglviewer-qt4/*.pkg.tar.xz
+RUN pacman -U --noconfirm libqglviewer-qt4/*.pkg.tar.xz && rm -rf libqglviewer-qt4
 
 ENV CGAL_TEST_PLATFORM="ArchLinux"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"
