@@ -13,7 +13,8 @@ RUN curl -SL http://registrationcenter-download.intel.com/akdlm/irc_nas/7538/par
     rpm -ivh --nodeps --ignorearch --excludedocs \
     intel-compilerpro-*.rpm \
     intel-compilerproc-*.rpm \
-    intel-mkl-*.rpm && \ 
+    intel-mkl-*.rpm \
+    intel-openmp*.rpm && \ 
     cd / && rm -rf parallel_studio_xe_2015_update3
 
 RUN echo "source /opt/intel/composer_xe_2015.3.187/pkg_bin/compilervars.sh intel64 \&\& source /opt/intel/composer_xe_2015.3.187/mkl/bin/mklvars.sh intel64" > /etc/profile.d/intel.sh
