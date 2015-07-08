@@ -5,9 +5,7 @@ MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 RUN rm -rf /usr/local/include/boost
 RUN rm -f /usr/local/lib/libboost_*
 
-ENV BOOST_MAJOR=1
-ENV BOOST_MINOR=57
-ENV BOOST_PATCH=0
+ENV BOOST_MAJOR=1 BOOST_MINOR=57 BOOST_PATCH=0
 RUN curl -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}.${BOOST_MINOR}.${BOOST_PATCH}/boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH}.tar.gz | tar xz
 RUN cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
     ./bootstrap.sh --without-libraries=filesystem,graph_parallel,python,iostreams,locale,mpi,serialization,signals,wave && \
