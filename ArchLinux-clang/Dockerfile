@@ -1,4 +1,4 @@
-From cgal/testsuite-docker:archlinux
+FROM cgal/testsuite-docker:archlinux
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN pacman -S --noconfirm clang
