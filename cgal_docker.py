@@ -62,7 +62,7 @@ class ContainerRunner:
 
     def __init__(self, docker_client, tester, tester_name, 
                  tester_address, force_rm, nb_jobs, testsuite, 
-                 testresults, use_fedora_selinux_policy):
+                 testresults, use_fedora_selinux_policy, intel_license):
         assert path.isabs(testsuite.path), 'testsuite needs to be an absolute path'
         assert path.isabs(testresults), 'testresults needs to be an absolute path'
         self.docker_client = docker_client
@@ -72,7 +72,7 @@ class ContainerRunner:
                           "CGAL_TESTER_ADDRESS": tester_address,
                           "CGAL_NUMBER_OF_JOBS" : nb_jobs
         }
-        self.host_config = docker.utils.create_host_config(binds={
+        bind = {
             testsuite.path:
             {
                 'bind': '/mnt/testsuite',
@@ -83,7 +83,14 @@ class ContainerRunner:
                 'bind': '/mnt/testresults',
                 'ro': False
             }
-        })
+        }
+        if intel_license:
+            assert path.isabs(intel_license), 'intel_license needs to be an absolute path'
+            bind[intel_license] = {
+                'bind': '/opt/intel/licenses',
+                'ro': True
+            }
+        self.host_config = docker.utils.create_host_config(binds=bind)
 
         if use_fedora_selinux_policy:
             self.host_config['Binds'][0] += 'z'

@@ -35,6 +35,9 @@ def parser():
     parser.add_argument('--packages', nargs='*',
                         help='List of package base names to run the tests for. Will always include Installation.'
                         'e.g. AABB_tree will run AABB_tree, AABB_tree_Examples, and AABB_tree_Demo.')
+    parser.add_argument('--intel-license', metavar='/path/to/intel-license',
+                        help='Absolute path where the release is going to be stored.',
+                        default='/opt/intel/licenses')
 
     # Docker related arguments
     parser.add_argument('--docker-url', metavar='protocol://hostname/to/docker.sock[:PORT]',
