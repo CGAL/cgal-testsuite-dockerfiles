@@ -30,4 +30,4 @@ RUN cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
     ./b2 --prefix=/usr/local/ install
 
 ENV CGAL_TEST_PLATFORM="CentOS5"
-ENV CGAL_CMAKE_FLAGS="(\"-DQT_QMAKE_EXECUTABLE=/usr/lib64/qt4/bin/qmake\")"
+ENV CGAL_CMAKE_FLAGS="(\"-DQT_QMAKE_EXECUTABLE=/usr/lib64/qt4/bin/qmake\" \"-DWITH_CGAL_Qt3:BOOL=OFF\")"
