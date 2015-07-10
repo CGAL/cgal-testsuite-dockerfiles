@@ -29,12 +29,11 @@ RUN cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
     ./bootstrap.sh --without-libraries=filesystem,graph_parallel,python,iostreams,locale,mpi,serialization,signals,wave && \
     ./b2 --prefix=/usr/local/ install
 
-COPY cmake.md5sum /root/cmake.md5sum
-RUN curl -SL -O http://www.cmake.org/files/v2.8/cmake-2.8.10.2.tar.gz && \
-    md5sum -c /root/cmake.md5sum && rm /root/cmake.md5sum && \
-    tar xzf cmake-2.8.10.2.tar.gz && \
-    cd cmake-2.8.10.2 && ./configure && make -j4 && make install && \
-    cd .. && rm -rf cmake-2.8.10.2*
+RUN curl -SL -O http://www.cmake.org/files/v2.8/cmake-2.8.11.tar.gz && \
+    md5sum -c - <<< "be6008f2299613d23fe82ab53ef7472e  cmake-2.8.11.tar.gz" && \
+    tar xzf cmake-2.8.11.tar.gz && \
+    cd cmake-2.8.11 && ./configure && make -j4 && make install && \
+    cd .. && rm -rf cmake-2.8.11*
 
 ENV CGAL_TEST_PLATFORM="CentOS5"
 ENV CGAL_CMAKE_FLAGS="(\"-DQT_QMAKE_EXECUTABLE=/usr/lib64/qt4/bin/qmake\" \"-DWITH_CGAL_Qt3:BOOL=OFF\")"
