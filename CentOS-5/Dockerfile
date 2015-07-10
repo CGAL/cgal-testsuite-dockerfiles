@@ -34,7 +34,7 @@ RUN curl -SL -O http://www.cmake.org/files/v2.8/cmake-2.8.10.2.tar.gz && \
     md5sum -c /root/cmake.md5sum && rm /root/cmake.md5sum && \
     tar xzf cmake-2.8.10.2.tar.gz && \
     cd cmake-2.8.10.2 && ./configure && make -j4 && make install && \
-    cd .. && rm -rf cmake-2.8.10.2
+    cd .. && rm -rf cmake-2.8.10.2*
 
 ENV CGAL_TEST_PLATFORM="CentOS5"
 ENV CGAL_CMAKE_FLAGS="(\"-DQT_QMAKE_EXECUTABLE=/usr/lib64/qt4/bin/qmake\" \"-DWITH_CGAL_Qt3:BOOL=OFF\")"
