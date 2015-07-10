@@ -18,6 +18,9 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     libqt4-dev \
     libqt4-opengl-dev \
     qt4-dev-tools \
+    qtbase5-dev \
+    qtscript5-dev \
+    libqt5svg5-dev \
     tar \
     zlib1g-dev
 
