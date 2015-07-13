@@ -15,6 +15,7 @@ RUN dnf -y install \
     libstdc++-devel.i686 \
     libstdc++-devel.x86_64 \
     make \
+    mesa-libGL-devel.i686 \
     mpfr-devel.i686 \
     qt-devel.i686 \
     qt3-devel.i686 \
@@ -29,10 +30,6 @@ RUN dnf -y install \
 # RUN dnf -y copr enable rineau/libQGLViewer-qt5 && dnf -y install libQGLViewer-qt5-devel.i386
 
 RUN dnf clean all
-
-ENV QTDIR=/usr/lib/qt-3.3/
-ENV QTINC=/usr/lib/qt-3.3/include/
-ENV QTLIB=/usr/lib/qt-3.3/lib/
 
 ENV CC="gcc -m32" CXX="g++ -m32"
 ENV CGAL_TEST_PLATFORM="Fedora-32"
