@@ -22,6 +22,7 @@ RUN dnf -y install \
     qt5-qtbase-devel.i686 \
     qt5-qtscript-devel.i686 \
     qt5-qtsvg-devel.i686 \
+    qt5-qttools-devel.i686 \
     tar \
     zlib-devel.i686
 

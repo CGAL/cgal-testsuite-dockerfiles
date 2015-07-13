@@ -19,6 +19,7 @@ RUN dnf -y install \
     qt5-qtbase-devel.x86_64 \
     qt5-qtscript-devel.x86_64 \
     qt5-qtsvg-devel.x86_64 \
+    qt5-qttools-devel.x86_64 \
     tar \
     zlib-devel.x86_64
 

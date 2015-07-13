@@ -14,6 +14,7 @@ RUN dnf -y install make cmake gcc-c++ \
                    qt5-qtbase-devel.x86_64 \
                    qt5-qtscript-devel.x86_64 \
                    qt5-qtsvg-devel.x86_64 \
+                   qt5-qttools-devel.x86_64 \
                    /usr/lib64/libX11.so /usr/lib64/libSM.so \
                    /usr/lib64/libpng.so /usr/lib64/libICE.so \
                    /usr/lib64/libGL.so /usr/lib64/libGLU.so \

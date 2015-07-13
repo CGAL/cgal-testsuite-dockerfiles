@@ -20,6 +20,7 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     qt4-dev-tools \
     qtbase5-dev \
     qtscript5-dev \
+    qttools5-dev \
     libqt5svg5-dev \
     tar \
     zlib1g-dev

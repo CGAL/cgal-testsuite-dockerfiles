@@ -22,6 +22,7 @@ RUN pacman -S --noconfirm \
               qt5-base \
               qt5-script \
               qt5-svg \
+              qt5-tools \
               zlib
 RUN pacman -Scc --noconfirm # clean up
 
