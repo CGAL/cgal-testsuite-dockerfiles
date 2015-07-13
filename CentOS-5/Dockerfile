@@ -15,6 +15,7 @@ RUN yum -y install \
     tar \
     zlib-devel.x86_64
 RUN yum clean all
+RUN ln -s /usr/lib64/qt4/bin/qmake /usr/bin/qmake-qt4
 
 RUN curl -SL http://bitbucket.org/eigen/eigen/get/3.2.5.tar.gz | tar xz && \
     mkdir -p /usr/local/include/eigen3 && \
@@ -36,4 +37,4 @@ RUN curl -SL -O http://www.cmake.org/files/v2.8/cmake-2.8.11.tar.gz && \
     cd .. && rm -rf cmake-2.8.11*
 
 ENV CGAL_TEST_PLATFORM="CentOS5"
-ENV CGAL_CMAKE_FLAGS="(\"-DQT_QMAKE_EXECUTABLE=/usr/lib64/qt4/bin/qmake\" \"-DWITH_CGAL_Qt3:BOOL=OFF\")"
+ENV CGAL_CMAKE_FLAGS="()"
