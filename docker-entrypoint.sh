@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 # This script is the entrypoint of a CGAL testsuite docker container.
 set -e
 
