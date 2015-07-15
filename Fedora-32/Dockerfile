@@ -32,6 +32,6 @@ RUN dnf -y install \
 
 RUN dnf clean all
 
-ENV CC="gcc -m32" CXX="g++ -m32"
+ENV CC="gcc -m32" CXX="g++ -m32" QTDIR=/usr/lib/qt-3.3
 ENV CGAL_TEST_PLATFORM="Fedora-32"
 ENV CGAL_CMAKE_FLAGS="()"
