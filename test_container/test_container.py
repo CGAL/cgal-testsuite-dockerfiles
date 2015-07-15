@@ -5,6 +5,7 @@ import docker
 import time
 import os
 import logging
+import re
 
 def main():
     logging.basicConfig(level=logging.INFO)
@@ -27,8 +28,18 @@ def main():
     docker_client = docker.Client(base_url=args.docker_url)
     this_path = os.path.dirname(os.path.realpath(__file__))
 
+    image_name_regex = re.compile('(.*/)?([^:]*)(:.*)?')
+    res = image_name_regex.search(args.image)
+    if 'testsuite-docker' in res.group(2):
+        chosen_name = 'CGAL-{}-test_container'.format(res.group(3)[1:])
+    elif res.group(3):
+        chosen_name = 'CGAL-{}-{}-test_container'.format(res.group(2), res.group(3)[1:])
+    else:
+        chosen_name = 'CGAL-{}-test_container'.format(res.group(2))
+
     container = docker_client.create_container(
         image=args.image,
+        name=chosen_name,
         environment={'CGAL_MODULES_DIR' : '/mnt/modules'},
         entrypoint=['/mnt/test/run-test.sh'],
         volumes=['/mnt/modules', '/mnt/test'],
