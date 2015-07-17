@@ -31,8 +31,8 @@ RUN dnf -y install make cmake gcc-c++ \
 # Note: dnf-plugins-core is already installed
 
 # Enable lrineau's copr repo to get libQGLViewer for Qt5.
-RUN rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg
-RUN dnf -y copr enable rineau/libQGLViewer-qt5 && dnf -y install libQGLViewer-qt5-devel.x86_64
+RUN rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg && \
+    dnf -y copr enable rineau/libQGLViewer-qt5 && dnf -y install libQGLViewer-qt5-devel.x86_64
 
 RUN dnf clean all
 

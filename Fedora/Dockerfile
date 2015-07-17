@@ -23,9 +23,9 @@ RUN dnf -y install \
     tar \
     zlib-devel.x86_64
 
-RUN dnf -y install 'dnf-command(copr)'
-RUN rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg
-RUN dnf -y copr enable rineau/libQGLViewer-qt5 && dnf -y install libQGLViewer-qt5-devel.x86_64
+RUN dnf -y install 'dnf-command(copr)' && \
+    rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg && \
+    dnf -y copr enable rineau/libQGLViewer-qt5 && dnf -y install libQGLViewer-qt5-devel.x86_64
 
 RUN dnf clean all
 
