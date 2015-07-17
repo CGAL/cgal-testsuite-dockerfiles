@@ -1,7 +1,9 @@
 FROM fedora:rawhide
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
-RUN yum -y update; dnf clean all
+RUN yum -y install dnf && yum clean && \
+    dnf -y update && dnf clean all
+
 # Note: tar is already installed
 RUN dnf -y install make cmake gcc-c++ \
                    glibc-devel.x86_64 libstdc++-devel.x86_64 \
