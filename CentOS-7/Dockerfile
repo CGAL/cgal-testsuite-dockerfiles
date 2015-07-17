@@ -29,11 +29,11 @@ RUN curl -SL http://www.libqglviewer.com/src/libQGLViewer-2.6.1.tar.gz | tar xzv
     cd libQGLViewer-2.6.1 && \
     qmake-qt4 -o Makefile libQGLViewer-2.6.1.pro && \
     make install && cd / && rm -rf libQGLViewer-2.6.1
-# Do it again for qt5
-# RUN curl -SL http://www.libqglviewer.com/src/libQGLViewer-2.6.1.tar.gz | tar xzv && \
-#     cd libQGLViewer-2.6.1 && \
-#     qmake-qt5 -o Makefile libQGLViewer-2.6.1.pro && \
-#     make install && cd / && rm -rf libQGLViewer-2.6.1
+
+RUN cd /etc/yum.repos.d/ && \
+    curl -SLO https://copr.fedoraproject.org/coprs/rineau/libQGLViewer-qt5/repo/epel-7/rineau-libQGLViewer-qt5-epel-7.repo && \
+    rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg && \
+    yum -y install libQGLViewer-qt5-devel.x86_64
 
 ENV CGAL_TEST_PLATFORM="CentOS7"
 ENV CGAL_CMAKE_FLAGS=""
