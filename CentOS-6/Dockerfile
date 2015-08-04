@@ -32,7 +32,7 @@ RUN cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
 RUN cd /etc/yum.repos.d/ && \
     curl -SLO https://copr.fedoraproject.org/coprs/rineau/libQGLViewer-qt5/repo/epel-6/rineau-libQGLViewer-qt5-epel-6.repo && \
     rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg && \
-    yum -y install libQGLViewer-qt5-devel.x86_64
+    yum -y install libQGLViewer-qt5-devel.x86_64 libQGLViewer-devel.x86_64
 
 ENV CGAL_TEST_PLATFORM="CentOS6"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"
