@@ -30,13 +30,12 @@ RUN dnf -y install make cmake gcc-c++ \
                    /usr/lib64/libxcb.so /usr/lib64/libdrm.so \
                    /usr/lib64/libfreetype.so /usr/lib64/libfontconfig.so \
                    zlib-devel.x86_64
-# Note: dnf-plugins-core is already installed
 
 # Enable lrineau's copr repo to get libQGLViewer for Qt5.
-RUN rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg && \
-    dnf -y copr enable rineau/libQGLViewer-qt5 && dnf -y install libQGLViewer-qt5-devel.x86_64
-
-RUN dnf clean all
+RUN dnf -y install 'dnf-command(copr)' && \
+    rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg && \
+    dnf -y copr enable rineau/libQGLViewer-qt5 && dnf -y install libQGLViewer-qt5-devel.x86_64 && \
+    dnf clean all
 
 ENV QTDIR=/usr/lib/qt-3.3/
 ENV QTINC=/usr/lib/qt-3.3/include/
