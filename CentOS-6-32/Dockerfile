@@ -11,7 +11,6 @@ RUN yum -y update; yum -y install \
                    glibc-devel.i686 \
                    glibc-devel.x86_64 \
                    gmp-devel.i686 \
-                   libQGLViewer-devel.i686 \
                    libstdc++-devel.i686 \
                    libstdc++-devel.x86_64 \
                    make \
@@ -32,6 +31,21 @@ RUN cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
          architecture=x86 \
          instruction-set=i686 \
          --prefix=/usr/local/ install
+
+ENV QGL_REPO_32="\n[rineau-libQGLViewer-qt5-i386]\n\
+name=Copr repo for libQGLViewer-qt5 owned by rineau (i386)\n\
+baseurl=https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/epel-6-i386/\n\
+skip_if_unavailable=True\n\
+gpgcheck=1\n\
+gpgkey=https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg\n\
+enabled=1\n\
+enabled_metadata=1"
+
+RUN cd /etc/yum.repos.d/ && \
+    curl -SLO https://copr.fedoraproject.org/coprs/rineau/libQGLViewer-qt5/repo/epel-6/rineau-libQGLViewer-qt5-epel-6.repo && \
+    rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg && \
+    echo -e "$QGL_REPO_32" >> rineau-libQGLViewer-qt5-epel-6.repo && \
+    yum -y install libQGLViewer-qt5-devel.i686 libQGLViewer-devel.i686
 
 ENV CC="gcc -m32" CXX="g++ -m32"
 ENV CGAL_TEST_PLATFORM="CentOS6-32"
