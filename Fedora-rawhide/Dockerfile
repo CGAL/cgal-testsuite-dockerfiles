@@ -1,7 +1,7 @@
 FROM fedora:rawhide
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
-RUN yum -y install dnf && yum clean && \
+RUN yum -y install dnf && yum clean all && \
     dnf -y update && dnf clean all
 
 # Note: tar is already installed
