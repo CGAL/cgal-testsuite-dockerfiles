@@ -23,13 +23,13 @@ RUN pacman -S --noconfirm \
               qt5-script \
               qt5-svg \
               qt5-tools \
-              zlib
-RUN pacman -Scc --noconfirm # clean up
+              zlib && \
+    pacman -Scc --noconfirm # clean up
 
-RUN groupadd -r makepkg
-RUN useradd -r -g makepkg makepkg
-RUN mkdir /tmp/makepkg
-RUN chown -R makepkg:makepkg /tmp/makepkg
+RUN groupadd -r makepkg && \
+    useradd -r -g makepkg makepkg && \
+    mkdir /tmp/makepkg && \
+    chown -R makepkg:makepkg /tmp/makepkg
 
 USER makepkg
 WORKDIR /tmp/makepkg
