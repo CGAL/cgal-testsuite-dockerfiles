@@ -18,6 +18,7 @@ RUN dnf -y install \
     make \
     mesa-libGL-devel.i686 \
     mpfr-devel.i686 \
+    ntl-devel.i686 \
     qt-devel.i686 \
     qt3-devel.i686 \
     qt5-qtbase-devel.i686 \

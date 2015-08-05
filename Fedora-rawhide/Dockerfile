@@ -11,6 +11,7 @@ RUN dnf -y install make cmake gcc-c++ \
                    boost-devel.x86_64 \
                    qt3-devel.x86_64 qt-devel.x86_64 \
                    libQGLViewer-devel.x86_64 \
+                   ntl-devel.x86_64 \
                    glew-devel.x86_64 \
                    ipe-devel.x86_64 \
                    eigen3-devel.noarch \
