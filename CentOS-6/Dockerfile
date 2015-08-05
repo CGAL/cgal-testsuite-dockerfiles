@@ -14,6 +14,7 @@ RUN yum -y update; yum -y install \
     libstdc++-devel.x86_64 \
     make \
     mpfr-devel.x86_64 \
+    ntl-devel.x86_64 \
     qt-devel.x86_64 \
     qt5-qtbase-devel.x86_64 \
     qt5-qtscript-devel.x86_64 \

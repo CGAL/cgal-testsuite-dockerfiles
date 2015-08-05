@@ -15,6 +15,7 @@ RUN yum -y update; yum -y install \
                    libstdc++-devel.x86_64 \
                    make \
                    mpfr-devel.i686 \
+                   ntl-devel.i686 \
                    qt-devel.i686 \
                    tar \
                    zlib-devel.i686
