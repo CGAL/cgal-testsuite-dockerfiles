@@ -10,6 +10,7 @@ RUN dnf -y install \
     glew-devel.x86_64 \
     glibc-devel.x86_64 \
     gmp-devel.x86_64 \
+    ipe-devel.x86_64 \
     libQGLViewer-devel.x86_64 \
     libstdc++-devel.x86_64 \
     make \

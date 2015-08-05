@@ -12,6 +12,7 @@ RUN dnf -y install make cmake gcc-c++ \
                    qt3-devel.x86_64 qt-devel.x86_64 \
                    libQGLViewer-devel.x86_64 \
                    glew-devel.x86_64 \
+                   ipe-devel.x86_64 \
                    eigen3-devel.noarch \
                    qt5-qtbase-devel.x86_64 \
                    qt5-qtscript-devel.x86_64 \

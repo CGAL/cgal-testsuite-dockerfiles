@@ -11,6 +11,7 @@ RUN dnf -y install \
     glew-devel.i686 \
     glibc-devel.i686 \
     gmp-devel.i686 \
+    ipe-devel.i686 \
     libQGLViewer-devel.i686 \
     libstdc++-devel.i686 \
     libstdc++-devel.x86_64 \
