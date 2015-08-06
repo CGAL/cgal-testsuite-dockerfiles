@@ -4,7 +4,6 @@ MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 RUN yum -y install dnf && yum clean all && \
     dnf -y update && dnf clean all
 
-# Note: tar is already installed
 RUN dnf -y install make cmake gcc-c++ \
                    glibc-devel.x86_64 libstdc++-devel.x86_64 \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
@@ -31,7 +30,8 @@ RUN dnf -y install make cmake gcc-c++ \
                    /usr/lib64/libXxf86vm.so /usr/lib64/libjpeg.so \
                    /usr/lib64/libxcb.so /usr/lib64/libdrm.so \
                    /usr/lib64/libfreetype.so /usr/lib64/libfontconfig.so \
-                   zlib-devel.x86_64
+                   zlib-devel.x86_64 \
+                   tar
 
 # Enable lrineau's copr repo to get libQGLViewer for Qt5.
 RUN dnf -y install 'dnf-command(copr)' && \
