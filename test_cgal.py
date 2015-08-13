@@ -28,6 +28,7 @@ import sys
 import time
 import tempfile
 import docker
+import signal
 import subprocess
 
 def handle_results(client, cont_id, upload, testresult_dir, release, tester):
@@ -111,6 +112,9 @@ def calculate_cpu_sets(max_cpus, cpus_per_container):
         cpu += cpus_per_container
     return cpu_sets
 
+def term_handler(self, *args):
+    sys.exit(0)
+
 def main():
     logging.basicConfig(level=logging.INFO)
     parser = cgal_docker_args.parser()
@@ -162,6 +166,9 @@ def main():
                              intel_license)
     scheduler = ContainerScheduler(runner, args.images, cpu_sets)
 
+    # Translate SIGTERM to SystemExit exception
+    signal.signal(signal.SIGTERM, term_handler)
+
     before_start = int(time.time())
     launch_result = scheduler.launch()
     if not launch_result:
@@ -186,34 +193,41 @@ def main():
     # containers. The decode parameter has been documented as a
     # resolution to this issue
     # https://github.com/docker/docker-py/issues/585
-    for ev in client.events(since=before_start, decode=True):
-        assert isinstance(ev, dict)
-        event_id = ev[u'id']
+    try:
+        for ev in client.events(since=before_start, decode=True):
+            assert isinstance(ev, dict)
+            event_id = ev[u'id']
 
-        if scheduler.is_ours(event_id): # we care
-            container_info = container_by_id(client, event_id)
-            if ev[u'status'] == u'die' and status_code_regex.search(container_info[u'Status']):
-                res = status_code_regex.search(container_info[u'Status'])
-                if not res:
-                    logging.warning('Could not parse exit status: {}. Assuming dirty death of the container.'
-                                    .format(container_info[u'Status']))
-                elif res.group(1) != '0':
-                    logging.warning('Container exited with Error Code: {}. Assuming dirty death of the container.'
-                                    .format(res.group(1)))
-                else:
-                    logging.info('Container died cleanly, handling results.')
-                    try:
-                        handle_results(client, event_id, args.upload_results, args.testresults,
-                                       release, args.tester)
-                    except TestsuiteException as e:
-                        logging.exception(str(e))
-                # The freed up cpu_set.
-                scheduler.container_finished(event_id)
-                if not scheduler.launch():
-                    logging.info('No more images to launch.')
-                if not scheduler.containers_running():
-                    logging.info('Handled all images.')
-                    break
+            if scheduler.is_ours(event_id): # we care
+                container_info = container_by_id(client, event_id)
+                if ev[u'status'] == u'die' and status_code_regex.search(container_info[u'Status']):
+                    res = status_code_regex.search(container_info[u'Status'])
+                    if not res:
+                        logging.warning('Could not parse exit status: {}. Assuming dirty death of the container.'
+                                        .format(container_info[u'Status']))
+                    elif res.group(1) != '0':
+                        logging.warning('Container exited with Error Code: {}. Assuming dirty death of the container.'
+                                        .format(res.group(1)))
+                    else:
+                        logging.info('Container died cleanly, handling results.')
+                        try:
+                            handle_results(client, event_id, args.upload_results, args.testresults,
+                                           release, args.tester)
+                        except TestsuiteException as e:
+                            logging.exception(str(e))
+                            # The freed up cpu_set.
+                    scheduler.container_finished(event_id)
+                    if not scheduler.launch():
+                        logging.info('No more images to launch.')
+                    if not scheduler.containers_running():
+                        logging.info('Handled all images.')
+                        break
+    except KeyboardInterrupt:
+        logging.warning('SIGINT received, cleaning up containers!')
+        scheduler.kill_all()
+    except SystemExit:
+        logging.warning('SIGTERM received, cleaning up containers!')
+        scheduler.kill_all()
 
 if __name__ == "__main__":
     main()

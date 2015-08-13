@@ -191,5 +191,11 @@ class ContainerScheduler:
         launched by this scheduler, `False` otherwise."""
         return len(self.running_containers) != 0
 
+    def kill_all(self):
+        """Kill all still running containers."""
+        for cont in self.running_containers:
+            logging.info('Killing Container ID {}'.format(cont))
+            self.runner.docker_client.kill(cont)
+
 if __name__ == "__main__":
     pass
