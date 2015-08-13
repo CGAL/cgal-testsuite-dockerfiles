@@ -20,7 +20,9 @@ from __future__ import division
 import logging
 from cgal_docker import *
 from cgal_release import *
+import atexit
 import cgal_docker_args
+import errno
 import os
 import re
 import shutil
@@ -115,10 +117,63 @@ def calculate_cpu_sets(max_cpus, cpus_per_container):
 def term_handler(self, *args):
     sys.exit(0)
 
+pidfile = '/tmp/test_cgal.pid'
+def remove_pidfile():
+    logging.info('Unlinking pidfile {}'.format(pidfile))
+    os.unlink(pidfile)
+
+def pid_exists(pid):
+    """Check whether pid exists in the current process table.
+    UNIX only.
+    """
+    if pid < 0:
+        return False
+    if pid == 0:
+        # According to "man 2 kill" PID 0 refers to every process
+        # in the process group of the calling process.
+        # On certain systems 0 is a valid PID but we have no way
+        # to know that in a portable fashion.
+        raise ValueError('invalid PID 0')
+    try:
+        os.kill(pid, 0)
+    except OSError as err:
+        if err.errno == errno.ESRCH:
+            # ESRCH == No such process
+            return False
+        elif err.errno == errno.EPERM:
+            # EPERM clearly means there's a process to deny access to
+            return True
+        else:
+            # According to "man 2 kill" possible error values are
+            # (EINVAL, EPERM, ESRCH)
+            raise
+    else:
+        return True
+
 def main():
     logging.basicConfig(level=logging.INFO)
     parser = cgal_docker_args.parser()
     args = parser.parse_args()
+
+    # Setup the pidfile handling
+    if os.path.isfile(pidfile):
+        logging.warning('pidfile {} already exists. Killing other process.'.format(pidfile))
+        with open(pidfile, 'r') as pf:
+            oldpid = int(pf.read().strip())
+        try:
+            os.kill(oldpid, signal.SIGTERM)
+            # Wait for the process to terminate.
+            while pid_exists(oldpid):
+                pass
+        except OSError:
+            logging.warning('pidfile {} did contain invalid pid {}.'.format(pidfile, oldpid))
+
+    with open(pidfile, 'w') as pf:
+        pid = str(os.getpid())
+        logging.info('Writing pidfile {} with pid {}'.format(pidfile, pid))
+        pf.write(pid)
+
+    atexit.register(remove_pidfile)
 
     # If no jobs are specified, use as many as we use cpus per
     # container.
@@ -228,6 +283,8 @@ def main():
     except SystemExit:
         logging.warning('SIGTERM received, cleaning up containers!')
         scheduler.kill_all()
+
+    remove_pidfile()
 
 if __name__ == "__main__":
     main()
