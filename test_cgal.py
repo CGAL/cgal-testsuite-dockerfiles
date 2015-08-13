@@ -173,14 +173,23 @@ def main():
         logging.info('Writing pidfile {} with pid {}'.format(pidfile, pid))
         pf.write(pid)
 
-    atexit.register(remove_pidfile)
-
     # If no jobs are specified, use as many as we use cpus per
     # container.
     if not args.jobs:
         args.jobs = args.container_cpus
 
     client = docker.Client(base_url=args.docker_url)
+
+    # Perform a check for existing, running containers.
+    existing = [cont for cont in client.containers(filters = { 'status' : 'running'})]
+    generic_name_regex = re.compile('CGAL-.+-testsuite')
+    for cont in existing:
+        for name in cont[u'Names']:
+            if generic_name_regex.match(name):
+                info.error('Testsuite Container {} of previous suite still running. Aborting. NOTE: This could also be a name clash.')
+                sys.exit(0)
+
+
     args.images = images(client, args.images)
 
     if args.upload_results:
