@@ -93,8 +93,8 @@ class ContainerRunner:
         self.host_config = docker.utils.create_host_config(binds=bind)
 
         if use_fedora_selinux_policy:
-            self.host_config['Binds'][0] += 'z'
-            self.host_config['Binds'][1] += 'z'
+            self.host_config['Binds'][0] += ',z'
+            self.host_config['Binds'][1] += ',z'
 
     def run(self, image, cpuset):
         """Create and start a container of the `image` with `cpuset`."""
