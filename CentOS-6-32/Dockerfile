@@ -17,6 +17,7 @@ RUN yum -y update; yum -y install \
                    mpfr-devel.i686 \
                    ntl-devel.i686 \
                    qt-devel.i686 \
+                   mesa-libGL-devel.i686 \
                    tar \
                    zlib-devel.i686
 RUN yum clean all
