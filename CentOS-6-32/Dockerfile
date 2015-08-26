@@ -18,6 +18,7 @@ RUN yum -y update; yum -y install \
                    ntl-devel.i686 \
                    qt-devel.i686 \
                    mesa-libGL-devel.i686 \
+                   qt5-qtsvg-devel.i686 \
                    tar \
                    zlib-devel.i686
 RUN yum clean all
