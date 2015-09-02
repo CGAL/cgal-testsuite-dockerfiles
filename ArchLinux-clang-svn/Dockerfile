@@ -15,11 +15,12 @@ RUN pacman -S --noconfirm \
 USER makepkg
 WORKDIR /tmp/makepkg
 
-RUN curl -SL https://aur.archlinux.org/packages/ll/llvm-svn/llvm-svn.tar.gz | tar xzv && \
+RUN curl -SL https://aur.archlinux.org/cgit/aur.git/snapshot/llvm-svn.tar.gz | tar xzv && \
     cd llvm-svn && makepkg --noconfirm
 
-RUN curl -SL https://aur.archlinux.org/packages/li/libc++-svn/libc++-svn.tar.gz | tar xzv && \
-    cd libc++-svn && makepkg --noconfirm
+# The libc++-svn package has not been ported to AUR4.
+# RUN curl -SL https://aur.archlinux.org/packages/li/libc++-svn/libc++-svn.tar.gz | tar xzv && \
+#     cd libc++-svn && makepkg --noconfirm
 
 USER root
 RUN pacman --noconfirm -U llvm-svn/*.pkg.tar.xz libc++-svn/*.pkg.tar.xz && rm -rf llvm-svn libc++-svn

@@ -41,15 +41,17 @@ RUN groupadd -r makepkg && \
 
 USER makepkg
 WORKDIR /tmp/makepkg
-RUN curl -SL https://aur.archlinux.org/packages/li/libqglviewer-qt4/libqglviewer-qt4.tar.gz | tar xzv && \
+             
+RUN curl -SL https://aur.archlinux.org/cgit/aur.git/snapshot/libqglviewer-qt4.tar.gz | tar xzv && \
     sed -i -e 's/2fa216dff83a352bf4bc0ef40b341036/65d41b1fa3e1e5396cb2952b8c032c6c/' libqglviewer-qt4/PKGBUILD && \
     cd libqglviewer-qt4 && makepkg --noconfirm
 
 RUN curl -SL https://aur4.archlinux.org/cgit/aur.git/snapshot/ipe.tar.gz | tar xzv && \
     cd ipe && makepkg --noconfirm
     
-RUN curl -SL https://aur.archlinux.org/packages/es/esbtl/esbtl.tar.gz | tar xzv && \
-    cd esbtl && makepkg --noconfirm
+# The ESBTL package has not been ported to AUR4.
+# RUN curl -SL https://aur.archlinux.org/packages/es/esbtl/esbtl.tar.gz | tar xzv && \
+#     cd esbtl && makepkg --noconfirm
 
 USER root
 RUN pacman -U --noconfirm libqglviewer-qt4/*.pkg.tar.xz ipe/*.pkg.tar.xz esbtl/*.pkg.tar.xz && \
