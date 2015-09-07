@@ -49,9 +49,8 @@ RUN curl -SL https://aur.archlinux.org/cgit/aur.git/snapshot/libqglviewer-qt4.ta
 RUN curl -SL https://aur4.archlinux.org/cgit/aur.git/snapshot/ipe.tar.gz | tar xzv && \
     cd ipe && makepkg --noconfirm
     
-# The ESBTL package has not been ported to AUR4.
-# RUN curl -SL https://aur.archlinux.org/packages/es/esbtl/esbtl.tar.gz | tar xzv && \
-#     cd esbtl && makepkg --noconfirm
+RUN curl -SL https://aur4.archlinux.org/cgit/aur.git/snapshot/esbtl.tar.gz | tar xzv && \
+    cd esbtl && makepkg --noconfirm
 
 USER root
 RUN pacman -U --noconfirm libqglviewer-qt4/*.pkg.tar.xz ipe/*.pkg.tar.xz esbtl/*.pkg.tar.xz && \
