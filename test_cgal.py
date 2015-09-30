@@ -87,7 +87,8 @@ def upload_results(local_path):
     except subprocess.CalledProcessError as e:
         logging.error('Could not upload result file. SCP failed with error code {}'.format(e.returncode))
     else:
-        logging.info('Done uploading {}'.format(local_path))
+        logging.info('Done uploading {}. Removing.'.format(local_path))
+        os.remove(local_path)
 
 def platform_from_container(client, cont_id):
     # We assume that the container is already dead and that this will not loop
