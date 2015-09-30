@@ -33,6 +33,8 @@ class Release:
                 path_to_tar = Release._get_cgal(latest, testsuite)
                 logging.info('Extracting {}'.format(path_to_tar))
                 self.path = Release._extract_release(path_to_tar)
+                logging.info('Removing {}'.format(path_to_tar))
+                os.remove(path_to_tar)
             except urllib2.URLError as e:
                 if hasattr(e, 'code') and e.code == 401:
                     logging.warning('URLError 401: Did you forget to provide --user and --passwd?')
