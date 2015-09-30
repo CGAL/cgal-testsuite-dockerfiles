@@ -294,6 +294,10 @@ def main():
         logging.warning('SIGTERM received, cleaning up containers!')
         scheduler.kill_all()
 
+    if not args.use_local:
+        logging.info('Cleaning up {}'.format(release.path))
+        shutil.rmtree(release.path)
+
     remove_pidfile()
 
 if __name__ == "__main__":
