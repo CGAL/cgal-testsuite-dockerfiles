@@ -38,6 +38,9 @@ def parser():
     parser.add_argument('--intel-license', metavar='/path/to/intel-license',
                         help='Absolute path to a directory containing Intel license files.',
                         default='/opt/intel/licenses')
+    parser.add_argument('--mac-address', metavar='92:d0:c6:0a:29:33',
+                        help='Container MAC address. Necessary for newer Intel Licenses.',
+                        default=None)
 
     # Docker related arguments
     parser.add_argument('--docker-url', metavar='protocol://hostname/to/docker.sock[:PORT]',

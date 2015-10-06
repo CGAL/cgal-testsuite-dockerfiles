@@ -62,7 +62,7 @@ class ContainerRunner:
 
     def __init__(self, docker_client, tester, tester_name, 
                  tester_address, force_rm, nb_jobs, testsuite, 
-                 testresults, use_fedora_selinux_policy, intel_license):
+                 testresults, use_fedora_selinux_policy, intel_license, mac_address=None):
         assert path.isabs(testsuite.path), 'testsuite needs to be an absolute path'
         assert path.isabs(testresults), 'testresults needs to be an absolute path'
         self.docker_client = docker_client
@@ -95,6 +95,8 @@ class ContainerRunner:
         if use_fedora_selinux_policy:
             self.host_config['Binds'][0] += ',z'
             self.host_config['Binds'][1] += ',z'
+
+        self.mac_address = mac_address
 
     def run(self, image, cpuset):
         """Create and start a container of the `image` with `cpuset`."""
@@ -137,7 +139,8 @@ class ContainerRunner:
             volumes=['/mnt/testsuite', '/mnt/testresults'],
             cpuset=cpuset,
             environment=self.environment,
-            host_config=self.host_config
+            host_config=self.host_config,
+            mac_address=self.mac_address
         )
 
         if container[u'Warnings']:

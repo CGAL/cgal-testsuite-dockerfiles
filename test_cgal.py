@@ -225,10 +225,15 @@ def main():
         intel_license = None
         logging.info('Not using an intel license directory')
 
+    if args.mac_address:
+        logging.info('Using custom MAC address: {}'.format(args.mac_address))
+    else:
+        logging.info('Not using custom MAC address')
+
     runner = ContainerRunner(client, args.tester, args.tester_name, 
                              args.tester_address, args.force_rm, args.jobs,
                              release, args.testresults, args.use_fedora_selinux_policy,
-                             intel_license)
+                             intel_license, args.mac_address)
     scheduler = ContainerScheduler(runner, args.images, cpu_sets)
 
     # Translate SIGTERM to SystemExit exception
