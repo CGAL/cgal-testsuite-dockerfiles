@@ -84,12 +84,17 @@ class ContainerRunner:
                 'ro': False
             }
         }
-        if intel_license:
+        if intel_license and path.isdir(intel_license):
             assert path.isabs(intel_license), 'intel_license needs to be an absolute path'
             bind[intel_license] = {
                 'bind': '/opt/intel/licenses',
                 'ro': True
             }
+            logging.info('Using {} as intel license directory'.format(intel_license))
+        else:
+            logging.info('Not using an intel license directory')
+
+
         self.host_config = docker.utils.create_host_config(binds=bind)
 
         if use_fedora_selinux_policy:
@@ -97,6 +102,10 @@ class ContainerRunner:
             self.host_config['Binds'][1] += ',z'
 
         self.mac_address = mac_address
+        if mac_address:
+            logging.info('Using custom MAC address: {}'.format(mac_address))
+        else:
+            logging.info('Not using custom MAC address')
 
     def run(self, image, cpuset):
         """Create and start a container of the `image` with `cpuset`."""
