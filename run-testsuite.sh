@@ -73,6 +73,7 @@ make -j ${CGAL_NUMBER_OF_JOBS} -k -fmakefile2
 # Copy version.h, so that collect_cgal_testresults_from_cmake can find it.
 mkdir -p "$HOME/build/src/include/CGAL"
 cp "${CGAL_RELEASE_DIR}/include/CGAL/version.h" "$HOME/build/src/include/CGAL"
+cp "${CGAL_RELEASE_DIR}"/.scm* "$HOME/build/src/"
 
 ./collect_cgal_testresults_from_cmake
 
