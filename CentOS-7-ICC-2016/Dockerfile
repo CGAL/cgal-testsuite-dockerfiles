@@ -8,7 +8,7 @@ RUN yum -y install \
     libstdc++-devel.x86_64 \
     tar
 
-RUN curl -SL http://registrationcenter-download.intel.com/akdlm/irc_nas/7997/parallel_studio_xe_2016.tgz | tar xzv && \
+RUN curl -SL http://registrationcenter-download.intel.com/akdlm/irc_nas/8365/parallel_studio_xe_2016_update1.tgz | tar xzv && \
     cd /parallel_studio_xe_2016/rpm && \
     rpm -ivh --nodeps --ignorearch --excludedocs \
     intel-icc-*.x86_64.rpm intel-icc-*.noarch.rpm \
