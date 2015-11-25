@@ -24,7 +24,7 @@ RUN yum -y update; yum -y install \
 RUN yum clean all
 
 ENV BOOST_MAJOR=1 BOOST_MINOR=48 BOOST_PATCH=0
-RUN curl -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}.${BOOST_MINOR}.${BOOST_PATCH}/boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH}.tar.gz | tar xz
+RUN curl -s -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}.${BOOST_MINOR}.${BOOST_PATCH}/boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH}.tar.gz | tar xz
 RUN cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
     ./bootstrap.sh --without-libraries=filesystem,graph_parallel,python,iostreams,locale,mpi,serialization,signals,wave && \
     ./b2 cflags=-m32 \
@@ -45,7 +45,7 @@ enabled=1\n\
 enabled_metadata=1"
 
 RUN cd /etc/yum.repos.d/ && \
-    curl -SLO https://copr.fedoraproject.org/coprs/rineau/libQGLViewer-qt5/repo/epel-6/rineau-libQGLViewer-qt5-epel-6.repo && \
+    curl -s -SLO https://copr.fedoraproject.org/coprs/rineau/libQGLViewer-qt5/repo/epel-6/rineau-libQGLViewer-qt5-epel-6.repo && \
     rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg && \
     echo -e "$QGL_REPO_32" >> rineau-libQGLViewer-qt5-epel-6.repo && \
     yum -y install libQGLViewer-qt5-devel.i686 libQGLViewer-devel.i686

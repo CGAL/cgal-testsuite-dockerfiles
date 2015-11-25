@@ -8,7 +8,7 @@ RUN yum -y install \
     libstdc++-devel.x86_64 \
     tar
 
-RUN curl -SL http://registrationcenter-download.intel.com/akdlm/irc_nas/7538/parallel_studio_xe_2015_update3.tgz | tar xzv && \
+RUN curl -s -SL http://registrationcenter-download.intel.com/akdlm/irc_nas/7538/parallel_studio_xe_2015_update3.tgz | tar xzv && \
     cd /parallel_studio_xe_2015_update3/rpm && \
     rpm -ivh --nodeps --ignorearch --excludedocs \
     intel-compilerpro-*.rpm \
