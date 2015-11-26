@@ -11,10 +11,10 @@ RUN yum -y install \
 RUN curl -s -SL http://registrationcenter-download.intel.com/akdlm/irc_nas/8365/parallel_studio_xe_2016_update1.tgz | tar xz && \
     cd /parallel_studio_xe_2016_update1/rpm && \
     rpm -ivh --nodeps --ignorearch --excludedocs \
-    \$(echo intel-icc-*.x86_64.rpm intel-icc-*.noarch.rpm \
+    $(for p in intel-icc-*.x86_64.rpm intel-icc-*.noarch.rpm \
     intel-comp-*.x86_64.rpm intel-comp-*.noarch.rpm \
     intel-mkl-*.x86_64.rpm intel-mkl-*.noarch.rpm \
-    intel-openmp-*.x86_64.rpm | grep -v -- -jp-) && \ 
+    intel-openmp-*.x86_64.rpm; do echo $p; done | grep -v -- -jp- ) && \
     cd / && rm -rf parallel_studio_xe_2016_update1
 
 RUN echo "source /opt/intel/compilers_and_libraries_2016/linux/bin/compilervars.sh intel64 \&\& source /opt/intel/compilers_and_libraries_2016/linux/mkl/bin/mklvars.sh intel64 \&\& source /opt/intel/compilers_and_libraries_2016/linux/tbb/bin/tbbvars.sh intel64" > /etc/profile.d/intel.sh
