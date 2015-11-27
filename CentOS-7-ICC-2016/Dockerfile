@@ -17,7 +17,7 @@ RUN curl -s -SL http://registrationcenter-download.intel.com/akdlm/irc_nas/8365/
     intel-openmp-*.x86_64.rpm; do echo $p; done | grep -v -- -jp- ) && \
     cd / && rm -rf parallel_studio_xe_2016_update1
 
-RUN echo "source /opt/intel/compilers_and_libraries_2016/linux/bin/compilervars.sh intel64 \&\& source /opt/intel/compilers_and_libraries_2016/linux/mkl/bin/mklvars.sh intel64 \&\& source /opt/intel/compilers_and_libraries_2016/linux/tbb/bin/tbbvars.sh intel64" > /etc/profile.d/intel.sh
+RUN echo "source /opt/intel/compilers_and_libraries_2016.1.150/linux/bin/compilervars.sh intel64 \&\& source /opt/intel/compilers_and_libraries_2016.1.150/linux/mkl/bin/mklvars.sh intel64 \&\& source /opt/intel/compilers_and_libraries_2016.1.150/linux/tbb/bin/tbbvars.sh intel64" > /etc/profile.d/intel.sh
 ENV CC=icc CXX=icpc BASH_ENV=/etc/profile.d/intel.sh
 ENV CGAL_TEST_PLATFORM="CentOS7-ICC-2016"
 ENV CGAL_CMAKE_FLAGS="('-DCMAKE_CXX_FLAGS=-w1')"
