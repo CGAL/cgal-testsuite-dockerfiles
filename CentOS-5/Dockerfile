@@ -30,8 +30,8 @@ RUN cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
     ./bootstrap.sh --without-libraries=filesystem,graph_parallel,python,iostreams,locale,mpi,serialization,signals,wave && \
     ./b2 --prefix=/usr/local/ install
 
-RUN curl -s -SL -O http://www.cmake.org/files/v2.8/cmake-2.8.11.tar.gz && \
-    md5sum -c - <<< "be6008f2299613d23fe82ab53ef7472e  cmake-2.8.11.tar.gz" && \
+RUN curl -s -k -SL -O http://www.cmake.org/files/v2.8/cmake-2.8.11.tar.gz && \
+    sha256sum -c - <<< "20d0d3661797fa82c19e7a75c7315c640e001cb3238331ca170bb0fae27feee5  cmake-2.8.11.tar.gz" && \
     tar xzf cmake-2.8.11.tar.gz && \
     cd cmake-2.8.11 && ./configure && make -j4 && make install && \
     cd .. && rm -rf cmake-2.8.11*
