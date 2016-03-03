@@ -17,7 +17,7 @@ RUN yum -y install \
 RUN yum clean all
 RUN ln -s /usr/lib64/qt4/bin/qmake /usr/bin/qmake-qt4
 
-RUN curl -s -SL http://bitbucket.org/eigen/eigen/get/3.2.5.tar.gz | tar xz && \
+RUN curl -s -SL http://bitbucket.org/eigen/eigen/get/3.2.8.tar.gz | tar xz && \
     mkdir -p /usr/local/include/eigen3 && \
     cd eigen-eigen-bdd17ee3b1b3 && \
     cp -R Eigen/ /usr/local/include/eigen3 && \
