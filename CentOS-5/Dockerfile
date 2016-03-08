@@ -19,7 +19,7 @@ RUN ln -s /usr/lib64/qt4/bin/qmake /usr/bin/qmake-qt4
 
 RUN curl -s -SL http://bitbucket.org/eigen/eigen/get/3.2.8.tar.gz | tar xz && \
     mkdir -p /usr/local/include/eigen3 && \
-    cd eigen-eigen-bdd17ee3b1b3 && \
+    cd eigen-eigen-07105f7124f9 && \
     cp -R Eigen/ /usr/local/include/eigen3 && \
     cp -R unsupported /usr/local/include/eigen3 && \
     cp -R signature_of_eigen3_matrix_library /usr/local/include/eigen3
