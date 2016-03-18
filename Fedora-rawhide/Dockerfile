@@ -8,7 +8,6 @@ RUN dnf -y install make cmake gcc-c++ \
                    glibc-devel.x86_64 libstdc++-devel.x86_64 \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    boost-devel.x86_64 \
-                   qt3-devel.x86_64 qt-devel.x86_64 \
                    libQGLViewer-devel.x86_64 \
                    ntl-devel.x86_64 \
                    glew-devel.x86_64 \
