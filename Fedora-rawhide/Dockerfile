@@ -43,4 +43,4 @@ ENV QTINC=/usr/lib/qt-3.3/include/
 ENV QTLIB=/usr/lib/qt-3.3/lib/
 
 ENV CGAL_TEST_PLATFORM="Fedora-rawhide"
-ENV CGAL_CMAKE_FLAGS=""
+ENV CGAL_CMAKE_FLAGS="('-DCGAL_HEADER_ONLY:BOOL=TRUE')"
