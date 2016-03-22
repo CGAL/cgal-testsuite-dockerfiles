@@ -11,6 +11,7 @@ RUN dnf -y install \
     glibc-devel.x86_64 \
     gmp-devel.x86_64 \
     ipe-devel.x86_64 \
+    OpenMesh-devel \
     libQGLViewer-devel.x86_64 \
     libstdc++-devel.x86_64 \
     make \
