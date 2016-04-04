@@ -16,6 +16,7 @@ RUN dnf -y install make cmake gcc-c++ \
                    qt5-qtsvg-devel.x86_64 \
                    qt5-qttools-devel.x86_64 \
                    libQGLViewer-qt5-devel.x86_64 \
+                   OpenMesh-devel \
                    zlib-devel.x86_64 \
                    tar
 
