@@ -1,11 +1,8 @@
 FROM fedora:rawhide
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
-RUN yum -y install dnf && yum clean all && \
-    dnf -y update && dnf clean all
-
-RUN dnf -y install make cmake gcc-c++ \
-                   glibc-devel.x86_64 libstdc++-devel.x86_64 \
+RUN dnf -y update && \
+    dnf -y install make cmake gcc-c++ \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    boost-devel.x86_64 \
                    ntl-devel.x86_64 \
@@ -18,7 +15,7 @@ RUN dnf -y install make cmake gcc-c++ \
                    libQGLViewer-qt5-devel.x86_64 \
                    OpenMesh-devel \
                    zlib-devel.x86_64 \
-                   tar
+                   tar && dnf clean all
 
 ENV CGAL_TEST_PLATFORM="Fedora-rawhide"
 ENV CGAL_CMAKE_FLAGS="('-DCGAL_HEADER_ONLY:BOOL=TRUE')"
