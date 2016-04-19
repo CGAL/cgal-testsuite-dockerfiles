@@ -13,6 +13,7 @@ RUN dnf -y update && \
                    qt5-qtsvg-devel.x86_64 \
                    qt5-qttools-devel.x86_64 \
                    libQGLViewer-qt5-devel.x86_64 \
+                   mesa-libGLU-devel \
                    OpenMesh-devel \
                    zlib-devel.x86_64 \
                    tar && dnf clean all
