@@ -95,7 +95,7 @@ class ContainerRunner:
             logging.info('Not using an intel license directory')
 
 
-        self.host_config = docker.utils.create_host_config(binds=bind)
+        self.host_config = docker_client.create_host_config(binds=bind)
 
         if use_fedora_selinux_policy:
             self.host_config['Binds'][0] += ',z'
