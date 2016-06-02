@@ -253,6 +253,9 @@ def main():
     try:
         for ev in client.events(since=before_start, decode=True):
             assert isinstance(ev, dict)
+            if ev[u'Type'] != u'container':
+                continue;
+
             event_id = ev[u'id']
 
             if scheduler.is_ours(event_id): # we care
