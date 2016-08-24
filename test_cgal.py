@@ -34,13 +34,10 @@ import signal
 import subprocess
 
 def handle_results(client, cont_id, upload, testresult_dir, release, tester):
-    # Try to recover the name of the resulting tar.gz from the container logs.
-    logs = client.logs(container=cont_id, tail=4)
-    res = re.search(r'([^ ]*)\.tar\.gz', logs)
-    if not res:
-        raise TestsuiteError('Could not identify resulting tar.gz file from logs of {}'.format(cont_id))
-    tarf = path.join(testresult_dir, res.group(0))
-    txtf = path.join(testresult_dir, res.group(1) + '.txt')
+    platform=platform_from_container(client, cont_id)
+    result_basename = 'results_{}_{}'.format(tester, platform)
+    tarf = path.join(testresult_dir, result_basename + '.tar.gz')
+    txtf = path.join(testresult_dir, result_basename + '.txt')
 
     if not path.isfile(tarf) or not path.isfile(txtf):
         raise TestsuiteError('Result Files {} or {} do not exist.'.format(tarf, txtf))
@@ -57,8 +54,6 @@ def handle_results(client, cont_id, upload, testresult_dir, release, tester):
         release_id = release.version
     else:
         release_id = 'NO_VERSION_FILE'
-
-    platform=platform_from_container(client, cont_id)
 
     archive_name = path.join(testresult_dir, 'CGAL-{0}_{1}-test-{2}'.format(release_id, tester, platform))
     archive_name = shutil.make_archive(archive_name, 'gztar', tmpd)
