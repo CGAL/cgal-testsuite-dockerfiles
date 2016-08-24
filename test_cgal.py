@@ -91,11 +91,9 @@ def upload_results(local_path):
         os.remove(local_path)
 
 def platform_from_container(client, cont_id):
-    # We assume that the container is already dead and that this will not loop
-    # forever.
     platform_regex = re.compile('^CGAL_TEST_PLATFORM=(.*)$')
-    for line in client.logs(container=cont_id, stream=True):
-        res = platform_regex.search(line)
+    for e in client.inspect_container(container=cont_id)[u'Config'][u'Env']:
+        res = platform_regex.search(e)
         if res:
             return res.group(1)
     return 'NO_TEST_PLATFORM'
