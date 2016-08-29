@@ -60,6 +60,8 @@ RUN pacman -U --noconfirm ipe/*.pkg.tar.xz esbtl/*.pkg.tar.xz leda-free/*.pkg.ta
     rm -rf ipe esbtl leda-free librs
 
 ENV CGAL_TEST_PLATFORM="ArchLinux"
+
+# LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
+# instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
+# to avoid conflicts with other files.
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DLEDA_INCLUDE_DIR=/usr/include/LEDA\")"
-# ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DWITH_LEDA:BOOL=ON\" \"-DLEDA_INCLUDE_DIR=/usr/include/LEDA\")"
-# ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DWITH_GMP:BOOL=ON\" \"-DWITH_MPFR:BOOL=ON\" \"-DWITH_MPFI:BOOL=ON\" \"-DWITH_NTL:BOOL=ON\" \"-DWITH_RS:BOOL=ON\" \"-DWITH_RS3:BOOL=ON\" \"-DWITH_LEDA:BOOL=ON\" \"-DLEDA_INCLUDE_DIR=/usr/include/LEDA\")"
