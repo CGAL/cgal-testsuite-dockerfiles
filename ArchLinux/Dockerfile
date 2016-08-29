@@ -42,10 +42,10 @@ RUN groupadd -r makepkg && \
 
 USER makepkg
 WORKDIR /tmp/makepkg
-             
+
 RUN curl -s -SL https://aur.archlinux.org/cgit/aur.git/snapshot/ipe.tar.gz | tar xzv && \
     cd ipe && makepkg --noconfirm
-    
+
 RUN curl -s -SL https://aur.archlinux.org/cgit/aur.git/snapshot/esbtl.tar.gz | tar xzv && \
     cd esbtl && makepkg --noconfirm
 
@@ -60,4 +60,6 @@ RUN pacman -U --noconfirm ipe/*.pkg.tar.xz esbtl/*.pkg.tar.xz leda-free/*.pkg.ta
     rm -rf ipe esbtl leda-free librs
 
 ENV CGAL_TEST_PLATFORM="ArchLinux"
-ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"
+ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DLEDA_INCLUDE_DIR=/usr/include/LEDA\")"
+# ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DWITH_LEDA:BOOL=ON\" \"-DLEDA_INCLUDE_DIR=/usr/include/LEDA\")"
+# ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DWITH_GMP:BOOL=ON\" \"-DWITH_MPFR:BOOL=ON\" \"-DWITH_MPFI:BOOL=ON\" \"-DWITH_NTL:BOOL=ON\" \"-DWITH_RS:BOOL=ON\" \"-DWITH_RS3:BOOL=ON\" \"-DWITH_LEDA:BOOL=ON\" \"-DLEDA_INCLUDE_DIR=/usr/include/LEDA\")"
