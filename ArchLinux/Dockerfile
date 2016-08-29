@@ -22,6 +22,7 @@ RUN pacman -S --noconfirm \
               mesa \
               mpfi \
               mpfr \
+              ntl \
               poppler \
               python2 \
               libqglviewer \
