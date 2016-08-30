@@ -21,12 +21,21 @@ WORKDIR /tmp/makepkg
 RUN curl -s -SL https://aur.archlinux.org/cgit/aur.git/snapshot/llvm-svn.tar.gz | tar xzv && \
     cd llvm-svn && makepkg --noconfirm
 
-# The libc++-svn package has not been ported to AUR4.
+# Outdated: The libc++-svn package has not been ported to AUR4;
+# the llvm-libs are now provided as a sub-package of llvm-svn
 # RUN curl -s -SL https://aur.archlinux.org/packages/li/libc++-svn/libc++-svn.tar.gz | tar xzv && \
 #     cd libc++-svn && makepkg --noconfirm
 
 USER root
-RUN pacman --noconfirm -U llvm-svn/*.pkg.tar.xz libc++-svn/*.pkg.tar.xz && rm -rf llvm-svn libc++-svn
+
+# remove llvm-libs without dependency checks to prepare replacement
+# (pulled in as dependency of libqglviewer -> mesa)...
+RUN pacman --noconfirm -Rdd llvm-libs
+# ... and install the llvm-svn packages
+RUN pacman --noconfirm -U llvm-svn/*.pkg.tar.xz && rm -rf llvm-svn
+
+# see above: not necessary anymore
+# RUN pacman --noconfirm -U libc++-svn/*.pkg.tar.xz && rm -rf libc++-svn
 
 ENV CC=clang
 ENV CXX=clang++
