@@ -4,13 +4,16 @@ MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 # Tools needed to build llvm
 RUN pacman -Syyu --noconfirm
-RUN pacman -S --noconfirm \
+RUN pacman -S --noconfirm --asdeps \
               chrpath \
               ocaml-ctypes \
               ocaml-findlib \
-              python-sphinx \
+              python2-sphinx \
               python2 \
               subversion
+
+# clean up the package cache
+RUN yes | pacman -Scc
 
 USER makepkg
 WORKDIR /tmp/makepkg
