@@ -69,26 +69,12 @@ RUN for PKG in ipe libqglviewer esbtl leda-free librs; do \
         pushd ${PKG} && makepkg --noconfirm && popd; \
     done
 
-# RUN curl -sSL https://aur.archlinux.org/cgit/aur.git/snapshot/ipe.tar.gz | tar xzv && \
-#     cd ipe && makepkg --noconfirm
-# RUN curl -sSL https://aur.archlinux.org/cgit/aur.git/snapshot/libqglviewer.tar.gz | tar xzv && \
-#     cd libqglviewer && makepkg --noconfirm
-# RUN curl -sSL https://aur.archlinux.org/cgit/aur.git/snapshot/esbtl.tar.gz | tar xzv && \
-#     cd esbtl && makepkg --noconfirm
-# RUN curl -sSL https://aur.archlinux.org/cgit/aur.git/snapshot/leda-free.tar.gz | tar xzv && \
-#     cd leda-free && makepkg --noconfirm
-# RUN curl -sSL https://aur.archlinux.org/cgit/aur.git/snapshot/librs.tar.gz | tar xzv && \
-#     cd librs && makepkg --noconfirm
-
 # install AUR packages and get rid of the build directories afterwards
 USER root
 RUN for PKG in ipe libqglviewer esbtl leda-free librs; do \
         pacman -U --noconfirm ${PKG}/*.pkg.tar.xz && \
         rm -rf ${PKG}; \
     done
-
-# RUN pacman -U --noconfirm ipe/*.pkg.tar.xz libqglviewer/*.pkg.tar.xz esbtl/*.pkg.tar.xz leda-free/*.pkg.tar.xz librs/*.pkg.tar.xz && \
-#     rm -rf ipe libqglviewer esbtl leda-free librs
 
 ENV CGAL_TEST_PLATFORM="ArchLinux"
 
