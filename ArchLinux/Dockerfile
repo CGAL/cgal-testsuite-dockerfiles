@@ -8,8 +8,8 @@ MAINTAINER Philipp Moeller <bootsarehax@gmail.com>, Alexander Kobel <alexander.k
 RUN pacman -Sy --noconfirm archlinux-keyring
 
 # remove the old database of trusted keys the hard way and initialize a new database
-# (Commented because it is currently unnecessary and takes a while;
-# should only be used as a last resort if the base image is /really, really/ old.)
+# This Should hopefully become unnecessary at some point, and should be commented because it takes a while;
+# but right now it's required as a last resort bacause the base image is really, /really/ ancient.)
 RUN rm -rf /etc/pacman.d/gnupg && \
     pacman-key --init
 
