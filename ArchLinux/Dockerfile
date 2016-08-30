@@ -1,9 +1,12 @@
 FROM base/archlinux:latest
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
-# base/archlinux is really old and we need to perform some manual
-# magic when updating
+# base/archlinux is really old; in particular, the packager keys are horribly outdated.
+# We delete the original keyring and refresh it from scratch before updating and installing new packages.
 RUN pacman -Sy --noconfirm && \
+    rm -rf /etc/pacman.d/gnupg && \
+    pacman-key --init && \
+    pacman-key --populate archlinux && \
     pacman-key --refresh-keys && \
     pacman -Su --noconfirm && \
     pacman-db-upgrade
