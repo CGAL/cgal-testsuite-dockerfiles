@@ -42,7 +42,7 @@ RUN pacman -S --noconfirm reflector && \
               --save /etc/pacman.d/mirrorlist
 
 # Finally, install additional packages beyond the baseline.
-RUN pacman -S --noconfirm \
+RUN pacman -S --needed --noconfirm \
               base-devel boost cmake \
               eigen \
               glew glu mesa \
@@ -52,7 +52,7 @@ RUN pacman -S --noconfirm \
 # Install dependencies of the AUR (user repository) packages to be built from source later:
 # ipe: freetype2, lua52, poppler, python2, zlib
 # leda-free: tcsh
-RUN pacman -S --noconfirm --asdeps \
+RUN pacman -S --needed --noconfirm --asdeps \
     freetype2 lua52 poppler python2 zlib \
     tcsh
 

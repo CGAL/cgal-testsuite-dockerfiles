@@ -4,7 +4,7 @@ MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 # Tools needed to build llvm
 RUN pacman -Syyu --noconfirm
-RUN pacman -S --noconfirm --asdeps \
+RUN pacman -S --noconfirm --needed --asdeps \
               chrpath \
               ocaml-ctypes \
               ocaml-findlib \
