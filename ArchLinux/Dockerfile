@@ -20,7 +20,7 @@ RUN pacman-key --populate archlinux
 RUN pacman-key --refresh-keys
 
 # Now, we are good to update the base system.
-RUN pacman -Su --noconfirm && \
+RUN pacman -Syyu --noconfirm && \
     pacman-db-upgrade
 
 # Update the database of trusted SSL certificates;
