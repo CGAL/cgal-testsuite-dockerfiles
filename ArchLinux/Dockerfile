@@ -33,6 +33,14 @@ RUN trust extract-compat
 RUN test -e /etc/pacman.d/mirrorlist.pacnew && \
     sed -e 's|^#\(.*Server.*\.fr/.*\)$|\1|' /etc/pacman.d/mirrorlist.pacnew > /etc/pacman.d/mirrorlist
 
+# Install and run reflector to get determine reasonably fast and up-to-date mirrors
+RUN pacman -S --noconfirm reflector && \
+    reflector --verbose \
+              --country France --country Germany \
+              --protocol http --protocol https --protocol ftp \
+              --latest 32 --sort rate --number 16 \
+              --save /etc/pacman.d/mirrorlist
+
 # Finally, install additional packages beyond the baseline.
 RUN pacman -S --noconfirm \
               base-devel boost cmake \
