@@ -4,13 +4,16 @@ MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 # Tools needed to build llvm
 RUN pacman -Syyu --noconfirm
-RUN pacman -S --noconfirm \
+RUN pacman -S --noconfirm --needed --asdeps \
               chrpath \
               ocaml-ctypes \
               ocaml-findlib \
-              python-sphinx \
+              python2-sphinx \
               python2 \
               subversion
+
+# clean up the package cache
+RUN yes | pacman -Scc
 
 USER makepkg
 WORKDIR /tmp/makepkg
@@ -18,14 +21,23 @@ WORKDIR /tmp/makepkg
 RUN curl -s -SL https://aur.archlinux.org/cgit/aur.git/snapshot/llvm-svn.tar.gz | tar xzv && \
     cd llvm-svn && makepkg --noconfirm
 
-# The libc++-svn package has not been ported to AUR4.
+# Outdated: The libc++-svn package has not been ported to AUR4;
+# the llvm-libs are now provided as a sub-package of llvm-svn
 # RUN curl -s -SL https://aur.archlinux.org/packages/li/libc++-svn/libc++-svn.tar.gz | tar xzv && \
 #     cd libc++-svn && makepkg --noconfirm
 
 USER root
-RUN pacman --noconfirm -U llvm-svn/*.pkg.tar.xz libc++-svn/*.pkg.tar.xz && rm -rf llvm-svn libc++-svn
+
+# remove llvm-libs without dependency checks to prepare replacement
+# (pulled in as dependency of libqglviewer -> mesa)...
+RUN pacman --noconfirm -Rdd llvm-libs
+# ... and install the llvm-svn packages
+RUN pacman --noconfirm -U llvm-svn/*.pkg.tar.xz && rm -rf llvm-svn
+
+# see above: not necessary anymore
+# RUN pacman --noconfirm -U libc++-svn/*.pkg.tar.xz && rm -rf libc++-svn
 
 ENV CC=clang
 ENV CXX=clang++
 ENV CGAL_TEST_PLATFORM="ArchLinux-clang-svn"
-ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-Wall -Wextra -std=c++14 -stdlib=libc++\" \"-DWITH_CGAL_Qt3:BOOL=OFF\")"
+ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-Wall -Wextra -std=c++14 -stdlib=libc++\" \"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DLEDA_INCLUDE_DIR=/usr/include/LEDA\")"
