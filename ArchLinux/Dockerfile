@@ -1,17 +1,36 @@
 FROM base/archlinux:latest
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>, Alexander Kobel <alexander.kobel@mpi-inf.mpg.de>
 
-# base/archlinux is really old; in particular, the packager keys are horribly outdated.
-# We delete the original keyring and refresh it from scratch before the real setup:
+# base/archlinux is /ancient/; in particular, the packager keys are horribly outdated.
+# We need to repopulate the keyring from scratch before the real setup:
 
 # install the official Arch Linux keyring package
 RUN pacman -Sy --noconfirm archlinux-keyring
 
-# remove the old database of trusted keys the hard way and initialize a new database
-# This Should hopefully become unnecessary at some point, and should be commented because it takes a while;
-# but right now it's required as a last resort bacause the base image is really, /really/ ancient.)
-RUN rm -rf /etc/pacman.d/gnupg && \
-    pacman-key --init
+# This is a "soft" version that deletes all packager keys, but preserves the local master key.
+#   pacman-key --list-keys | grep -B1 '\[ultimate\]' | head -n1 | cut -d/ -f2 | cut -d' ' -f1
+# determines the fingerprint of the local "Pacman Keyring Master Key" (unique one with ultimate trust);
+# we delete every key except this one.
+RUN pacman-key --delete \
+    $(pacman-key --list-keys \
+      | grep '^pub' | cut -d/ -f2 | cut -d' ' -f1 \
+      | grep -v $(pacman-key --list-keys | grep -B1 '\[ultimate\]' | head -n1 | cut -d/ -f2 | cut -d' ' -f1))
+
+# # Here is the equivalent call for more recent pacman-key syntax (once the base image gets updated):
+# #   pacman-key --list-keys | grep -B1 '\[ultimate\]' | head -n1
+# # determines the fingerprint of the local "Pacman Keyring Master Key" (unique one with ultimate trust);
+# # we delete every key except this one.
+# RUN pacman-key --delete \
+#     $(pacman-key --list-keys \
+#       | grep '^  ' \
+#       | grep -v $(pacman-key --list-keys | grep -B1 '\[ultimate\]' | head -n1))
+
+# # Finally, here is a way to clear the old database of trusted keys the HARD way and initialize a new database.
+# # This should hopefully be unnecessary except in the darkest hours; but nobody knows the trouble I've seen...
+# # Regenerating a new private key requires a lot of randomness and is not suited for a virtual machine where randomness is scarce.
+# # Only use it as a last resort if nothing else works.
+# RUN rm -rf /etc/pacman.d/gnupg && \
+#     pacman-key --init
 
 # add the keys from the offical keyring as trusted keys
 RUN pacman-key --populate archlinux
