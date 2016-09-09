@@ -168,6 +168,8 @@ class ContainerScheduler:
         """Launch as many containers as possible. Returns `False` if all
         images have been scheduled, `True` otherwise."""
 
+        nb_images = len(self.images)
+
         if len(self.images) == 0:
             return False
 
@@ -176,12 +178,20 @@ class ContainerScheduler:
             # running. Should run throw, the image is dropped, but the
             # cpuset is kept.
             image_to_launch = self.images.pop()
+            run_no_exception=True
             try:
                 cont_id = self.runner.run(image_to_launch, self.available_cpusets[-1])
             except TestsuiteWarning as e:
                 logging.warning(e.value)
-
-            self.running_containers[cont_id] = self.available_cpusets.pop()
+            except docker.errors.APIError as e:
+                run_no_exception=False
+                logging.error("There was a fatal error while trying to run testsuite on "+image_to_launch)
+                logging.error("Error message is: "+e.explanation)
+                nb_images-=1
+                if nb_images==0:
+                  return False
+	    if run_no_exception:
+                self.running_containers[cont_id] = self.available_cpusets.pop()
 
         return True
 
