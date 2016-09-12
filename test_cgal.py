@@ -288,5 +288,9 @@ def main():
 
     remove_pidfile()
 
+    if scheduler.errors_encountered:
+      print (scheduler.error_buffer.getvalue())
+      exit(33)
+
 if __name__ == "__main__":
     main()

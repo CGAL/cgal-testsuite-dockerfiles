@@ -2,6 +2,7 @@ from os import path
 import logging
 import docker
 import re
+import StringIO
 
 class TestsuiteException(Exception):
     pass
@@ -163,6 +164,13 @@ class ContainerScheduler:
         self.images = images
         self.available_cpusets = cpusets
         self.running_containers = {}
+        # error handling
+        self.errors_encountered = False
+        self.error_buffer=StringIO.StringIO()
+        self.error_handler=logging.StreamHandler(self.error_buffer)
+        self.error_handler.setFormatter( logging.Formatter('%(levelname)s: %(message)s') )
+        self.error_logger = logging.getLogger("Error_logger")
+        self.error_logger.addHandler(self.error_handler)
 
     def launch(self):
         """Launch as many containers as possible. Returns `False` if all
@@ -185,12 +193,15 @@ class ContainerScheduler:
                 logging.warning(e.value)
             except docker.errors.APIError as e:
                 run_no_exception=False
+                self.errors_encountered = True
                 logging.error("There was a fatal error while trying to run testsuite on "+image_to_launch)
                 logging.error("Error message is: "+e.explanation)
+                self.error_logger.error("There was a fatal error while trying to run testsuite on "+image_to_launch)
+                self.error_logger.error("Error message is: "+e.explanation)
                 nb_images-=1
                 if nb_images==0:
                   return False
-	    if run_no_exception:
+            if run_no_exception:
                 self.running_containers[cont_id] = self.available_cpusets.pop()
 
         return True
