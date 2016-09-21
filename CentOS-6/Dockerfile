@@ -3,7 +3,6 @@ MAINTAINER Laurent Rineau <laurent.rineau@cgal.org>
 
 RUN yum -y install epel-release.noarch; yum -y update; yum clean all
 RUN yum -y install \
-    cmake \
     curl \
     eigen3-devel.noarch \
     gcc-c++ \
@@ -20,6 +19,13 @@ RUN yum -y install \
     qt5-qttools-devel.x86_64 \
     tar \
     zlib-devel.x86_64 && yum clean all
+
+RUN curl -fSL "https://cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.sh" -o /usr/cmake.sh
+RUN cd /usr \
+ && chmod +x ./cmake.sh
+
+RUN cd /usr \
+&& ./cmake.sh --skip-license
 
 ENV BOOST_MAJOR=1 BOOST_MINOR=48 BOOST_PATCH=0
 RUN curl -s -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}.${BOOST_MINOR}.${BOOST_PATCH}/boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH}.tar.gz | tar xz && \
