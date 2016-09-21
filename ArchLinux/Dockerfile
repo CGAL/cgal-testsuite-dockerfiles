@@ -108,4 +108,4 @@ ENV CGAL_TEST_PLATFORM="ArchLinux"
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
 # to avoid conflicts with other files.
-ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DLEDA_INCLUDE_DIR=/usr/include/LEDA\")"
+ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"  LEDA_INC_DIR=/usr/include/LEDA
