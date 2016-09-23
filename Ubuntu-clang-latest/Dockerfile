@@ -27,4 +27,4 @@ ENV PATH="/tmp/build/bin:${PATH}"
 ENV CGAL_TEST_PLATFORM="Ubuntu-clang-latest"
 ENV CC=/tmp/build/bin/clang
 ENV CXX=/tmp/build/bin/clang++
-ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-DDONT_USE_BOOST_PROGRAM_OPTIONS\" \"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DCMAKE_C_COMPILER:FILEPATH=/tmp/build/bin/clang\" \"-DCMAKE_CXX_COMPILER:FILEPATH=/tmp/build/bin/clang++ \")"
+ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-DDONT_USE_BOOST_PROGRAM_OPTIONS -Wthread-safety\" \"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DCMAKE_C_COMPILER:FILEPATH=/tmp/build/bin/clang\" \"-DCMAKE_CXX_COMPILER:FILEPATH=/tmp/build/bin/clang++ \")"
