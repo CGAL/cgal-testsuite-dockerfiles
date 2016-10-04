@@ -18,4 +18,6 @@ RUN apt-get update \
  && make -j"$(nproc)" install \
  && cd /tmp && rm -rf build llvm 
 ENV CGAL_TEST_PLATFORM="Ubuntu-clang-latest"
-ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-DDONT_USE_BOOST_PROGRAM_OPTIONS -Wthread-safety\" \"-#DWITH_CGAL_Qt3:BOOL=OFF\")"
+ENV CXX=/usr/local/bin/clang++
+ENV CC=/usr/local/bin/clang
+ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-DDONT_USE_BOOST_PROGRAM_OPTIONS -Wthread-safety\")"
