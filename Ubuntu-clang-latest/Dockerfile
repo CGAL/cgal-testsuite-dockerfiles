@@ -13,7 +13,7 @@ RUN apt-get update \
  && svn co http://llvm.org/svn/llvm-project/cfe/trunk clang \
  && cd /tmp && mkdir build \
  && cd ./build \
- && cmake -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ ../llvm -DCMAKE_CXX_FLAGS_DEBUG=""\
+ && cmake -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ ../llvm -DCMAKE_BUILD_TYPE=Release \
  && make -j"$(nproc)" \
  && make -j"$(nproc)" install \
  && cd /tmp && rm -rf build llvm 
