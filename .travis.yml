@@ -1,0 +1,6 @@
+language: cpp
+services: 
+- docker
+script :
+- docker build -t cgal/testsuite-docker:fedora ./Fedora
+
