@@ -21,7 +21,7 @@ Running the testsuite
 
 To run the testsuite using this image:
 
-    ./test_cgal.py --username **** --passwd **** --images cgal-testsuite/centos6
+    ./test_cgal.py --user **** --passwd **** --images cgal-testsuite/centos6
 
 If you would like to use an already extraced internal release:
 
@@ -88,6 +88,10 @@ available in all common distributions.
 
 - `docker-py`
 - `xdg`
+
+They can be installed using `pip`:
+
+    pip install docker-py xdg
 
 SELinux issues
 --------------

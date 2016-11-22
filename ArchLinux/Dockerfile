@@ -61,22 +61,20 @@ RUN pacman -S --noconfirm reflector && \
               --save /etc/pacman.d/mirrorlist
 
 # Finally, install additional packages beyond the baseline.
+# Install dependencies of the AUR (user repository) packages to be built from source later
+#   ipe: freetype2, lua, poppler, python2, zlib
+#   leda-free: tcsh
+# and clean up the package cache
 RUN pacman -S --needed --noconfirm \
               base-devel boost cmake \
               eigen \
               glew glu mesa \
               gmp mpfr mpfi ntl \
-              qt5-base qt5-script qt5-svg qt5-tools
-
-# Install dependencies of the AUR (user repository) packages to be built from source later:
-# ipe: freetype2, lua52, poppler, python2, zlib
-# leda-free: tcsh
-RUN pacman -S --needed --noconfirm --asdeps \
-    freetype2 lua52 poppler python2 zlib \
-    tcsh
-
-# clean up the package cache
-RUN yes | pacman -Scc
+              qt5-base qt5-script qt5-svg qt5-tools \
+    && pacman -S --needed --noconfirm --asdeps \
+                 freetype2 lua poppler python2 zlib \
+                 tcsh \
+    && yes | pacman -Scc
 
 # create a group for building AUR (user contributed) packages from sources
 # (not allowed as root for security reasons)
@@ -87,25 +85,26 @@ RUN groupadd -r makepkg && \
     mkdir /home/makepkg && \
     chown -R makepkg:makepkg /home/makepkg
 
+# get and build AUR packages
 USER makepkg
 WORKDIR /tmp/makepkg
-
-# get and build AUR packages
 RUN for PKG in ipe libqglviewer esbtl leda-free librs; do \
         curl -sSL https://aur.archlinux.org/cgit/aur.git/snapshot/${PKG}.tar.gz | tar xzv && \
-        pushd ${PKG} && makepkg --noconfirm && popd; \
+        cd ${PKG} && makepkg --noconfirm; \
+        cd /tmp/makepkg; \
+        mv ${PKG}/*.pkg.tar.xz .; \
+        rm -rf ${PKG}; \
     done
 
 # install AUR packages and get rid of the build directories afterwards
 USER root
-RUN for PKG in ipe libqglviewer esbtl leda-free librs; do \
-        pacman -U --noconfirm ${PKG}/*.pkg.tar.xz && \
-        rm -rf ${PKG}; \
-    done
-
-ENV CGAL_TEST_PLATFORM="ArchLinux"
+WORKDIR /tmp/makepkg
+RUN pacman -U --noconfirm *.pkg.tar.xz && \
+    rm *.pkg.tar.xz
 
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
 # to avoid conflicts with other files.
-ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DLEDA_INCLUDE_DIR=/usr/include/LEDA\")"
+ENV CGAL_TEST_PLATFORM="ArchLinux" \
+    CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")" \
+    LEDA_INC_DIR=/usr/include/LEDA

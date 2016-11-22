@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN buildDeps='bison flex libmpc-dev g++ ' \
  && apt-get update && apt-get install -y $buildDeps --no-install-recommends \
- && git clone git://gcc.gnu.org/git/gcc.git --single-branch --depth=1 \
+ && git clone git://github.com/gcc-mirror/gcc.git --depth 1 \
  && cd gcc \
  && mkdir objdir \
  && cd objdir \
