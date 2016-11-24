@@ -1,7 +1,21 @@
 language: cpp
 services: 
 - docker
+env: 
+  matrix :
+    - PLATFORM='ArchLinux'
+    - PLATFORM='CentOS-5'
+    - PLATFORM='CentOS-6'
+    - PLATFORM='CentOS-6-32'
+    - PLATFORM='CentOS-7'
+    - PLATFORM='Debian-stable'
+    - PLATFORM='Debian-testing'
+    - PLATFORM='Fedora'
+    - PLATFORM='Fedora-32'
+    - PLATFORM='Fedora-rawhide'
+    - PLATFORM='Ubuntu'
+
 script :
-- chmod +x ./test.sh
-- ./test.sh Fedora
+- chmod +x ./test.sh 
+- travis_wait 120 ./test.sh $PLATFORM
 
