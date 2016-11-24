@@ -21,12 +21,7 @@ RUN yum -y update; yum -y install \
                    tar \
                    zlib-devel.i686
 RUN yum clean all
-RUN curl -fSL "https://cmake.org/files/v3.1/cmake-3.1.3-Linux-i386.sh" -o /usr/cmake.sh
-RUN cd /usr \
- && chmod +x ./cmake.sh
-
-RUN cd /usr \
-&& ./cmake.sh --skip-license
+RUN curl -fSL "https://cmake.org/files/v3.1/cmake-3.1.3-Linux-i386.sh" -o cmake.sh && bash cmake.sh --skip-license && rm cmake.sh
 
 ENV BOOST_MAJOR=1 BOOST_MINOR=48 BOOST_PATCH=0
 RUN curl -s -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}.${BOOST_MINOR}.${BOOST_PATCH}/boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH}.tar.gz | tar xz
