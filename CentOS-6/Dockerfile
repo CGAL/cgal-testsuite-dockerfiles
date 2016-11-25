@@ -20,18 +20,13 @@ RUN yum -y install \
     tar \
     zlib-devel.x86_64 && yum clean all
 
-RUN curl -fSL "https://cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.sh" -o /usr/cmake.sh
-RUN cd /usr \
- && chmod +x ./cmake.sh
+RUN curl -fSL "https://cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.sh" -o cmake.sh && bash cmake.sh --skip-license && rm cmake.sh
 
-RUN cd /usr \
-&& ./cmake.sh --skip-license
-
-ENV BOOST_MAJOR=1 BOOST_MINOR=48 BOOST_PATCH=0
+ENV BOOST_MAJOR=1 BOOST_MINOR=62 BOOST_PATCH=0
 RUN curl -s -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}.${BOOST_MINOR}.${BOOST_PATCH}/boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH}.tar.gz | tar xz && \
     cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
-    ./bootstrap.sh --without-libraries=filesystem,graph_parallel,python,iostreams,locale,mpi,serialization,signals,wave && \
-    ./b2 --prefix=/usr/local/ install && \
+    ./bootstrap.sh --without-libraries=graph_parallel,python,iostreams,locale,mpi,serialization,signals,wave && \
+    ./b2 -d0 --prefix=/usr/local/ install && \
     cd .. && rm -rf boost_*
 
 RUN cd /etc/yum.repos.d/ && \
