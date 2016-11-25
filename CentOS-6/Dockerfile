@@ -22,7 +22,7 @@ RUN yum -y install \
 
 RUN curl -fSL "https://cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.sh" -o cmake.sh && bash cmake.sh --skip-license && rm cmake.sh
 
-ENV BOOST_MAJOR=1 BOOST_MINOR=62 BOOST_PATCH=0
+ENV BOOST_MAJOR=1 BOOST_MINOR=55 BOOST_PATCH=0
 RUN curl -s -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}.${BOOST_MINOR}.${BOOST_PATCH}/boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH}.tar.gz | tar xz && \
     cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
     ./bootstrap.sh --without-libraries=graph_parallel,python,iostreams,locale,mpi,serialization,signals,wave && \
