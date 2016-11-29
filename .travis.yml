@@ -14,6 +14,7 @@ env:
     - PLATFORM='Fedora-32'
     - PLATFORM='Fedora-rawhide'
     - PLATFORM='Ubuntu'
+    - PLATFORM='Ubuntu-clang'
 
 script :
 - chmod +x ./test.sh 
