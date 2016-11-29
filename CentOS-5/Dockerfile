@@ -26,7 +26,7 @@ ENV BOOST_MAJOR=1 BOOST_MINOR=48 BOOST_PATCH=0
 RUN curl -s -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}.${BOOST_MINOR}.${BOOST_PATCH}/boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH}.tar.gz | tar xz && \
     cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
     ./bootstrap.sh --without-libraries=filesystem,graph_parallel,python,iostreams,locale,mpi,serialization,signals,wave && \
-    ./b2 --prefix=/usr/local/ install && \
+    ./b2 -d0 --prefix=/usr/local/ install && \
     cd .. && \
     rm -rf boost_*
 

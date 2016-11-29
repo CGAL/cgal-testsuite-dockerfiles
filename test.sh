@@ -3,7 +3,6 @@
 if [ "$1" = ArchLinux ]
 then
   docker build -t cgal/testsuite-docker:archlinux ./ArchLinux
-  docker build -t cgal/testsuite-docker:archlinux-clang-svn ./ArchLinux-clang-svn
   docker build -t cgal/testsuite-docker:archlinux-cxx14 ./ArchLinux-clang-CXX14
   docker build -t cgal/testsuite-docker:archlinux-clang ./ArchLinux-clang
   docker build -t cgal/testsuite-docker:archlinux-clang-cxx1z ./ArchLinux-clang-CXX1z
@@ -49,5 +48,12 @@ then
   docker build -t cgal/testsuite-docker:fedora-rawhide-release ./Fedora-rawhide-Release
 elif [ "$1" = Ubuntu ]
 then
-  docker build -t cgal/testsuite-docker:fedora-rawhide ./Ubuntu
+  docker build -t cgal/testsuite-docker:ubuntu ./Ubuntu
+  docker build -t cgal/testsuite-docker:ubuntu-cxx11 ./Ubuntu-CXX11
+  docker build -t cgal/testsuite-docker:ubuntu-gcc6 ./Ubuntu-GCC6
+  docker build -t cgal/testsuite-docker:ubuntu-gcc6-cxx1z ./Ubuntu-GCC6-CXX1Z
+  docker build -t cgal/testsuite-docker:ubuntu-gcc6-release ./Ubuntu-GCC6-Release
+  docker build -t cgal/testsuite-docker:ubuntu-no-deprecated-code ./Ubuntu-NO_DEPRECATED_CODE
+  docker build -t cgal/testsuite-docker:ubuntu-clang-latest ./Ubuntu-clang-latest
+
 fi
