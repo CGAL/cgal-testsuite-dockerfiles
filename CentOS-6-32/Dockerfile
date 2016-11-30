@@ -15,6 +15,7 @@ RUN yum -y update; yum -y install \
                    mpfr-devel.i686 \
                    ntl-devel.i686 \
                    mesa-libGL-devel.i686 \
+                   mesa-libGLU-devel.i686 \
                    qt5-qtbase-devel.i686 \
                    qt5-qtscript-devel.i686 \
                    qt5-qtsvg-devel.i686 \
