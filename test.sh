@@ -38,6 +38,7 @@ then
   docker build -t cgal/testsuite-docker:fedora ./Fedora
   docker build -t cgal/testsuite-docker:fedora-release ./Fedora-Release
   docker build -t cgal/testsuite-docker:fedora-strict-ansi ./Fedora-strict-ansi
+  docker build -t cgal/testsuite-docker:fedora-clang-svn ./Fedora-clang-svn
 elif [ "$1" = Fedora-32 ]
 then
   docker build -t cgal/testsuite-docker:fedora-32 ./Fedora-32
@@ -54,9 +55,4 @@ then
   docker build -t cgal/testsuite-docker:ubuntu-gcc6-cxx1z ./Ubuntu-GCC6-CXX1Z
   docker build -t cgal/testsuite-docker:ubuntu-gcc6-release ./Ubuntu-GCC6-Release
   docker build -t cgal/testsuite-docker:ubuntu-no-deprecated-code ./Ubuntu-NO_DEPRECATED_CODE
-
-elif [ "$1" = Ubuntu-clang ]
-then
-  docker build -t cgal/testsuite-docker:ubuntu ./Ubuntu
-  docker build -t cgal/testsuite-docker:ubuntu-clang-latest ./Ubuntu-clang-latest
 fi
