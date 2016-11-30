@@ -6,9 +6,9 @@ RUN apt-get update && apt-get install -y \
     tar \
     libboost-dev libboost-program-options-dev \
     libboost-thread-dev libgmp10-dev \
-    libmpfr-dev libqt4-dev zlib1g-dev \
-    geomview libeigen3-dev libglew1.5-dev libipe-dev \
-    libmpfi-dev libqglviewer-dev libqt4-opengl-dev qt4-dev-tools \
+    libmpfr-dev zlib1g-dev \
+    libeigen3-dev libglew1.5-dev libipe-dev \
+    libmpfi-dev libqglviewer-dev \
     qtbase5-dev qtscript5-dev libqt5svg5-dev qttools5-dev qttools5-dev-tools
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest"
