@@ -102,6 +102,11 @@ WORKDIR /tmp/makepkg
 RUN pacman -U --noconfirm *.pkg.tar.xz && \
     rm *.pkg.tar.xz
 
+# Patch FindBoost from CMake-3.6.x, to handle Boost-1.62
+# See the bug https://bugs.archlinux.org/task/51597
+COPY update-FindBoost.cmake.sh 00*patch /updates/
+ENV BASH_ENV=/updates/update-FindBoost.cmake.sh
+
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
 # to avoid conflicts with other files.

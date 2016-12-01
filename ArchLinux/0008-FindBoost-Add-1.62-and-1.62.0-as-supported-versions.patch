@@ -1,0 +1,25 @@
+From a997cac8323dc1764e092b8691857dd9af70956e Mon Sep 17 00:00:00 2001
+From: Roger Leigh <rleigh@dundee.ac.uk>
+Date: Mon, 3 Oct 2016 12:19:33 +0100
+Subject: [PATCH 8/8] FindBoost: Add 1.62 and 1.62.0 as supported versions
+
+---
+ Modules/FindBoost.cmake | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Modules/FindBoost.cmake b/Modules/FindBoost.cmake
+index a66aa8f..184fb05 100644
+--- a/Modules/FindBoost.cmake
++++ b/Modules/FindBoost.cmake
+@@ -944,7 +944,7 @@ else()
+   # _Boost_COMPONENT_HEADERS.  See the instructions at the top of
+   # _Boost_COMPONENT_DEPENDENCIES.
+   set(_Boost_KNOWN_VERSIONS ${Boost_ADDITIONAL_VERSIONS}
+-    "1.61.0" "1.61" "1.60.0" "1.60"
++    "1.62.0" "1.62" "1.61.0" "1.61" "1.60.0" "1.60"
+     "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55"
+     "1.54.0" "1.54" "1.53.0" "1.53" "1.52.0" "1.52" "1.51.0" "1.51"
+     "1.50.0" "1.50" "1.49.0" "1.49" "1.48.0" "1.48" "1.47.0" "1.47" "1.46.1"
+-- 
+2.10.0.478.g3ef7618
+
