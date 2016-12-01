@@ -19,3 +19,6 @@ script :
 - chmod +x ./test.sh 
 - travis_wait 120 ./test.sh $PLATFORM
 
+after_success:
+- chmod +x ./push.sh
+- - if [ "$TRAVIS_BRANCH" == "master" ]; then  docker login -u $USER -p $PASS; ./push.sh $PLATFORM fi

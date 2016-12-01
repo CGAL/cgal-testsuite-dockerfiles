@@ -22,10 +22,6 @@ elif [ "$1" = CentOS-7 ]
 then
   docker build -t centos7 ./CentOS-7
   docker build -t cgal/testsuite-docker:centos7-release ./CentOS-7-Release
-  docker build -t cgal/testsuite-docker:centos7-icc ./CentOS-7-ICC
-  #docker build -t cgal/testsuite-docker:centos7-icc-release ./CentOS-7-ICC-Release
-  #docker build -t cgal/testsuite-docker:centos7-icc-2016 ./CentOS-7-ICC-1016
-  #docker build -t cgal/testsuite-docker:centos7-icc-2016-release ./CentOS-7-ICC-1016-Release
 elif [ "$1" = Debian-stable ]
 then
   docker build -t cgal/testsuite-docker:debian-stable ./Debian-stable
