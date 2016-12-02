@@ -20,7 +20,7 @@ then
   docker build -t cgal/testsuite-docker:centos6-32 ./CentOS-6-32
 elif [ "$1" = CentOS-7 ]
 then
-  docker build -t centos7 ./CentOS-7
+  docker build -t cgal/testsuite-docker:centos7 ./CentOS-7
   docker build -t cgal/testsuite-docker:centos7-release ./CentOS-7-Release
 elif [ "$1" = Debian-stable ]
 then
