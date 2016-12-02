@@ -3,7 +3,6 @@ MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN yum -y update; yum clean all
 RUN yum -y install \
-    cmake \
     curl \
     gcc-c++ \
     glibc-devel.x86_64 \
@@ -30,11 +29,7 @@ RUN curl -s -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}
     cd .. && \
     rm -rf boost_*
 
-RUN curl -s -k -SL -O http://www.cmake.org/files/v2.8/cmake-2.8.11.tar.gz && \
-    sha256sum -c - <<< "20d0d3661797fa82c19e7a75c7315c640e001cb3238331ca170bb0fae27feee5  cmake-2.8.11.tar.gz" && \
-    tar xzf cmake-2.8.11.tar.gz && \
-    cd cmake-2.8.11 && ./configure && make -j4 && make install && \
-    cd .. && rm -rf cmake-2.8.11*
+RUN curl -s -k -SL "https://cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.sh" -o cmake.sh && bash cmake.sh --skip-license && rm cmake.sh
 
 ENV CGAL_TEST_PLATFORM="CentOS5"
 ENV CGAL_CMAKE_FLAGS="()"
