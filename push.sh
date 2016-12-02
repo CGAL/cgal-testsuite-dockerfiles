@@ -20,7 +20,7 @@ then
    docker push cgal/testsuite-docker:centos6-32
 elif [ "$1" = CentOS-7 ]
 then
-   docker push centos7 ./CentOS-7
+   docker push cgal/testsuite-docker:centos7
    docker push cgal/testsuite-docker:centos7-release
 elif [ "$1" = Debian-stable ]
 then
