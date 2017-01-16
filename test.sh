@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ "$1" = ArchLinux ]
 then
   docker build -t cgal/testsuite-docker:archlinux ./ArchLinux

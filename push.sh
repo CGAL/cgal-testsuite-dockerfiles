@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ "$1" = ArchLinux ]
 then
    docker push cgal/testsuite-docker:archlinux
