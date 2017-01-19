@@ -66,7 +66,9 @@ RUN pacman -S --noconfirm reflector && \
 #   leda-free: tcsh
 # and clean up the package cache
 RUN pacman -S --needed --noconfirm \
-              base-devel boost cmake \
+              base-devel \
+              git \
+              boost \
               eigen \
               glew glu mesa \
               gmp mpfr mpfi ntl \
@@ -74,7 +76,19 @@ RUN pacman -S --needed --noconfirm \
     && pacman -S --needed --noconfirm --asdeps \
                  freetype2 lua poppler python2 zlib \
                  tcsh \
+
     && yes | pacman -Scc
+#Install latest cmake from the `next` branch on github
+RUN git clone git://github.com/Kitware/CMake.git --depth 1 \
+ && cd ./CMake \
+ && git branch next \
+ && mkdir build \
+ && cd build \
+ && env CC=cc CXX=c++ ../bootstrap \
+ && make -j"$(nproc)" \
+ && make install \
+ && cd ../.. \
+ && rm -rf ./CMake
 
 # create a group for building AUR (user contributed) packages from sources
 # (not allowed as root for security reasons)
@@ -101,11 +115,6 @@ USER root
 WORKDIR /tmp/makepkg
 RUN pacman -U --noconfirm *.pkg.tar.xz && \
     rm *.pkg.tar.xz
-
-# Patch FindBoost from CMake-3.6.x, to handle Boost-1.62
-# See the bug https://bugs.archlinux.org/task/51597
-COPY update-FindBoost.cmake.sh 00*patch /updates/
-ENV BASH_ENV=/updates/update-FindBoost.cmake.sh
 
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
