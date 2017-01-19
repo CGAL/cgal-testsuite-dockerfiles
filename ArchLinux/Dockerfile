@@ -86,7 +86,9 @@ RUN git clone git://github.com/Kitware/CMake.git --depth 1 \
  && cd build \
  && env CC=cc CXX=c++ ../bootstrap \
  && make -j"$(nproc)" \
- && make install 
+ && make install \
+ && cd ../.. \
+ && rm -rf ./CMake
 
 # create a group for building AUR (user contributed) packages from sources
 # (not allowed as root for security reasons)
