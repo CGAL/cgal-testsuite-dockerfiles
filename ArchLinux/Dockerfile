@@ -120,5 +120,5 @@ RUN pacman -U --noconfirm *.pkg.tar.xz && \
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
 # to avoid conflicts with other files.
 ENV CGAL_TEST_PLATFORM="ArchLinux" \
-    CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")" \
+    CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DCMAKE_POLICY_DEFAULT_CMP0053=OLD\")" \
     LEDA_INC_DIR=/usr/include/LEDA
