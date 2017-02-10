@@ -116,9 +116,16 @@ WORKDIR /tmp/makepkg
 RUN pacman -U --noconfirm *.pkg.tar.xz && \
     rm *.pkg.tar.xz
 
+COPY init.cmake /
+
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
 # to avoid conflicts with other files.
+#
+# The CMAKE_GENERATOR trick is used to pass a CMake variable to each CMake
+# run by the testsuite.
+#
 ENV CGAL_TEST_PLATFORM="ArchLinux" \
     CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DCMAKE_POLICY_DEFAULT_CMP0053=OLD\")" \
-    LEDA_INC_DIR=/usr/include/LEDA
+    LEDA_INC_DIR=/usr/include/LEDA \
+    CMAKE_GENERATOR="-C /init.cmake"
