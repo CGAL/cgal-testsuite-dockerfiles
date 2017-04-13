@@ -4,7 +4,6 @@ services:
 env:
   matrix:
   - PLATFORM='ArchLinux'
-  - PLATFORM='CentOS-5'
   - PLATFORM='CentOS-6'
   - PLATFORM='CentOS-6-32'
   - PLATFORM='CentOS-7'
