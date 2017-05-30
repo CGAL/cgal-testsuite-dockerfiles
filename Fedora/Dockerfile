@@ -21,7 +21,19 @@ RUN dnf -y install \
     qt5-qtsvg-devel.x86_64 \
     qt5-qttools-devel.x86_64 \
     tar \
+    unzip \
+    wget \
     zlib-devel.x86_64
+
+RUN wget "https://github.com/CGAL/LAStools/archive/master.zip" -O laslib.zip \
+ && unzip laslib.zip \
+ && cd ./LAStools-master \
+ && cmake -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ -DCMAKE_CXX_FLAGS=-std=c++11 . \
+ && make -j "$(nproc)" \
+ && make install \
+ && cd .. \
+ && rm -rf LAStools-master
+
 
 ENV CGAL_TEST_PLATFORM="Fedora"
 ENV CGAL_CMAKE_FLAGS=""

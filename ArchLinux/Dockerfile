@@ -60,6 +60,17 @@ RUN pacman -U --noconfirm *.pkg.tar.xz && \
 
 COPY init.cmake /
 
+ RUN pacman -Sy --noconfirm unzip \
+ && cd /tmp \
+ && curl -sSL "https://github.com/CGAL/LAStools/archive/master.zip" -o master.zip \
+ && unzip master.zip \
+ && cd ./LAStools-master \
+ && cmake -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ -DCMAKE_CXX_FLAGS=-std=c++11 . \
+ && make -j "$(nproc)" \
+ && make install \
+ && cd .. \
+ && rm -rf LAStools-master
+
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
 # to avoid conflicts with other files.
