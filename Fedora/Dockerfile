@@ -32,7 +32,8 @@ RUN wget "https://github.com/CGAL/LAStools/archive/master.zip" -O laslib.zip \
  && make -j "$(nproc)" \
  && make install \
  && cd .. \
- && rm -rf LAStools-master
+ && rm -rf LAStools-master \
+ && rm -rf laslib.zip
 
 
 ENV CGAL_TEST_PLATFORM="Fedora"

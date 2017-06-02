@@ -26,7 +26,8 @@ RUN apt-get update \
  && make -j "$(nproc)" \
  && make install \
  && cd .. \
- && rm -rf LAStools-master
+ && rm -rf LAStools-master \
+ && rm -rf laslib.zip
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-clang-latest"
 ENV CXX=/usr/local/bin/clang++

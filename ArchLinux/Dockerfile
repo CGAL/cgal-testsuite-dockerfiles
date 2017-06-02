@@ -69,7 +69,8 @@ COPY init.cmake /
  && make -j "$(nproc)" \
  && make install \
  && cd .. \
- && rm -rf LAStools-master
+ && rm -rf LAStools-master \
+ && rm -rf master.zip
 
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
