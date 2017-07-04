@@ -44,7 +44,8 @@ RUN groupadd -r makepkg && \
 # get and build AUR packages
 USER makepkg
 WORKDIR /tmp/makepkg
-RUN for PKG in ipe libqglviewer esbtl leda-free librs; do \
+RUN set -e; \
+    for PKG in ipe libqglviewer esbtl leda-free librs; do \
         curl -sSL https://aur.archlinux.org/cgit/aur.git/snapshot/${PKG}.tar.gz | tar xzv && \
         cd ${PKG} && makepkg --noconfirm; \
         cd /tmp/makepkg; \
