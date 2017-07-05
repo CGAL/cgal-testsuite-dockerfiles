@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     libipe-dev \
     libmpfi-dev \
     libmpfr-dev \
-    libqglviewer-dev \
+    libqglviewer-dev-qt5 \
     qtbase5-dev \
     qtscript5-dev \
     libqt5svg5-dev \
