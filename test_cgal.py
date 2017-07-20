@@ -172,7 +172,7 @@ def main():
     if not args.jobs:
         args.jobs = args.container_cpus
 
-    client = docker.Client(base_url=args.docker_url)
+    client = docker.APIClient(base_url=args.docker_url, version='1.24')
 
     # Perform a check for existing, running containers.
     existing = [cont for cont in client.containers(filters = { 'status' : 'running'})]
