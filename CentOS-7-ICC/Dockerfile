@@ -7,7 +7,7 @@ RUN yum -y install \
     gcc-c++ \
     glibc-devel.x86_64 \
     libstdc++-devel.x86_64 \
-    tar
+    tar; yum clean all
 
 COPY config.cfg /tmp/icc-config.cfg
 
