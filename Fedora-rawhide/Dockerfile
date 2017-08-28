@@ -16,6 +16,7 @@ RUN rpm --import https://pagure.io/fedora-repos/raw/master/f/RPM-GPG-KEY-fedora-
                    libQGLViewer-qt5-devel.x86_64 \
                    mesa-libGLU-devel \
                    OpenMesh-devel \
+                   tbb-devel \
                    zlib-devel.x86_64 \
                    tar && dnf clean all
 

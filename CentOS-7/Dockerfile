@@ -12,6 +12,7 @@ RUN yum -y update; yum -y install \
     glibc-devel.x86_64 \
     gmp-devel.x86_64 \
     libstdc++-devel.x86_64 \
+    tbb-devel \
     make \
     mpfr-devel.x86_64 \
     qt5-qtbase-devel.x86_64 \

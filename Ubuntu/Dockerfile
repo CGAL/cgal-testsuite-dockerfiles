@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libmpfr-dev zlib1g-dev \
     libeigen3-dev libglew1.5-dev libipe-dev \
     libmpfi-dev libqglviewer-dev \
+    libtbb-dev \
     qtbase5-dev qtscript5-dev libqt5svg5-dev qttools5-dev qttools5-dev-tools
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest"
