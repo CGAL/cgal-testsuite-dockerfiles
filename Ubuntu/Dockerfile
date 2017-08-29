@@ -3,6 +3,7 @@ MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN apt-get update && apt-get install -y \
     build-essential cmake \
+    libopencv-dev \
     tar \
     libboost-dev libboost-program-options-dev \
     libboost-thread-dev libgmp10-dev \

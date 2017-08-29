@@ -11,6 +11,7 @@ RUN dnf -y install \
     gmp-devel.x86_64 \
     ipe-devel.x86_64 \
     OpenMesh-devel \
+    opencv-devel \
     libQGLViewer-qt5-devel.x86_64 \
     make \
     mpfr-devel.x86_64 \
