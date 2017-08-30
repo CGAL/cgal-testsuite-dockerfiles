@@ -19,7 +19,7 @@ RUN cd /tmp && \
   cd .. && \
   rm -rf parallel_studio_xe_2017_update4_composer_edition_for_cpp_online icc.tgz
 
-RUN echo "source /opt/intel/parallel_studio_xe_2017.4.056/compilers_and_libraries_2017/linux/pkg_bin/compilervars.sh intel64 \&\& source /opt/intel/parallel_studio_xe_2017.4.056/compilers_and_libraries_2017/linux/mkl/bin/mklvars.sh intel64" > /etc/profile.d/intel.sh
+RUN echo "if [ "$GUARD" != "1" ]; then source /opt/intel/parallel_studio_xe_2017.4.056/compilers_and_libraries_2017/linux/pkg_bin/compilervars.sh intel64 \&\& source /opt/intel/parallel_studio_xe_2017.4.056/compilers_and_libraries_2017/linux/mkl/bin/mklvars.sh intel64; fi; export GUARD=1" > /etc/profile.d/intel.sh
 ENV CC=icc CXX=icpc BASH_ENV=/etc/profile.d/intel.sh
 ENV CGAL_TEST_PLATFORM="CentOS7-ICC"
 ENV CGAL_CMAKE_FLAGS="('-DCMAKE_CXX_FLAGS=-w1')"
