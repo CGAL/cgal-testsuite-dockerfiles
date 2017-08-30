@@ -54,9 +54,9 @@ cronjob the following configuration could be used:
     --tester-address joe@example.com
     --testsuite /path/to/testsuite
     --testresults /path/to/testresults
-    --images docker.io/cgal/testsuite-docker:centos5
-             docker.io/cgal/testsuite-docker:centos6
-             docker.io/cgal/testsuite-docker:archlinux
+    --images cgal/testsuite-docker:centos5
+             cgal/testsuite-docker:centos6
+             cgal/testsuite-docker:archlinux
 
 The names of the images depend on how they have been obtained. The
 example shows the names that will typically be used when obtaining the
@@ -86,12 +86,12 @@ Required Non-Standard Python Packages
 The code requires several non-standard python2 packages, which are
 available in all common distributions.
 
-- `docker-py`
+- `docker`
 - `xdg`
 
 They can be installed using `pip`:
 
-    pip install docker-py xdg
+    pip install docker xdg
 
 SELinux issues
 --------------
