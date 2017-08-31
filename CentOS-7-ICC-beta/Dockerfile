@@ -10,7 +10,10 @@ RUN yum -y install \
 
 COPY config.cfg /tmp/icc-config.cfg
 
+ARG ACTIVATION_SERIAL_NUMBER
+
 RUN cd /tmp && \
+  echo ACTIVATION_SERIAL_NUMBER=$ACTIVATION_SERIAL_NUMBER >> /tmp/icc-config.cfg && \
   wget -O icc.tgz http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11681/parallel_studio_xe_2018_beta_update1_cluster_edition_online.tgz && \
   tar -xvzf icc.tgz && \
   cd /tmp/parallel_studio_xe_* && \
