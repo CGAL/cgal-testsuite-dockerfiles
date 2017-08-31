@@ -1,13 +1,12 @@
 FROM cgal/testsuite-docker:centos7
-MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
+MAINTAINER Maxime Gimeno <maxime.gimeno@gmail.com>
 
-RUN yum -y update; yum clean all
 RUN yum -y install \
     wget \
     gcc-c++ \
     glibc-devel.x86_64 \
     libstdc++-devel.x86_64 \
-    tar; yum clean all
+    tar && yum clean all
 
 COPY config.cfg /tmp/icc-config.cfg
 
