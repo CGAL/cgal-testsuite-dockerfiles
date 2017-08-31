@@ -20,6 +20,12 @@ then
 elif [ "$1" = CentOS-6-32 ]
 then
   docker build -t cgal/testsuite-docker:centos6-32 ./CentOS-6-32
+elif [ "$1" = CentOS-7-ICC-beta ]
+then
+  docker build --build-arg ACTIVATION_SERIAL_NUMBER=$ICC_BETA_ACTIVATION_SERIAL_NUMBER -t cgal/testsuite-docker:centos7-icc-beta ./CentOS-7-ICC-beta
+elif [ "$1" = CentOS-7-ICC ]
+then
+  docker build -t cgal/testsuite-docker:centos7-icc ./CentOS-7-ICC
 elif [ "$1" = CentOS-7 ]
 then
   docker build -t cgal/testsuite-docker:centos7 ./CentOS-7
