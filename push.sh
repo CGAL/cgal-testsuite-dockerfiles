@@ -20,6 +20,12 @@ then
 elif [ "$1" = CentOS-6-32 ]
 then
    docker push cgal/testsuite-docker:centos6-32
+elif [ "$1" = CentOS-7-ICC-beta ]
+then
+  docker push cgal/testsuite-docker:centos7-icc-beta
+elif [ "$1" = CentOS-7-ICC ]
+then
+  docker push cgal/testsuite-docker:centos7-icc
 elif [ "$1" = CentOS-7 ]
 then
    docker push cgal/testsuite-docker:centos7
