@@ -3,6 +3,7 @@ services:
 - docker
 env:
   matrix:
+  - PLATFORM='CentOS-7-ICC-beta'
   - PLATFORM='ArchLinux'
   - PLATFORM='CentOS-6'
   - PLATFORM='CentOS-6-32'
@@ -13,8 +14,11 @@ env:
   - PLATFORM='Fedora-32'
   - PLATFORM='Fedora-rawhide'
   - PLATFORM='Ubuntu'
+  - PLATFORM='CentOS-7-ICC'
+  global:
+    secure: ZLycyR5jXMmVojJkRQa2t4PjN9z8EuCAmf9GHVKT92K48dzOzhW0sRuOVeIC9OT8bIXZ7JlAe0bSgKA6mjeGpd/wPhuQ0jcZN7VXRTXzh4eVE2+6Bg6bM4wL5mQWQR7uAAflXkZVsrWsrMcdx3pYSFFONYiXi2xaGVzuTALd5CM=
 script:
-- travis_wait 120 bash -x ./test.sh $PLATFORM
+- export ICC_BETA_ACTIVATION_SERIAL_NUMBER; travis_wait 120 bash -x ./test.sh $PLATFORM
 after_success:
 - if [ "$TRAVIS_EVENT_TYPE" != "pull_request" -a "$TRAVIS_BRANCH" = "master" ]; then openssl aes-256-cbc -K $encrypted_99d730745b24_key -iv $encrypted_99d730745b24_iv -in secret.txt.enc -out secret.txt -d; source ./secret.txt; docker login -u lrineau -p $PASS; bash -x ./push.sh $PLATFORM; fi
 notifications:

@@ -10,17 +10,21 @@ RUN yum -y install \
 
 COPY config.cfg /tmp/icc-config.cfg
 
+ARG ACTIVATION_SERIAL_NUMBER
+
 RUN cd /tmp && \
-  wget -O icc.tgz http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11542/parallel_studio_xe_2017_update4_composer_edition_for_cpp_online.tgz && \
+  echo ACTIVATION_SERIAL_NUMBER=$ACTIVATION_SERIAL_NUMBER >> /tmp/icc-config.cfg && \
+  wget -O icc.tgz http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11681/parallel_studio_xe_2018_beta_update1_cluster_edition_online.tgz && \
   tar -xvzf icc.tgz && \
   cd /tmp/parallel_studio_xe_* && \
   bash ./install.sh --silent=/tmp/icc-config.cfg && \
   cd .. && \
   rm -rf parallel_studio_xe_* icc.tgz && \
-  rm /tmp/icc-config.cfg
+  rm /tmp/icc-config.cfg && \
+  rm /opt/intel/licenses/*.lic
 
 COPY intel.sh /etc/profile.d/intel.sh
 
 ENV CC=icc CXX=icpc BASH_ENV=/etc/profile.d/intel.sh
-ENV CGAL_TEST_PLATFORM="CentOS7-ICC"
+ENV CGAL_TEST_PLATFORM="CentOS7-ICC-beta"
 ENV CGAL_CMAKE_FLAGS="('-DCMAKE_CXX_FLAGS=-w1')"
