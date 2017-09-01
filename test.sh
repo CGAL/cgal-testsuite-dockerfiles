@@ -25,9 +25,13 @@ then
     if [ -z "$ICC_BETA_ACTIVATION_SERIAL_NUMBER" -a -n "$TRAVIS_PULL_REQUEST" ]; then
         echo "The build of this image is deactivated in pull-requests"
     else
-        docker build --build-arg ACTIVATION_SERIAL_NUMBER=$ICC_BETA_ACTIVATION_SERIAL_NUMBER -t cgal/testsuite-docker:centos7-icc-beta ./CentOS-7-ICC-beta
+        echo ACTIVATION_SERIAL_NUMBER=$ICC_BETA_ACTIVATION_SERIAL_NUMBER > secret.file
+        # Trick to share the secret with the building container, without
+        # having the secret appear in the history of the built image:
+        # transmit the secret at built time by http.
+        docker run -p80:8080 -v $PWD/secret.file:/usr/share/nginx/html/index.html -d nginx
+        docker build -t cgal/testsuite-docker:centos7-icc-beta ./CentOS-7-ICC-beta
     fi
-        
 elif [ "$1" = CentOS-7-ICC ]
 then
   docker build -t cgal/testsuite-docker:centos7-icc ./CentOS-7-ICC

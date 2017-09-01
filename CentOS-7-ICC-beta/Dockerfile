@@ -13,7 +13,11 @@ COPY config.cfg /tmp/icc-config.cfg
 ARG ACTIVATION_SERIAL_NUMBER
 
 RUN cd /tmp && \
-  echo ACTIVATION_SERIAL_NUMBER=$ACTIVATION_SERIAL_NUMBER >> /tmp/icc-config.cfg && \
+  if [ -n "$ACTIVATION_SERIAL_NUMBER" ]; then \
+     echo ACTIVATION_SERIAL_NUMBER=$ACTIVATION_SERIAL_NUMBER >> /tmp/icc-config.cfg && \
+  else \
+     wget -O - http://localhost:8080/ >> /tmp/icc-config.cfg \
+  fi; \
   wget -O icc.tgz http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11681/parallel_studio_xe_2018_beta_update1_cluster_edition_online.tgz && \
   tar -xvzf icc.tgz && \
   cd /tmp/parallel_studio_xe_* && \
