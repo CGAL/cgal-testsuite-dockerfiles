@@ -29,8 +29,9 @@ then
         # Trick to share the secret with the building container, without
         # having the secret appear in the history of the built image:
         # transmit the secret at built time by http.
-        docker run -p8080:80 -v $PWD/secret.file:/usr/share/nginx/html/index.html -d nginx
-        docker build -t cgal/testsuite-docker:centos7-icc-beta ./CentOS-7-ICC-beta
+        docker network inspect local || docker network create local
+        docker run --network local --name web -v $PWD/secret.file:/usr/share/nginx/html/index.html -d nginx
+        docker build --network local -t cgal/testsuite-docker:centos7-icc-beta ./CentOS-7-ICC-beta
     fi
 elif [ "$1" = CentOS-7-ICC ]
 then
