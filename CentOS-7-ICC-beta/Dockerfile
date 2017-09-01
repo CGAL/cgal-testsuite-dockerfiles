@@ -14,7 +14,7 @@ ARG ACTIVATION_SERIAL_NUMBER
 
 RUN cd /tmp && \
   if [ -n "$ACTIVATION_SERIAL_NUMBER" ]; then \
-     echo ACTIVATION_SERIAL_NUMBER=$ACTIVATION_SERIAL_NUMBER >> /tmp/icc-config.cfg && \
+     echo ACTIVATION_SERIAL_NUMBER=$ACTIVATION_SERIAL_NUMBER >> /tmp/icc-config.cfg \
   else \
      wget -O - http://localhost:8080/ >> /tmp/icc-config.cfg \
   fi; \
