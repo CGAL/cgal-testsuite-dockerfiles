@@ -137,8 +137,7 @@ class ContainerRunner:
             self.docker_client.remove_container(container=chosen_name)
         elif len(existing) != 0 and self.force_rm:
             logging.info('A non-Exited container with name {} already exists. Forcing exit and removal.'.format(chosen_name))
-            self.docker_client.kill(container=chosen_name)
-            self.docker_client.remove_container(container=chosen_name)
+            self.docker_client.remove_container(container=chosen_name, force=True)
         elif len(existing) != 0:
             raise TestsuiteWarning('A non-Exited container with name {} already exists. Skipping.'.format(chosen_name))
         
