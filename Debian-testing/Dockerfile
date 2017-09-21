@@ -22,6 +22,7 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     libqt5svg5-dev \
     libqt5opengl5-dev \
     tar \
+    libtbb-dev \
     zlib1g-dev
 
 ENV CGAL_TEST_PLATFORM="Debian-Testing"

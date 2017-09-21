@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
     qttools5-dev-tools \
     tar \
     zlib1g-dev \
+    libtbb-dev \
     curl
 
 RUN curl -fSL "https://cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.sh" -o /usr/cmake.sh

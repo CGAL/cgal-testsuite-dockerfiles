@@ -28,6 +28,7 @@ RUN dnf -y install \
     qt5-qtsvg-devel.i686 \
     qt5-qttools-devel.i686 \
     tar \
+    tbb-devel \
     zlib-devel.i686
 
 # RUN dnf -y install 'dnf-command(copr)'

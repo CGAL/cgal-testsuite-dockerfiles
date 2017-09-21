@@ -10,6 +10,7 @@ RUN yum -y install \
     glibc-devel.x86_64 \
     gmp-devel.x86_64 \
     libstdc++-devel.x86_64 \
+    tbb-devel \
     make \
     mpfr-devel.x86_64 \
     ntl-devel.x86_64 \

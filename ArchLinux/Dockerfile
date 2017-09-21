@@ -14,6 +14,7 @@ RUN pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
               glew glu mesa \
               gmp mpfr mpfi ntl \
               qt5-base qt5-script qt5-svg qt5-tools \
+	      intel-tbb \
     && pacman -S --needed --noconfirm --asdeps \
                  freetype2 lua poppler python2 zlib \
                  tcsh \
