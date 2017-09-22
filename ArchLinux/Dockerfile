@@ -47,11 +47,13 @@ USER makepkg
 WORKDIR /tmp/makepkg
 RUN set -e; \
     for PKG in ipe libqglviewer esbtl leda-free librs; do \
-        curl -sSL https://aur.archlinux.org/cgit/aur.git/snapshot/${PKG}.tar.gz | tar xzv && \
-        cd ${PKG} && makepkg --noconfirm; \
+        if curl -sSL https://aur.archlinux.org/cgit/aur.git/snapshot/${PKG}.tar.gz | tar xzv && \
+           cd ${PKG} && makepkg --noconfirm; then \
+               cd /tmp/makepkg; \
+               mv ${PKG}/*.pkg.tar.xz .; \
+               rm -rf ${PKG}; \
+        fi; \
         cd /tmp/makepkg; \
-        mv ${PKG}/*.pkg.tar.xz .; \
-        rm -rf ${PKG}; \
     done
 
 # install AUR packages and get rid of the build directories afterwards
