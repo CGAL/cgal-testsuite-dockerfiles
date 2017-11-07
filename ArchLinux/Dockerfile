@@ -85,5 +85,4 @@ COPY init.cmake /
 #
 ENV CGAL_TEST_PLATFORM="ArchLinux" \
     CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DCMAKE_POLICY_DEFAULT_CMP0053=OLD\")" \
-    LEDA_INC_DIR=/usr/include/LEDA \
-    CMAKE_GENERATOR="-C/init.cmake"
+    LEDA_INC_DIR=/usr/include/LEDA
