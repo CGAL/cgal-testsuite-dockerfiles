@@ -62,8 +62,6 @@ WORKDIR /tmp/makepkg
 RUN pacman -U --noconfirm *.pkg.tar.xz && \
     rm *.pkg.tar.xz
 
-COPY init.cmake /
-
  RUN pacman -Sy --noconfirm unzip \
  && cd /tmp \
  && curl -sSL "https://github.com/CGAL/LAStools/archive/master.zip" -o master.zip \
