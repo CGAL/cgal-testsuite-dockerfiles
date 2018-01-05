@@ -35,4 +35,4 @@ RUN cd /etc/yum.repos.d/ && \
     yum -y install libQGLViewer-qt5-devel.x86_64; yum clean all
 
 ENV CGAL_TEST_PLATFORM="CentOS7"
-ENV CGAL_CMAKE_FLAGS=""
+ENV CGAL_CMAKE_FLAGS="(\"-DCMAKE_POLICY_DEFAULT_CMP0054=OLD\")"
