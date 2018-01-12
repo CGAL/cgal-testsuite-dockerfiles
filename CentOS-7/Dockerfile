@@ -8,6 +8,7 @@ RUN yum -y update; yum -y install \
     curl \
     eigen3-devel.noarch \
     gcc-c++ \
+    metis-devel \
     glew-devel.x86_64 \
     glibc-devel.x86_64 \
     gmp-devel.x86_64 \
