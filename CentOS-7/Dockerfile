@@ -34,5 +34,8 @@ RUN cd /etc/yum.repos.d/ && \
     rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg && \
     yum -y install libQGLViewer-qt5-devel.x86_64; yum clean all
 
-ENV CGAL_TEST_PLATFORM="CentOS7"
-ENV CGAL_CMAKE_FLAGS="(\"-DCMAKE_POLICY_DEFAULT_CMP0054=OLD\")"
+#
+# The CMAKE_GENERATOR trick is used to pass a CMake variable to each CMake
+# run by the testsuite.
+#
+ENV CGAL_TEST_PLATFORM="CentOS7" CMAKE_GENERATOR="-DCMAKE_POLICY_DEFAULT_CMP0054=OLD"
