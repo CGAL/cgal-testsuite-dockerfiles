@@ -3,6 +3,7 @@ MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN apt-get update && apt-get install -y \
     build-essential \
+    libmetis-dev \
     geomview \
     libboost-dev \
     libboost-program-options-dev \
