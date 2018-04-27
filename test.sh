@@ -50,6 +50,7 @@ then
 elif [ "$1" = Fedora ]
 then
   docker build -t cgal/testsuite-docker:fedora ./Fedora
+  docker build -t cgal/testsuite-docker:fedora-with-leda ./Fedora-with-LEDA
   docker build -t cgal/testsuite-docker:fedora-release ./Fedora-Release
   docker build -t cgal/testsuite-docker:fedora-strict-ansi ./Fedora-strict-ansi
 elif [ "$1" = Fedora-32 ]

@@ -40,6 +40,7 @@ then
 elif [ "$1" = Fedora ]
 then
    docker push cgal/testsuite-docker:fedora
+   docker push cgal/testsuite-docker:fedora-with-leda
    docker push cgal/testsuite-docker:fedora-release
    docker push cgal/testsuite-docker:fedora-strict-ansi
 elif [ "$1" = Fedora-32 ]
