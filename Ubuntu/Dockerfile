@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential cmake \
     libopencv-dev \
     libsuitesparse-dev \
