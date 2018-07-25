@@ -68,12 +68,13 @@ class ContainerRunner:
         assert path.isabs(testresults), 'testresults needs to be an absolute path'
         self.docker_client = docker_client
         self.force_rm = force_rm
+        self.use_fedora_selinux_policy = use_fedora_selinux_policy
         self.environment={"CGAL_TESTER" : tester,
                           "CGAL_TESTER_NAME" : tester_name,
                           "CGAL_TESTER_ADDRESS": tester_address,
                           "CGAL_NUMBER_OF_JOBS" : nb_jobs
         }
-        bind = {
+        self.bind = {
             testsuite.path:
             {
                 'bind': '/mnt/testsuite',
@@ -87,7 +88,7 @@ class ContainerRunner:
         }
         if intel_license and path.isdir(intel_license):
             assert path.isabs(intel_license), 'intel_license needs to be an absolute path'
-            bind[intel_license] = {
+            self.bind[intel_license] = {
                 'bind': '/opt/intel/licenses',
                 'ro': True
             }
@@ -95,12 +96,6 @@ class ContainerRunner:
         else:
             logging.info('Not using an intel license directory')
 
-
-        self.host_config = docker_client.create_host_config(binds=bind)
-
-        if use_fedora_selinux_policy:
-            self.host_config['Binds'][0] += ',z'
-            self.host_config['Binds'][1] += ',z'
 
         self.mac_address = mac_address
         if mac_address:
@@ -141,14 +136,19 @@ class ContainerRunner:
         elif len(existing) != 0:
             raise TestsuiteWarning('A non-Exited container with name {} already exists. Skipping.'.format(chosen_name))
         
+        config = self.docker_client.create_host_config(binds=self.bind,
+                                                       cpuset_cpus=cpuset)
+        if self.use_fedora_selinux_policy:
+            config['Binds'][0] += ',z'
+            config['Binds'][1] += ',z'
+
         container = self.docker_client.create_container(
             image=img,
             name=chosen_name,
             entrypoint=['/mnt/testsuite/docker-entrypoint.sh'],
             volumes=['/mnt/testsuite', '/mnt/testresults'],
-            cpuset=cpuset,
             environment=self.environment,
-            host_config=self.host_config,
+            host_config=config,
             mac_address=self.mac_address
         )
 
