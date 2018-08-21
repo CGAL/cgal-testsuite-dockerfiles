@@ -1,7 +1,7 @@
 FROM fedora:rawhide
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
-RUN rpm --import https://pagure.io/fedora-repos/raw/master/f/RPM-GPG-KEY-fedora-28-primary && \
+RUN rpm --import https://src.fedoraproject.org/rpms/fedora-repos/raw/master/f/RPM-GPG-KEY-fedora-30-primary && \
     dnf -y update && \
     dnf -y install make cmake gcc-c++ \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
