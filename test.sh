@@ -6,9 +6,10 @@ if [ "$1" = ArchLinux ]
 then
   docker build -t cgal/testsuite-docker:archlinux ./ArchLinux
   docker build -t cgal/testsuite-docker:archlinux-cxx14 ./ArchLinux-CXX14
+  docker build -t cgal/testsuite-docker:archlinux-cxx17-release ./ArchLinux-CXX17-Release
   docker build -t cgal/testsuite-docker:archlinux-clang ./ArchLinux-clang
-  docker build -t cgal/testsuite-docker:archlinux-clang-cxx1z ./ArchLinux-clang-CXX1z
   docker build -t cgal/testsuite-docker:archlinux-clang-cxx14 ./ArchLinux-clang-CXX14
+  docker build -t cgal/testsuite-docker:archlinux-clang-cxx17-release ./ArchLinux-clang-CXX17-Release
   docker build -t cgal/testsuite-docker:archlinux-clang-release ./ArchLinux-clang-Release
 elif [ "$1" = CentOS-5 ]
 then
