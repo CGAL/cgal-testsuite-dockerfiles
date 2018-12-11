@@ -215,10 +215,8 @@ def main():
                              release, args.testresults, args.use_fedora_selinux_policy,
                              args.intel_license, args.mac_address)
     scheduler = ContainerScheduler(runner, args.images, cpu_sets)
-
     # Translate SIGTERM to SystemExit exception
     signal.signal(signal.SIGTERM, term_handler)
-
     before_start = int(time.time())
     launch_result = scheduler.launch()
     if not launch_result:
@@ -234,9 +232,8 @@ def main():
     # know if it got stopped, killed or exited regularly. Waiting for
     # the next event with a timeout is very flaky and error
     # prone. This is a known design flaw of the docker event API. To
-    # work around it, we parse the Exit Status of the container and
-    # base our decision on the error code.
-    status_code_regex = re.compile(r'Exited \((.*)\)')
+    # work around it, we parse the ExitCode of the container die event and
+    # base our decision on it.
 
     # Process events since starting our containers, so we don't miss
     # any event that might have occured while we were still starting
@@ -248,19 +245,13 @@ def main():
             assert isinstance(ev, dict)
             if ev[u'Type'] != u'container':
                 continue;
-
             event_id = ev[u'id']
 
             if scheduler.is_ours(event_id): # we care
-                container_info = container_by_id(client, event_id)
-                if ev[u'status'] == u'die' and status_code_regex.search(container_info[u'Status']):
-                    res = status_code_regex.search(container_info[u'Status'])
-                    if not res:
+                if ev[u'status'] == u'die':
+                    if ev[u'Actor'][u'Attributes'][u'exitCode']!='0':
                         logging.warning('Could not parse exit status: {}. Assuming dirty death of the container.'
-                                        .format(container_info[u'Status']))
-                    elif res.group(1) != '0':
-                        logging.warning('Container exited with Error Code: {}. Assuming dirty death of the container.'
-                                        .format(res.group(1)))
+                                        .format(ev[u'Actor'][u'Attributes'][u'exitCode']))
                     else:
                         logging.info('Container died cleanly, handling results.')
                         try:
