@@ -55,7 +55,7 @@ fi
 # Build CGAL. The CGAL_CMAKE_FLAGS used here will affect all other
 # builds using this binary directory.
 cd "${CGAL_SRC_BUILD_DIR}"
-cmake -DRUNNING_CGAL_AUTO_TEST=TRUE VERBOSE=1 \
+cmake -DRUNNING_CGAL_AUTO_TEST=TRUE \
       "${CGAL_CMAKE_FLAGS[@]}" "${CGAL_RELEASE_DIR}" 2>&1 | tee "installation.log"
 make VERBOSE=ON -k -fMakefile 2>&1 | tee -a "installation.log"
 
