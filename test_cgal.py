@@ -202,8 +202,8 @@ def main():
 
     local_dir = os.path.dirname(os.path.realpath(__file__))
     # Copy the entrypoint to the testsuite volume
-    shutil.copy(os.path.join(local_dir, 'docker-entrypoint.sh'), release.path)
-    shutil.copy(os.path.join(local_dir, 'run-testsuite.sh'), release.path)
+    subprocess.call(['cp', '--preserve=xattr', os.path.join(local_dir, 'docker-entrypoint.sh'), release.path])
+    subprocess.call(['cp', '--preserve=xattr', os.path.join(local_dir, 'run-testsuite.sh'), release.path])
 
     cpu_sets = calculate_cpu_sets(args.max_cpus, args.container_cpus)
     nb_parallel_containers = len(cpu_sets)
