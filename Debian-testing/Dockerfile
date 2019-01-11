@@ -14,16 +14,17 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     libipe-dev \
     libmpfi-dev \
     libmpfr-dev \
-    libqglviewer-dev-qt5 \
-    qtbase5-dev \
-    qtscript5-dev \
-    qttools5-dev \
-    qttools5-dev-tools \
-    libqt5svg5-dev \
-    libqt5opengl5-dev \
+#    libqglviewer-dev-qt5 \
+#    qtbase5-dev \
+#    qtscript5-dev \
+#    qttools5-dev \
+#    qttools5-dev-tools \
+#    libqt5svg5-dev \
+#    libqt5opengl5-dev \
     tar \
     libtbb-dev \
     zlib1g-dev
 
 ENV CGAL_TEST_PLATFORM="Debian-Testing"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"
+
