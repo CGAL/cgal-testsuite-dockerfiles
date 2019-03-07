@@ -1,5 +1,5 @@
 language: cpp
-dist: xenial 
+dist: xenial
 services:
 - docker
 env:
