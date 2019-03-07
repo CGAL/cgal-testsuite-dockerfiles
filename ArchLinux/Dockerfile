@@ -17,9 +17,8 @@ RUN pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
 	      intel-tbb \
     && pacman -S --needed --noconfirm --asdeps \
                  freetype2 lua poppler python2 zlib \
-                 tcsh 
-
-#    && yes | pacman -Scc
+                 tcsh \
+    && pacman -Scc
 #Install latest cmake from the `next` branch on github
 RUN git clone git://github.com/Kitware/CMake.git --depth 1 \
  && cd ./CMake \
@@ -71,9 +70,9 @@ RUN pacman -U --noconfirm *.pkg.tar.xz && \
  && make install \
  && cd .. \
  && rm -rf LAStools-master \
- && rm -rf master.zip
+ && rm -rf master.zip \
+ && pacman -Scc
 
- RUN pacman -Scc 
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
 # to avoid conflicts with other files.
