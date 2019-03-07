@@ -13,7 +13,7 @@ RUN dnf -y install \
     gmp-devel.i686 \
     ipe.i686 \
     ipe-devel.i686 \
-#    libQGLViewer-devel.i686 \
+    libQGLViewer-devel.i686 \
     libstdc++-devel.i686 \
     libstdc++-devel.x86_64 \
     make \
@@ -21,12 +21,12 @@ RUN dnf -y install \
     mesa-libGLU-devel.i686 \
     mpfr-devel.i686 \
     ntl-devel.i686 \
-#    qt-devel.i686 \
-#    qt3-devel.i686 \
-#    qt5-qtbase-devel.i686 \
-#    qt5-qtscript-devel.i686 \
-#    qt5-qtsvg-devel.i686 \
-#    qt5-qttools-devel.i686 \
+    qt-devel.i686 \
+    qt3-devel.i686 \
+    qt5-qtbase-devel.i686 \
+    qt5-qtscript-devel.i686 \
+    qt5-qtsvg-devel.i686 \
+    qt5-qttools-devel.i686 \
     tar \
     tbb-devel \
     zlib-devel.i686
