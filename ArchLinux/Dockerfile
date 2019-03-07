@@ -1,4 +1,4 @@
-FROM base/devel:latest
+FROM archlinux/base:latest
 MAINTAINER Alexander Kobel <alexander.kobel@mpi-inf.mpg.de>, Laurent Rineau <laurent.rineau@cgal.org>
 
 # Install additional packages beyond the baseline.
@@ -17,10 +17,9 @@ RUN pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
 	      intel-tbb \
     && pacman -S --needed --noconfirm --asdeps \
                  freetype2 lua poppler python2 zlib \
-                 tcsh \
+                 tcsh 
 
-    && yes | pacman -Scc
-
+#    && yes | pacman -Scc
 #Install latest cmake from the `next` branch on github
 RUN git clone git://github.com/Kitware/CMake.git --depth 1 \
  && cd ./CMake \
@@ -74,6 +73,7 @@ RUN pacman -U --noconfirm *.pkg.tar.xz && \
  && rm -rf LAStools-master \
  && rm -rf master.zip
 
+ RUN pacman -Scc 
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
 # to avoid conflicts with other files.
