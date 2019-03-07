@@ -12,15 +12,15 @@ RUN dnf -y install \
     ipe-devel.x86_64 \
     OpenMesh-devel \
     opencv-devel \
-#    libQGLViewer-qt5-devel.x86_64 \
+    libQGLViewer-qt5-devel.x86_64 \
     make \
     mpfr-devel.x86_64 \
     mpfi-devel.x86_64 \
     ntl-devel.x86_64 \
-#    qt5-qtbase-devel.x86_64 \
-#    qt5-qtscript-devel.x86_64 \
-#    qt5-qtsvg-devel.x86_64 \
-#    qt5-qttools-devel.x86_64 \
+    qt5-qtbase-devel.x86_64 \
+    qt5-qtscript-devel.x86_64 \
+    qt5-qtsvg-devel.x86_64 \
+    qt5-qttools-devel.x86_64 \
     tar \
     unzip \
     wget \
