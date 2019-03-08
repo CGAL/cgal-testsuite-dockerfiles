@@ -35,6 +35,8 @@ elif [ "$1" = Debian-stable ]
 then
    docker push cgal/testsuite-docker:debian-stable
    docker push cgal/testsuite-docker:debian-stable-release
+elif [ "$1" = Debian-stable-cross-compilation-for-arm ];then
+  docker push cgal/testsuite-docker:debian-stable-cross-compilation-for-arm
 elif [ "$1" = Debian-testing ]
 then
    docker push cgal/testsuite-docker:debian-testing

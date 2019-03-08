@@ -8,6 +8,6 @@ RUN apt-get update && apt-get install -y \
     python3 \
     gzip
 
-ENV CGAL_TEST_PLATFORM="Debian-stable-for-cross-compilation"
+ENV CGAL_TEST_PLATFORM="Debian-stable-cross-compilation-for-arm"
 COPY ./startup.sh .
 CMD bash ./startup.sh
