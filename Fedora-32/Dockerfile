@@ -27,16 +27,11 @@ RUN dnf -y install \
     qt5-qtscript-devel.i686 \
     qt5-qtsvg-devel.i686 \
     qt5-qttools-devel.i686 \
-    qt5-doctools.i686 \
     tar \
     tbb-devel \
-    zlib-devel.i686
+    zlib-devel.i686 && dnf clean all
 
-# RUN dnf -y install 'dnf-command(copr)'
-# RUN rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg
-# RUN dnf -y copr enable rineau/libQGLViewer-qt5 && dnf -y install libQGLViewer-qt5-devel.i386
-
-RUN dnf clean all
+RUN ln -s /usr/lib64/qt5/bin/qhelpgenerator /usr/lib/qt5/bin/qhelpgenerator
 
 ENV CC="gcc -m32" CXX="g++ -m32" QTDIR=/usr/lib/qt-3.3
 ENV CGAL_TEST_PLATFORM="Fedora-32"
