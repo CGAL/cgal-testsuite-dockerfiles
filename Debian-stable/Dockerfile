@@ -26,12 +26,5 @@ RUN apt-get update && apt-get install -y \
     libtbb-dev \
     curl
 
-RUN curl -fSL "https://cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.sh" -o /usr/cmake.sh
-RUN cd /usr \
- && chmod +x ./cmake.sh
-
-RUN cd /usr \
-&& ./cmake.sh --skip-license
-
 ENV CGAL_TEST_PLATFORM="Debian-Stable"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"
