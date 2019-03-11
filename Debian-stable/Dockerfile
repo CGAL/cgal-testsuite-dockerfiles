@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y \
     tar \
     zlib1g-dev \
     libtbb-dev \
+    cmake \
     curl
 
 ENV CGAL_TEST_PLATFORM="Debian-Stable"
