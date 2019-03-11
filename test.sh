@@ -45,10 +45,7 @@ elif [ "$1" = Debian-stable ]
 then
   docker build -t cgal/testsuite-docker:debian-stable ./Debian-stable
   docker build -t cgal/testsuite-docker:debian-stable-release ./Debian-stable-Release
-elif [ "$1" = Debian-stable-cross-compilation-for-arm ]
-then
   docker build -t cgal/testsuite-docker:debian-stable-cross-compilation-for-arm ./Debian-stable-cross-compilation-for-arm
-
 elif [ "$1" = Debian-testing ]
 then
   docker build -t cgal/testsuite-docker:debian-testing ./Debian-testing
