@@ -58,6 +58,7 @@ then
    docker push cgal/testsuite-docker:ubuntu
    docker push cgal/testsuite-docker:ubuntu-cxx11
    docker push cgal/testsuite-docker:ubuntu-no-deprecated-code
+   docker push cgal/testsuite-docker:ubuntu-no-gmp-no-leda
 elif [ "$1" = Ubuntu-GCC-master ]
 then
    docker push cgal/testsuite-docker:ubuntu-gcc6
