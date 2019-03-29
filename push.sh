@@ -57,8 +57,10 @@ elif [ "$1" = Ubuntu ]
 then
    docker push cgal/testsuite-docker:ubuntu
    docker push cgal/testsuite-docker:ubuntu-cxx11
+   docker push cgal/testsuite-docker:ubuntu-no-deprecated-code
+elif [ "$1" = Ubuntu-GCC-master ]
+then
    docker push cgal/testsuite-docker:ubuntu-gcc6
    docker push cgal/testsuite-docker:ubuntu-gcc6-cxx1z
    docker push cgal/testsuite-docker:ubuntu-gcc6-release
-   docker push cgal/testsuite-docker:ubuntu-no-deprecated-code
 fi
