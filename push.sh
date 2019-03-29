@@ -61,4 +61,5 @@ then
    docker push cgal/testsuite-docker:ubuntu-gcc6-cxx1z
    docker push cgal/testsuite-docker:ubuntu-gcc6-release
    docker push cgal/testsuite-docker:ubuntu-no-deprecated-code
+   docker push cgal/testsuite-docker:ubuntu-no-gmp-no-leda
 fi
