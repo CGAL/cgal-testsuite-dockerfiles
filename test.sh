@@ -67,10 +67,12 @@ elif [ "$1" = Ubuntu ]
 then
   docker build -t cgal/testsuite-docker:ubuntu ./Ubuntu
   docker build -t cgal/testsuite-docker:ubuntu-cxx11 ./Ubuntu-CXX11
+  docker build -t cgal/testsuite-docker:ubuntu-no-deprecated-code ./Ubuntu-NO_DEPRECATED_CODE
+  docker build -t cgal/testsuite-docker:ubuntu-no-gmp-no-leda ./Ubuntu-no-gmp-no-leda
+elif [ "$1" = Ubuntu-GCC-master ]
+then
   docker build -t cgal/testsuite-docker:ubuntu-gcc6 ./Ubuntu-GCC6
   docker build -t cgal/testsuite-docker:ubuntu-gcc6-cxx1z ./Ubuntu-GCC6-CXX1Z
   docker build -t cgal/testsuite-docker:ubuntu-gcc6-release ./Ubuntu-GCC6-Release
-  docker build -t cgal/testsuite-docker:ubuntu-no-deprecated-code ./Ubuntu-NO_DEPRECATED_CODE
-  docker build -t cgal/testsuite-docker:ubuntu-no-gmp-no-leda ./Ubuntu-no-gmp-no-leda
 fi
 docker images

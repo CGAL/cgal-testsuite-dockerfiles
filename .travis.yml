@@ -14,6 +14,7 @@ env:
   - PLATFORM='Fedora-32'
   - PLATFORM='Fedora-rawhide'
   - PLATFORM='Ubuntu'
+  - PLATFORM='Ubuntu-GCC-master'
   global:
     secure: ZLycyR5jXMmVojJkRQa2t4PjN9z8EuCAmf9GHVKT92K48dzOzhW0sRuOVeIC9OT8bIXZ7JlAe0bSgKA6mjeGpd/wPhuQ0jcZN7VXRTXzh4eVE2+6Bg6bM4wL5mQWQR7uAAflXkZVsrWsrMcdx3pYSFFONYiXi2xaGVzuTALd5CM=
 script:
