@@ -24,3 +24,5 @@ ENV CXX=/usr/local/bin/clang++
 ENV CC=/usr/local/bin/clang
 ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-DDONT_USE_BOOST_PROGRAM_OPTIONS -Wthread-safety\")"
 
+ENV INIT_FILE=/tmp/init.cmake
+COPY init.cmake /tmp/init.cmake

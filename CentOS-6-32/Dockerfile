@@ -57,3 +57,5 @@ RUN cd /etc/yum.repos.d/ && \
 ENV CC="gcc -m32" CXX="g++ -m32"
 ENV CGAL_TEST_PLATFORM="CentOS6-32"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"
+ENV INIT_FILE=/tmp/init.cmake
+COPY init.cmake /tmp/init.cmake

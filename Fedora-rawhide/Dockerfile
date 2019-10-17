@@ -22,3 +22,5 @@ RUN rpm --import https://src.fedoraproject.org/rpms/fedora-repos/raw/master/f/RP
 
 ENV CGAL_TEST_PLATFORM="Fedora-rawhide"
 ENV CGAL_CMAKE_FLAGS="('-DCGAL_HEADER_ONLY:BOOL=TRUE')"
+ENV INIT_FILE=/tmp/init.cmake
+COPY init.cmake /tmp/init.cmake

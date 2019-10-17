@@ -32,3 +32,5 @@ COPY intel.sh /etc/profile.d/intel.sh
 ENV CC=icc CXX=icpc BASH_ENV=/etc/profile.d/intel.sh
 ENV CGAL_TEST_PLATFORM="CentOS7-ICC-beta"
 ENV CGAL_CMAKE_FLAGS="('-DCMAKE_CXX_FLAGS=-w1')"
+ENV INIT_FILE=/tmp/init.cmake
+COPY init.cmake /tmp/init.cmake

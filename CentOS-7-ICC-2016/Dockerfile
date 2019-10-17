@@ -21,3 +21,5 @@ RUN echo "if [ "$GUARD" != "1" ]; then source /opt/intel/compilers_and_libraries
 ENV CC=icc CXX=icpc BASH_ENV=/etc/profile.d/intel.sh
 ENV CGAL_TEST_PLATFORM="CentOS7-ICC-2016"
 ENV CGAL_CMAKE_FLAGS="('-DCMAKE_CXX_FLAGS=-w1')"
+ENV INIT_FILE=/tmp/init.cmake
+COPY init.cmake /tmp/init.cmake
