@@ -30,3 +30,5 @@ RUN buildDeps='bison flex libmpc-dev g++ ' \
 ENV CGAL_TEST_PLATFORM="Ubuntu-latest-GCC6"
 ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-DDONT_USE_BOOST_PROGRAM_OPTIONS -Wall -Wno-expansion-to-defined\" \"-DWITH_CGAL_Qt3:BOOL=OFF\")"
 
+ENV INIT_FILE=/tmp/init.cmake
+COPY init.cmake /tmp/init.cmake

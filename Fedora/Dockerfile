@@ -40,3 +40,5 @@ RUN wget "https://github.com/CGAL/LAStools/archive/master.zip" -O laslib.zip \
 
 ENV CGAL_TEST_PLATFORM="Fedora"
 ENV CGAL_CMAKE_FLAGS=""
+ENV INIT_FILE=/tmp/init.cmake
+COPY init.cmake /tmp/init.cmake

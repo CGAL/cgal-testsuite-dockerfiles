@@ -33,3 +33,5 @@ RUN curl -s -k -SL "https://cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.sh" -o
 
 ENV CGAL_TEST_PLATFORM="CentOS5"
 ENV CGAL_CMAKE_FLAGS="()"
+ENV INIT_FILE=/tmp/init.cmake
+COPY init.cmake /tmp/init.cmake
