@@ -2,7 +2,7 @@ from os import path
 import logging
 import docker
 import re
-import StringIO
+import io
 
 class TestsuiteException(Exception):
     pass
@@ -24,7 +24,7 @@ class TestsuiteError(TestsuiteException):
 def container_by_id(docker_client, Id):
     """Returns a container given an `Id`. Raises `TestsuiteError` if the
     `Id` cannot be found."""
-    contlist = [cont for cont in docker_client.containers(all=True) if Id == cont[u'Id']]
+    contlist = [cont for cont in docker_client.containers(all=True) if Id == cont['Id']]
     if len(contlist) != 1:
         raise TestsuiteError('Requested Container Id ' + Id + 'does not exist')
     return contlist[0]
@@ -45,7 +45,7 @@ def images(docker_client, images):
 def _default_images(docker_client):
     images = []
     for img in docker_client.images():
-        tag = next((x for x in img[u'RepoTags'] if x.startswith(u'cgal-testsuite/')), None)
+        tag = next((x for x in img['RepoTags'] if x.startswith('cgal-testsuite/')), None)
         if tag:
             images.append(tag)
     return images
@@ -109,7 +109,7 @@ class ContainerRunner:
         container_id = self._create_container(image, cpuset)
         cont = container_by_id(self.docker_client, container_id)
         logging.info('Created container: {0} with id {1[Id]} from image {1[Image]} on cpus {2}'
-                     .format(', '.join(cont[u'Names']), cont, cpuset))
+                     .format(', '.join(cont['Names']), cont, cpuset))
         self.docker_client.start(container_id)
         return container_id
 
@@ -124,10 +124,10 @@ class ContainerRunner:
         else:
             chosen_name = 'CGAL-{}-testsuite'.format(res.group(2))
 
-        existing = [cont for cont in self.docker_client.containers(all=True) if '/' + chosen_name in cont[u'Names']]
+        existing = [cont for cont in self.docker_client.containers(all=True) if '/' + chosen_name in cont['Names']]
         assert len(existing) == 0 or len(existing) == 1, 'Length of existing containers is odd'
 
-        if len(existing) != 0 and u'Exited' in existing[0][u'Status']:
+        if len(existing) != 0 and 'Exited' in existing[0]['Status']:
             logging.info('An Exited container with name {} already exists. Removing.'.format(chosen_name))
             self.docker_client.remove_container(container=chosen_name)
         elif len(existing) != 0 and self.force_rm:
@@ -152,10 +152,10 @@ class ContainerRunner:
             mac_address=self.mac_address
         )
 
-        if container[u'Warnings']:
-            logging.warning('Container of image {} got created with warnings: {}'.format(img, container[u'Warnings']))
+        if container['Warnings']:
+            logging.warning('Container of image {} got created with warnings: {}'.format(img, container['Warnings']))
 
-        return container[u'Id']
+        return container['Id']
 
 class ContainerScheduler:
     def __init__(self, runner, images, cpusets):
@@ -165,7 +165,7 @@ class ContainerScheduler:
         self.running_containers = {}
         # error handling
         self.errors_encountered = False
-        self.error_buffer=StringIO.StringIO()
+        self.error_buffer=io.StringIO()
         self.error_handler=logging.StreamHandler(self.error_buffer)
         self.error_handler.setFormatter( logging.Formatter('%(levelname)s: %(message)s') )
         self.error_logger = logging.getLogger("Error_logger")

@@ -1,4 +1,4 @@
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import os
 import tarfile
 import shutil
@@ -16,11 +16,11 @@ class Release:
     def __init__(self, testsuite, use_local, user, passwd):
         if not use_local and user and passwd:
             logging.info('Setting up user and password for download.')
-            password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+            password_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
             password_mgr.add_password(None, Release._release_url, user, passwd)
-            handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-            opener = urllib2.build_opener(handler)
-            urllib2.install_opener(opener)
+            handler = urllib.request.HTTPBasicAuthHandler(password_mgr)
+            opener = urllib.request.build_opener(handler)
+            urllib.request.install_opener(opener)
 
         if use_local:
             logging.info('Using local CGAL release at {}'.format(testsuite))
@@ -35,7 +35,7 @@ class Release:
                 self.path = Release._extract_release(path_to_tar)
                 logging.info('Removing {}'.format(path_to_tar))
                 os.remove(path_to_tar)
-            except urllib2.URLError as e:
+            except urllib.error.URLError as e:
                 if hasattr(e, 'code') and e.code == 401:
                     logging.warning('URLError 401: Did you forget to provide --user and --passwd?')
                 raise
@@ -49,8 +49,8 @@ class Release:
 
     @staticmethod
     def _get_latest():
-        response = urllib2.urlopen(Release._latest_url)
-        return response.read().strip()
+        response = urllib.request.urlopen(Release._latest_url)
+        return response.read().strip().decode(encoding='UTF-8')
 
     @staticmethod
     def _get_cgal(latest, testsuite):
@@ -62,7 +62,7 @@ class Release:
             logging.warning('Path {} already exists, reusing it.'.format(download_to))
             return download_to
 
-        response = urllib2.urlopen(download_from)
+        response = urllib.request.urlopen(download_from)
         with open(download_to, "wb") as local_file:
             local_file.write(response.read())
             return download_to
