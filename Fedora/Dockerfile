@@ -25,7 +25,8 @@ RUN dnf -y install \
     unzip \
     wget \
     tbb-devel \
-    zlib-devel.x86_64
+    zlib-devel.x86_64 \
+    libssh-devel
 
 RUN wget "https://github.com/CGAL/LAStools/archive/master.zip" -O laslib.zip \
  && unzip laslib.zip \
