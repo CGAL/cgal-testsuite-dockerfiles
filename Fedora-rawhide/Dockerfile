@@ -18,6 +18,7 @@ RUN rpm --import https://src.fedoraproject.org/rpms/fedora-repos/raw/master/f/RP
                    OpenMesh-devel \
                    tbb-devel \
                    zlib-devel.x86_64 \
+		   diffutils \
                    tar && dnf clean all
 
 ENV CGAL_TEST_PLATFORM="Fedora-rawhide"
