@@ -11,10 +11,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libmpfr-dev zlib1g-dev \
     libeigen3-dev libglew1.5-dev libipe-dev \
     libmpfi-dev libqglviewer-dev-qt5 \
-    libtbb-dev \
-    qtbase5-dev qtscript5-dev libqt5svg5-dev qttools5-dev qttools5-dev-tools
+    libtbb-dev
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest"
-ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"
+ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt5:BOOL=OFF\")"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake
