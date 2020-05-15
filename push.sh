@@ -10,6 +10,7 @@ then
    docker push cgal/testsuite-docker:archlinux-clang
    docker push cgal/testsuite-docker:archlinux-clang-cxx14
    docker push cgal/testsuite-docker:archlinux-clang-cxx17-release
+   docker push cgal/testsuite-docker:archlinux-clang-cxx20-release
    docker push cgal/testsuite-docker:archlinux-clang-release
 elif [ "$1" = CentOS-5 ]
 then
