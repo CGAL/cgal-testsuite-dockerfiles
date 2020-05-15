@@ -65,4 +65,5 @@ then
    docker push cgal/testsuite-docker:ubuntu-gcc6
    docker push cgal/testsuite-docker:ubuntu-gcc6-cxx1z
    docker push cgal/testsuite-docker:ubuntu-gcc6-release
+   docker push cgal/testsuite-docker:ubuntu-gcc_master_cxx20-release
 fi

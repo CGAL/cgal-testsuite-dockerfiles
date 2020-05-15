@@ -75,5 +75,6 @@ then
   docker build -t cgal/testsuite-docker:ubuntu-gcc6 ./Ubuntu-GCC6
   docker build -t cgal/testsuite-docker:ubuntu-gcc6-cxx1z ./Ubuntu-GCC6-CXX1Z
   docker build -t cgal/testsuite-docker:ubuntu-gcc6-release ./Ubuntu-GCC6-Release
+  docker build -t cgal/testsuite-docker:ubuntu-gcc_master_cxx20-release ./Ubuntu-GCC_master_cpp20-Release
 fi
 docker images
