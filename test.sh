@@ -10,6 +10,7 @@ then
   docker build -t cgal/testsuite-docker:archlinux-clang ./ArchLinux-clang
   docker build -t cgal/testsuite-docker:archlinux-clang-cxx14 ./ArchLinux-clang-CXX14
   docker build -t cgal/testsuite-docker:archlinux-clang-cxx17-release ./ArchLinux-clang-CXX17-Release
+  docker build -t cgal/testsuite-docker:archlinux-clang-cxx20-release ./ArchLinux-clang-CXX20-Release
   docker build -t cgal/testsuite-docker:archlinux-clang-release ./ArchLinux-clang-Release
 elif [ "$1" = CentOS-5 ]
 then
@@ -74,5 +75,6 @@ then
   docker build -t cgal/testsuite-docker:ubuntu-gcc6 ./Ubuntu-GCC6
   docker build -t cgal/testsuite-docker:ubuntu-gcc6-cxx1z ./Ubuntu-GCC6-CXX1Z
   docker build -t cgal/testsuite-docker:ubuntu-gcc6-release ./Ubuntu-GCC6-Release
+  docker build -t cgal/testsuite-docker:ubuntu-gcc_master_cxx20-release ./Ubuntu-GCC_master_cpp20-Release
 fi
 docker images

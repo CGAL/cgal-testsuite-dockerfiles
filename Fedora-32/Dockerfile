@@ -29,6 +29,7 @@ RUN dnf -y install \
     qt5-qttools-devel.i686 \
     tar \
     tbb-devel \
+    diffutils \
     zlib-devel.i686 && dnf clean all
 
 RUN ln -s /usr/lib64/qt5/bin/qhelpgenerator /usr/lib/qt5/bin/qhelpgenerator
