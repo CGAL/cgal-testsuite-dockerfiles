@@ -29,7 +29,7 @@ def container_by_id(docker_client, Id):
         raise TestsuiteError('Requested Container Id ' + Id + 'does not exist')
     return contlist[0]
 
-def images(docker_client, images):
+def images(docker_client, release, images):
     """If `images` is `None`, returns a list of default images, else
     validates the list of images and returns it. Raises an exception
     if an invalid image is found.
@@ -40,7 +40,7 @@ def images(docker_client, images):
     if len(not_existing) != 0:
         raise TestsuiteError('Could not find specified images: ' + ', '.join(not_existing))
 
-    return images
+    return [ img for img in images if _image_to_ignore(docker_client, img, release) == False ]
 
 def _default_images(docker_client):
     images = []
@@ -55,6 +55,14 @@ def _not_existing_images(docker_client, images):
     for a docker image. Returns a list of not existing names."""
     # Since img might contain a :TAG we need to work it a little.
     return [img for img in images if len(docker_client.images(name=img.rsplit(':')[0])) == 0]
+
+def _image_to_ignore(docker_client, image, release):
+    labels = docker_client.inspect_image(image)['Config']['Labels']
+    if labels != None and 'org.cgal.releases_to_ignore' in labels:
+        if re.match(labels['org.cgal.releases_to_ignore'], release.version):
+            print('Image {} will be ignored for release {}'.format(image, release.version))
+            return True
+    return False
 
 class ContainerRunner:
     # A regex to decompose the name of an image into the groups

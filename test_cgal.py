@@ -184,8 +184,6 @@ def main():
                 sys.exit(0)
 
 
-    args.images = images(client, args.images)
-
     if args.upload_results:
         assert args.tester, 'When uploading a --tester has to be given'
         assert args.tester_name, 'When uploading a --tester-name has to be given'
@@ -195,6 +193,8 @@ def main():
     logging.info('Using images {}'.format(', '.join(args.images)))
 
     release = Release(args.testsuite, args.use_local, args.user, args.passwd)
+
+    args.images = images(client, release, args.images)
     if args.packages:
         release.scrub(args.packages)
 
