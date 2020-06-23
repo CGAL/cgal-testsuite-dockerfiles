@@ -42,3 +42,5 @@ RUN cd /etc/yum.repos.d/ && \
 ENV CGAL_TEST_PLATFORM="CentOS7" CMAKE_GENERATOR="-DCMAKE_POLICY_DEFAULT_CMP0054=OLD"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake
+
+LABEL org.cgal.releases_to_ignore="^[5-9]"

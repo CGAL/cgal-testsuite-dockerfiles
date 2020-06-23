@@ -39,3 +39,5 @@ ENV CGAL_TEST_PLATFORM="CentOS6"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake
+
+LABEL org.cgal.releases_to_ignore="^[5-9]"
