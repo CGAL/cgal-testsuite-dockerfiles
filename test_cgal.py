@@ -184,17 +184,17 @@ def main():
                 sys.exit(0)
 
 
-    args.images = images(client, args.images)
-
     if args.upload_results:
         assert args.tester, 'When uploading a --tester has to be given'
         assert args.tester_name, 'When uploading a --tester-name has to be given'
         assert args.tester_address, 'When uploading a --tester-address has to be given'
         assert 'gztar' in (item[0] for item in shutil.get_archive_formats()), 'When uploading results, gztar needs to be available'
 
+    release = Release(args.testsuite, args.use_local, args.user, args.passwd)
+
+    args.images = images(client, release, args.images)
     logging.info('Using images {}'.format(', '.join(args.images)))
 
-    release = Release(args.testsuite, args.use_local, args.user, args.passwd)
     if args.packages:
         release.scrub(args.packages)
 
@@ -210,7 +210,7 @@ def main():
 
     logging.info('Running a maximum of %i containers in parallel each using %i CPUs and using %i jobs' % (nb_parallel_containers, args.container_cpus, args.jobs))
 
-    runner = ContainerRunner(client, args.tester, args.tester_name, 
+    runner = ContainerRunner(client, args.tester, args.tester_name,
                              args.tester_address, args.force_rm, args.jobs,
                              release, args.testresults, args.use_fedora_selinux_policy,
                              args.intel_license, args.mac_address)
