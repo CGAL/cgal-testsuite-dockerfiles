@@ -10,3 +10,5 @@ RUN git clone -b develop --depth=1 --shallow-submodules --recursive https://gith
         ./bootstrap.sh --with-toolset=clang --prefix=/usr/local/boost --with-libraries=container,filesystem,system,serialization,iostreams,program_options,thread && \
         ./b2 install -j4 && \
         cd .. && rm -rf boost
+
+LABEL org.cgal.releases_to_ignore="^(4|5\\.0)"
