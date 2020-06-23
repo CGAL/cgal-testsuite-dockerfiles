@@ -69,8 +69,8 @@ class ContainerRunner:
     # ('user', 'name', 'tag')
     _image_name_regex = re.compile('(.*/)?([^:]*)(:.*)?')
 
-    def __init__(self, docker_client, tester, tester_name, 
-                 tester_address, force_rm, nb_jobs, testsuite, 
+    def __init__(self, docker_client, tester, tester_name,
+                 tester_address, force_rm, nb_jobs, testsuite,
                  testresults, use_fedora_selinux_policy, intel_license, mac_address=None):
         assert path.isabs(testsuite.path), 'testsuite needs to be an absolute path'
         assert path.isabs(testresults), 'testresults needs to be an absolute path'
@@ -143,7 +143,7 @@ class ContainerRunner:
             self.docker_client.remove_container(container=chosen_name, force=True)
         elif len(existing) != 0:
             raise TestsuiteWarning('A non-Exited container with name {} already exists. Skipping.'.format(chosen_name))
-        
+
         config = self.docker_client.create_host_config(binds=self.bind,
                                                        cpuset_cpus=cpuset)
         if self.use_fedora_selinux_policy:
