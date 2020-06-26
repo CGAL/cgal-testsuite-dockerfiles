@@ -35,3 +35,5 @@ ENV CGAL_TEST_PLATFORM="CentOS5"
 ENV CGAL_CMAKE_FLAGS="()"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake
+
+LABEL org.cgal.releases_to_ignore="^[5-9]"
