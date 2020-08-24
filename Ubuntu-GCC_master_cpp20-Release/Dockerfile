@@ -12,4 +12,9 @@ RUN git clone -b develop --depth=1 --shallow-submodules --recursive https://gith
         ./b2 install -j4 && \
         cd .. && rm -rf boost
 
+RUN git clone --depth=1 --shallow-submodules  https://gitlab.com/libeigen/eigen.git && \
+        cd eigen && git submodule update  --init --recursive && \
+        mkdir build && cd build && \
+        cmake .. && make install && cd .. && rm -rf eigen
+        
 LABEL org.cgal.releases_to_ignore="^(4|5\\.0)"
