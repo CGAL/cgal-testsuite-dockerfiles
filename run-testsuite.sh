@@ -21,7 +21,7 @@ declare -a "CGAL_CMAKE_FLAGS=${CGAL_CMAKE_FLAGS}"
 echo "CGAL_CMAKE_FLAGS is ${CGAL_CMAKE_FLAGS[@]}."
 
 # The directory where the release is stored.
-CGAL_RELEASE_DIR="/mnt/testsuite/"
+export CGAL_RELEASE_DIR="/mnt/testsuite/"
 # Directory where CGAL sources are stored.
 CGAL_SRC_DIR="${CGAL_RELEASE_DIR}src/"
 # Directory where CGAL tests are stored.
