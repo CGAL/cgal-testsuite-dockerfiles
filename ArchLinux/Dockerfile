@@ -45,11 +45,11 @@ RUN groupadd -r makepkg && \
 USER makepkg
 WORKDIR /tmp/makepkg
 RUN set -e; \
-    for PKG in leda-free librs; do \
+    for PKG in ipe esbtl leda-free librs; do \
         if curl -sSL https://aur.archlinux.org/cgit/aur.git/snapshot/${PKG}.tar.gz | tar xzv && \
            cd ${PKG} && makepkg --noconfirm; then \
                cd /tmp/makepkg; \
-               mv ${PKG}/*.pkg.tar.xz .; \
+               mv ${PKG}/*.pkg.tar.zst .; \
                rm -rf ${PKG}; \
         fi; \
         cd /tmp/makepkg; \
@@ -58,8 +58,8 @@ RUN set -e; \
 # install AUR packages and get rid of the build directories afterwards
 USER root
 WORKDIR /tmp/makepkg
-RUN pacman -U --noconfirm *.pkg.tar.xz && \
-    rm *.pkg.tar.xz
+RUN pacman -U --noconfirm *.pkg.tar.zst && \
+    rm *.pkg.tar.zst
 
  RUN pacman -Sy --noconfirm unzip \
  && cd /tmp \

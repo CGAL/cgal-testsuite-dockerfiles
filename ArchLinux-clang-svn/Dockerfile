@@ -32,10 +32,10 @@ USER root
 # (pulled in as dependency of libqglviewer -> mesa)...
 RUN pacman --noconfirm -Rdd llvm-libs
 # ... and install the llvm-svn packages
-RUN pacman --noconfirm -U llvm-svn/*.pkg.tar.xz && rm -rf llvm-svn
+RUN pacman --noconfirm -U llvm-svn/*.pkg.tar.zst && rm -rf llvm-svn
 
 # see above: not necessary anymore
-# RUN pacman --noconfirm -U libc++-svn/*.pkg.tar.xz && rm -rf libc++-svn
+# RUN pacman --noconfirm -U libc++-svn/*.pkg.tar.zst && rm -rf libc++-svn
 
 ENV CC=clang
 ENV CXX=clang++
