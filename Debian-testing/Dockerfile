@@ -11,7 +11,6 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     libeigen3-dev \
     libglew1.5-dev \
     libgmp10-dev \
-    libipe-dev \
     libmpfi-dev \
     libmpfr-dev \
     libqglviewer-dev-qt5 \
