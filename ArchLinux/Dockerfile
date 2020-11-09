@@ -63,14 +63,14 @@ RUN pacman -U --noconfirm *.pkg.tar.zst && \
 
  RUN pacman -Sy --noconfirm unzip \
  && cd /tmp \
- && curl -sSL "https://github.com/CGAL/LAStools/archive/master.zip" -o master.zip \
+ && curl -sSL "https://github.com/CGAL/LAStools/archive/LAStools-2020-11-09.zip" -o master.zip \
  && unzip master.zip \
- && cd ./LAStools-master \
+ && cd ./LAStools-LAStools-2020-11-09 \
  && cmake -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ -DCMAKE_CXX_FLAGS=-std=c++11 . \
  && make -j "$(nproc)" \
  && make install \
  && cd .. \
- && rm -rf LAStools-master \
+ && rm -rf LAStools-LAStools-2020-11-09 \
  && rm -rf master.zip \
  && pacman -Scc
 
