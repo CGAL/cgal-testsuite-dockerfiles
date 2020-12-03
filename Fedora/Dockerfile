@@ -29,14 +29,14 @@ RUN dnf -y install \
     diffutils.x86_64 \
     libssh-devel
 
-RUN wget "https://github.com/CGAL/LAStools/archive/master.zip" -O laslib.zip \
+RUN wget "https://github.com/CGAL/LAStools/archive/LAStools-2020-11-09.zip" -O laslib.zip \
  && unzip laslib.zip \
- && cd ./LAStools-master \
+ && cd ./LAStools-LAStools-2020-11-09 \
  && cmake -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ -DCMAKE_CXX_FLAGS=-std=c++11 . \
  && make -j "$(nproc)" \
  && make install \
  && cd .. \
- && rm -rf LAStools-master \
+ && rm -rf LAStools-LAStools-2020-11-09 \
  && rm -rf laslib.zip
 
 
