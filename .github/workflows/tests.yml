@@ -1,0 +1,26 @@
+name: Tests
+
+on: [push]
+
+jobs:  
+  testing:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test_platform: ['ArchLinux','Debian-stable','Debian-testing','Fedora','Fedora-32','Fedora-rawhide','Ubuntu','Ubuntu-GCC-master']
+   
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v1
+      
+    - name: Test
+      run: bash -x ./test.sh ${{ matrix.test_platform }}
+       
+  update:
+    runs-on: ubuntu-latest
+    needs: testing
+    if: ${{ github.ref == 'master' }} && ! ${{ github.event.issue.pull_request }}
+    steps:
+    - name: Update
+      run: openssl aes-256-cbc -K $encrypted_99d730745b24_key -iv $encrypted_99d730745b24_iv -in secret.txt.enc -out secret.txt -d; source ./secret.txt; docker login -u lrineau -p $PASS; bash -x ./push.sh $PLATFORM; fi
+  
