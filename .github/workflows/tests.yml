@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test_platform: ['ArchLinux','CentOS-6','CentOS-6-32','CentOS-7','Debian-stable','Debian-testing','Fedora','Fedora-32','Fedora-rawhide','Ubuntu','Ubuntu-GCC-master']
+        test_platform: ['ArchLinux','CentOS-7','Debian-stable','Debian-testing','Fedora','Fedora-32','Fedora-rawhide','Ubuntu','Ubuntu-GCC-master']
    
     steps:
     - name: Git checkout
