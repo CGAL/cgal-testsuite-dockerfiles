@@ -20,8 +20,7 @@ RUN buildDeps='bison flex libmpc-dev g++ ' \
     --disable-bootstrap --build=x86_64-linux-gnu \
  && make -j"$(nproc)" \
  && make install \
- && make distclean \
- && cd ../.. \
+  && cd ../.. \
  && rm -rf ./gcc \
  && sed -i '1s/^/\/usr\/local\/lib64\n/' /etc/ld.so.conf \
  && ldconfig \
