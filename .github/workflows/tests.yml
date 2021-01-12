@@ -22,5 +22,7 @@ jobs:
     if: ${{ github.ref == 'master' }} && ! ${{ github.event.issue.pull_request }}
     steps:
     - name: Update
-      run: openssl aes-256-cbc -K $encrypted_99d730745b24_key -iv $encrypted_99d730745b24_iv -in secret.txt.enc -out secret.txt -d; source ./secret.txt; docker login -u lrineau -p $PASS; bash -x ./push.sh $PLATFORM; fi
+      run: |
+        docker login -u maxgimeno -p ${{ secrets.PASSWD }}
+        bash -x ./push.sh ${{ matrix.test_platform }}
   
