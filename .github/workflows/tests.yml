@@ -13,8 +13,8 @@ jobs:
     - name: Git checkout
       uses: actions/checkout@v1
       
-    - name: Test
-      run: bash -x ./test.sh ${{ matrix.test_platform }}
+    #- name: Test
+    #  run: bash -x ./test.sh ${{ matrix.test_platform }}
        
   update:
     runs-on: ubuntu-latest
@@ -23,6 +23,8 @@ jobs:
     steps:
     - name: Update
       run: |
-        docker login -u maxgimeno -p ${{ secrets.PASSWD }}
-        bash -x ./push.sh ${{ matrix.test_platform }}
+        pwd
+        ls
+        #docker login -u maxgimeno -p ${{ secrets.PASSWD }}
+        #bash -x ./push.sh ${{ matrix.test_platform }}
   
