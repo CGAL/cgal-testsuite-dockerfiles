@@ -13,18 +13,12 @@ jobs:
     - name: Git checkout
       uses: actions/checkout@v1
       
-    #- name: Test
-    #  run: bash -x ./test.sh ${{ matrix.test_platform }}
-       
-  update:
-    runs-on: ubuntu-latest
-    needs: testing
-    if: ${{ github.ref == 'master' }} && ! ${{ github.event.issue.pull_request }}
-    steps:
+    - name: Test
+      run: bash -x ./test.sh ${{ matrix.test_platform }}
+      
     - name: Update
+      if: ${{ github.ref == 'master' }} && ! ${{ github.event.issue.pull_request }}
       run: |
-        pwd
-        ls
-        #docker login -u maxgimeno -p ${{ secrets.PASSWD }}
-        #bash -x ./push.sh ${{ matrix.test_platform }}
-  
+        docker login -u maxgimeno -p ${{ secrets.PASSWD }}
+        bash -x ./push.sh ${{ matrix.test_platform }}
+        
