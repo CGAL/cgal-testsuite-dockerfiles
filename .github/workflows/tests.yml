@@ -1,0 +1,24 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:  
+  testing:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test_platform: ['ArchLinux','CentOS-7','Debian-stable','Debian-testing','Fedora','Fedora-32','Fedora-rawhide','Ubuntu','Ubuntu-GCC-master']
+   
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v1
+      
+    - name: Test
+      run: bash -x ./test.sh ${{ matrix.test_platform }}
+      
+    - name: Update
+      if: ${{ github.ref == 'master' }} && ! ${{ github.event.issue.pull_request }}
+      run: |
+        docker login -u maxgimeno -p ${{ secrets.PASSWD }}
+        bash -x ./push.sh ${{ matrix.test_platform }}
+        
