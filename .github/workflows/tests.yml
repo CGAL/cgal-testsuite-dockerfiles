@@ -17,9 +17,5 @@ jobs:
       run: bash -x ./test.sh ${{ matrix.test_platform }}
       
     - name: Update
-      run: |
-        if [ ${{ github.ref == 'master' }} ] && [ ! ${{ github.event.issue.pull_request }} ]; then
-          docker login -u maxgimeno -p ${{ secrets.PASSWD }}
-          bash -x ./push.sh ${{ matrix.test_platform }}
-        fi
+      run: if [ ${{ github.ref == 'master' }} ] && [ ! ${{ github.event.issue.pull_request }} ]; then docker login -u maxgimeno -p ${{ secrets.PASSWD }} && bash -x ./push.sh ${{ matrix.test_platform }} fi
         
