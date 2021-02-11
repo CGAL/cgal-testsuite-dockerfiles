@@ -2,20 +2,21 @@ name: Tests
 
 on: [push, pull_request]
 
-jobs:  
+jobs:
   testing:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         test_platform: ['ArchLinux','CentOS-7','Debian-stable','Debian-testing','Fedora','Fedora-32','Fedora-rawhide','Ubuntu','Ubuntu-GCC-master']
-   
+      fail-fast: false
+
     steps:
     - name: Git checkout
       uses: actions/checkout@v1
-      
+
     - name: Test
       run: bash -x ./test.sh ${{ matrix.test_platform }}
-      
+
     - name: Update
       run: |
         if [ ${{ github.event_name == 'push' }} && ${{ github.ref == 'refs/heads/master' }} ]; then
@@ -24,4 +25,4 @@ jobs:
         else
           echo "Don't upload on pull_requests"
         fi
-        
+
