@@ -6,6 +6,7 @@ MAINTAINER Alexander Kobel <alexander.kobel@mpi-inf.mpg.de>, Laurent Rineau <lau
 #   ipe: freetype2, lua, poppler, python2, zlib
 #   leda-free: tcsh
 # and clean up the package cache
+RUN pacman -Syu archlinux-keyring
 RUN pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
               base-devel \
               coreutils \
