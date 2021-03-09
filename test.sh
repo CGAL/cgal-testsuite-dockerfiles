@@ -2,26 +2,31 @@
 
 set -e
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1900021#c44
+if [ -n "$GITHUB_ACTIONS" ]; then
+    OPTIONS=--security-opt seccomp=unconfined
+fi
+
 if [ "$1" = ArchLinux ]
 then
-  docker build -t cgal/testsuite-docker:archlinux ./ArchLinux
-  docker build -t cgal/testsuite-docker:archlinux-cxx14 ./ArchLinux-CXX14
-  docker build -t cgal/testsuite-docker:archlinux-cxx17-release ./ArchLinux-CXX17-Release
-  docker build -t cgal/testsuite-docker:archlinux-clang ./ArchLinux-clang
-  docker build -t cgal/testsuite-docker:archlinux-clang-cxx14 ./ArchLinux-clang-CXX14
-  docker build -t cgal/testsuite-docker:archlinux-clang-cxx17-release ./ArchLinux-clang-CXX17-Release
-  docker build -t cgal/testsuite-docker:archlinux-clang-cxx20-release ./ArchLinux-clang-CXX20-Release
-  docker build -t cgal/testsuite-docker:archlinux-clang-release ./ArchLinux-clang-Release
+  docker build $OPTIONS -t cgal/testsuite-docker:archlinux ./ArchLinux
+  docker build $OPTIONS -t cgal/testsuite-docker:archlinux-cxx14 ./ArchLinux-CXX14
+  docker build $OPTIONS -t cgal/testsuite-docker:archlinux-cxx17-release ./ArchLinux-CXX17-Release
+  docker build $OPTIONS -t cgal/testsuite-docker:archlinux-clang ./ArchLinux-clang
+  docker build $OPTIONS -t cgal/testsuite-docker:archlinux-clang-cxx14 ./ArchLinux-clang-CXX14
+  docker build $OPTIONS -t cgal/testsuite-docker:archlinux-clang-cxx17-release ./ArchLinux-clang-CXX17-Release
+  docker build $OPTIONS -t cgal/testsuite-docker:archlinux-clang-cxx20-release ./ArchLinux-clang-CXX20-Release
+  docker build $OPTIONS -t cgal/testsuite-docker:archlinux-clang-release ./ArchLinux-clang-Release
 elif [ "$1" = CentOS-5 ]
 then
-  docker build -t cgal/testsuite-docker:centos5 ./CentOS-5
+  docker build $OPTIONS -t cgal/testsuite-docker:centos5 ./CentOS-5
 elif [ "$1" = CentOS-6 ]
 then
-  docker build -t cgal/testsuite-docker:centos6 ./CentOS-6
-  docker build -t cgal/testsuite-docker:centos6-cxx11-boost157 ./CentOS-6-CXX11-Boost157
+  docker build $OPTIONS -t cgal/testsuite-docker:centos6 ./CentOS-6
+  docker build $OPTIONS -t cgal/testsuite-docker:centos6-cxx11-boost157 ./CentOS-6-CXX11-Boost157
 elif [ "$1" = CentOS-6-32 ]
 then
-  docker build -t cgal/testsuite-docker:centos6-32 ./CentOS-6-32
+  docker build $OPTIONS -t cgal/testsuite-docker:centos6-32 ./CentOS-6-32
 elif [ "$1" = CentOS-7-ICC-beta ]
 then
     if [ -z "$ICC_BETA_ACTIVATION_SERIAL_NUMBER" -a -n "$TRAVIS_PULL_REQUEST" ]; then
@@ -33,48 +38,48 @@ then
         # transmit the secret at built time by http.
         docker network inspect local || docker network create local
         docker run --network local --name web -v $PWD/secret.file:/usr/share/nginx/html/index.html -d nginx
-        docker build --network local -t cgal/testsuite-docker:centos7-icc-beta ./CentOS-7-ICC-beta
+        docker build $OPTIONS --network local -t cgal/testsuite-docker:centos7-icc-beta ./CentOS-7-ICC-beta
     fi
 elif [ "$1" = CentOS-7-ICC ]
 then
-  docker build -t cgal/testsuite-docker:centos7-icc ./CentOS-7-ICC
+  docker build $OPTIONS -t cgal/testsuite-docker:centos7-icc ./CentOS-7-ICC
 elif [ "$1" = CentOS-7 ]
 then
-  docker build -t cgal/testsuite-docker:centos7 ./CentOS-7
-  docker build -t cgal/testsuite-docker:centos7-release ./CentOS-7-Release
+  docker build $OPTIONS -t cgal/testsuite-docker:centos7 ./CentOS-7
+  docker build $OPTIONS -t cgal/testsuite-docker:centos7-release ./CentOS-7-Release
 elif [ "$1" = Debian-stable ]
 then
-  docker build -t cgal/testsuite-docker:debian-stable ./Debian-stable
-  docker build -t cgal/testsuite-docker:debian-stable-release ./Debian-stable-Release
-  docker build -t cgal/testsuite-docker:debian-stable-cross-compilation-for-arm ./Debian-stable-cross-compilation-for-arm
+  docker build $OPTIONS -t cgal/testsuite-docker:debian-stable ./Debian-stable
+  docker build $OPTIONS -t cgal/testsuite-docker:debian-stable-release ./Debian-stable-Release
+  docker build $OPTIONS -t cgal/testsuite-docker:debian-stable-cross-compilation-for-arm ./Debian-stable-cross-compilation-for-arm
 elif [ "$1" = Debian-testing ]
 then
-  docker build -t cgal/testsuite-docker:debian-testing ./Debian-testing
+  docker build $OPTIONS -t cgal/testsuite-docker:debian-testing ./Debian-testing
 elif [ "$1" = Fedora ]
 then
-  docker build -t cgal/testsuite-docker:fedora ./Fedora
-  docker build -t cgal/testsuite-docker:fedora-with-leda ./Fedora-with-LEDA
-  docker build -t cgal/testsuite-docker:fedora-release ./Fedora-Release
-  docker build -t cgal/testsuite-docker:fedora-strict-ansi ./Fedora-strict-ansi
+  docker build $OPTIONS -t cgal/testsuite-docker:fedora ./Fedora
+  docker build $OPTIONS -t cgal/testsuite-docker:fedora-with-leda ./Fedora-with-LEDA
+  docker build $OPTIONS -t cgal/testsuite-docker:fedora-release ./Fedora-Release
+  docker build $OPTIONS -t cgal/testsuite-docker:fedora-strict-ansi ./Fedora-strict-ansi
 elif [ "$1" = Fedora-32 ]
 then
-  docker build -t cgal/testsuite-docker:fedora-32 ./Fedora-32
-  docker build -t cgal/testsuite-docker:fedora-32-release ./Fedora-32-Release
+  docker build $OPTIONS -t cgal/testsuite-docker:fedora-32 ./Fedora-32
+  docker build $OPTIONS -t cgal/testsuite-docker:fedora-32-release ./Fedora-32-Release
 elif [ "$1" = Fedora-rawhide ]
 then
-  docker build -t cgal/testsuite-docker:fedora-rawhide ./Fedora-rawhide
-  docker build -t cgal/testsuite-docker:fedora-rawhide-release ./Fedora-rawhide-Release
+  docker build $OPTIONS -t cgal/testsuite-docker:fedora-rawhide ./Fedora-rawhide
+  docker build $OPTIONS -t cgal/testsuite-docker:fedora-rawhide-release ./Fedora-rawhide-Release
 elif [ "$1" = Ubuntu ]
 then
-  docker build -t cgal/testsuite-docker:ubuntu ./Ubuntu
-  docker build -t cgal/testsuite-docker:ubuntu-cxx11 ./Ubuntu-CXX11
-  docker build -t cgal/testsuite-docker:ubuntu-no-deprecated-code ./Ubuntu-NO_DEPRECATED_CODE
-  docker build -t cgal/testsuite-docker:ubuntu-no-gmp-no-leda ./Ubuntu-no-gmp-no-leda
+  docker build $OPTIONS -t cgal/testsuite-docker:ubuntu ./Ubuntu
+  docker build $OPTIONS -t cgal/testsuite-docker:ubuntu-cxx11 ./Ubuntu-CXX11
+  docker build $OPTIONS -t cgal/testsuite-docker:ubuntu-no-deprecated-code ./Ubuntu-NO_DEPRECATED_CODE
+  docker build $OPTIONS -t cgal/testsuite-docker:ubuntu-no-gmp-no-leda ./Ubuntu-no-gmp-no-leda
 elif [ "$1" = Ubuntu-GCC-master ]
 then
-  docker build -t cgal/testsuite-docker:ubuntu-gcc6 ./Ubuntu-GCC6
-  docker build -t cgal/testsuite-docker:ubuntu-gcc6-cxx1z ./Ubuntu-GCC6-CXX1Z
-  docker build -t cgal/testsuite-docker:ubuntu-gcc6-release ./Ubuntu-GCC6-Release
-  docker build -t cgal/testsuite-docker:ubuntu-gcc_master_cxx20-release ./Ubuntu-GCC_master_cpp20-Release
+  docker build $OPTIONS -t cgal/testsuite-docker:ubuntu-gcc6 ./Ubuntu-GCC6
+  docker build $OPTIONS -t cgal/testsuite-docker:ubuntu-gcc6-cxx1z ./Ubuntu-GCC6-CXX1Z
+  docker build $OPTIONS -t cgal/testsuite-docker:ubuntu-gcc6-release ./Ubuntu-GCC6-Release
+  docker build $OPTIONS -t cgal/testsuite-docker:ubuntu-gcc_master_cxx20-release ./Ubuntu-GCC_master_cpp20-Release
 fi
 docker images
