@@ -39,6 +39,16 @@ RUN git clone git://github.com/ethz-asl/libpointmatcher.git \
  && cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release ${SRC_DIR} \
  && make -j"$(nproc)" && make install \
  && cd ../.. && rm -rf libpointmatcher
+ 
+RUN git clone --recursive https://github.com/oxfordcontrol/osqp \
+ && cd ./osqp \
+ && mkdir build \
+ && cd build \
+ && cmake .. \
+ && make -j"$(nproc)" \
+ && make install \
+ && cd ../.. \
+ && rm -rf osqp
 
 
 
