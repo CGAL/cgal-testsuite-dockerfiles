@@ -1,5 +1,4 @@
-FROM archlinux/base:latest
-MAINTAINER Alexander Kobel <alexander.kobel@mpi-inf.mpg.de>, Laurent Rineau <laurent.rineau@cgal.org>
+FROM archlinux:base-devel
 
 # Install additional packages beyond the baseline.
 # Install dependencies of the AUR (user repository) packages to be built from source later
