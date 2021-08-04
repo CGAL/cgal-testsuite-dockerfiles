@@ -1,6 +1,11 @@
 name: Tests
 
-on: [push, pull_request]
+on: 
+  push:
+  pull_request:
+  schedule:
+    # On Sundays at 01:00
+    - cron: '0 1 * * SUN'
 
 jobs:
   testing:

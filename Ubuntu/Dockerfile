@@ -10,7 +10,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libmpfr-dev zlib1g-dev \
     libeigen3-dev libglew1.5-dev libipe-dev \
     libmpfi-dev libqglviewer-dev-qt5 \
-    libtbb-dev git
+    libinsighttoolkit4-dev libtbb-dev git
 
 RUN git clone https://github.com/STORM-IRIT/OpenGR.git --depth 1 \
  && cd ./OpenGR \
@@ -39,8 +39,16 @@ RUN git clone git://github.com/ethz-asl/libpointmatcher.git \
  && cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release ${SRC_DIR} \
  && make -j"$(nproc)" && make install \
  && cd ../.. && rm -rf libpointmatcher
-
-
+ 
+RUN git clone --recursive https://github.com/oxfordcontrol/osqp \
+ && cd ./osqp \
+ && mkdir build \
+ && cd build \
+ && cmake .. \
+ && make -j"$(nproc)" \
+ && make install \
+ && cd ../.. \
+ && rm -rf osqp
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt5:BOOL=OFF\")"
