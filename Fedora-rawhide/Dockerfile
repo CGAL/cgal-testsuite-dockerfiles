@@ -4,7 +4,7 @@ MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 RUN rpm --import https://src.fedoraproject.org/rpms/fedora-repos/blob/main/f/RPM-GPG-KEY-fedora-35-primary && \
     cat /etc/resolv.conf && \
     dnf -y update && \
-    cat /etc/resolv.conf && echo && resolvectl && \
+    systemctl restart NetworkManager && systemctl restart systemd-resolved && cat /etc/resolv.conf && echo && resolvectl && \
     dnf -y install make cmake gcc-c++ \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    boost-devel.x86_64 \
