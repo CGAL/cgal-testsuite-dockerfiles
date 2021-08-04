@@ -2,7 +2,7 @@ FROM fedora:rawhide
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN rpm --import https://src.fedoraproject.org/rpms/fedora-repos/blob/main/f/RPM-GPG-KEY-fedora-35-primary && \
-    dnf -y update --exclude systemd-resolved && \
+    dnf -y update --exclude systemd,systemd-resolved && \
     dnf -y install make cmake gcc-c++ \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    boost-devel.x86_64 \
