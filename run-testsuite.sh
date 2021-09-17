@@ -26,6 +26,8 @@ export CGAL_RELEASE_DIR="/mnt/testsuite/"
 CGAL_SRC_DIR="${CGAL_RELEASE_DIR}src/"
 # Directory where CGAL tests are stored.
 CGAL_TEST_DIR="${CGAL_RELEASE_DIR}test/"
+# Directory where CGAL data are stored.
+CGAL_DATA_DIR="${CGAL_RELEASE_DIR}data/"
 
 # The directory where testresults are stored.
 CGAL_TESTRESULTS="/mnt/testresults/"
@@ -43,6 +45,7 @@ CGAL_TEST_BUILD_DIR="$HOME/build/src/cmake/platforms/${CGAL_TEST_PLATFORM}/test/
 
 export CGAL_DIR
 export CGAL_TEST_PLATFORM
+export CGAL_DATA_DIR
 
 # Create the binary directories
 if [ ! -d "${CGAL_SRC_BUILD_DIR}" ]; then 
