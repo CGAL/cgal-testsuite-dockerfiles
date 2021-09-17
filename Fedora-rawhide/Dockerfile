@@ -2,7 +2,6 @@ FROM fedora:rawhide
 MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN rpm --import https://src.fedoraproject.org/rpms/fedora-repos/blob/main/f/RPM-GPG-KEY-fedora-35-primary && \
-    dnf -y update && \
     dnf -y install make cmake gcc-c++ \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    boost-devel.x86_64 \
@@ -19,7 +18,9 @@ RUN rpm --import https://src.fedoraproject.org/rpms/fedora-repos/blob/main/f/RPM
                    tbb-devel \
                    zlib-devel.x86_64 \
 		   diffutils \
-                   tar && dnf clean all
+                   tar && \
+    dnf -y update --exclude systemd,systemd-resolved && \
+    dnf clean all
 
 ENV CGAL_TEST_PLATFORM="Fedora-rawhide"
 ENV CGAL_CMAKE_FLAGS="('-DCGAL_HEADER_ONLY:BOOL=TRUE')"
