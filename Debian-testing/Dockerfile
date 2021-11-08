@@ -9,7 +9,7 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     libboost-program-options-dev \
     libboost-thread-dev \
     libeigen3-dev \
-    libglew1.5-dev \
+    libglew-dev \
     libgmp10-dev \
     libipe-dev \
     libmpfi-dev \
