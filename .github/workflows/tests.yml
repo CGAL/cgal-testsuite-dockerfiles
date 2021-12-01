@@ -1,6 +1,6 @@
 name: Tests
 
-on: 
+on:
   push:
   pull_request:
   schedule:
@@ -24,7 +24,7 @@ jobs:
 
     - name: Push images
       run: |
-        if ${{ github.event_name == 'push' }} && ${{ github.ref == 'refs/heads/master' }}; then
+        if ${{ github.event_name == 'push' || github.event_name == 'schedule' }} && ${{ github.ref == 'refs/heads/master' }}; then
           docker login -u maxgimeno -p ${{ secrets.PASSWD }}
           bash -x ./push.sh ${{ matrix.test_platform }}
         else
