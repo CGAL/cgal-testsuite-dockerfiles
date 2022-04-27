@@ -1,5 +1,6 @@
 FROM debian:testing
 ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN apt-get clean && apt-get update && apt-get install -y \
     build-essential \

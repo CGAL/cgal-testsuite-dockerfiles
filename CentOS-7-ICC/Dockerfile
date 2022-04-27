@@ -1,5 +1,6 @@
 FROM cgal/testsuite-docker:centos7
 ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN yum -y install \
     wget \

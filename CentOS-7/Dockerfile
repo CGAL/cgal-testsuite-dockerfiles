@@ -1,5 +1,6 @@
 FROM centos:centos7
 ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN yum -y update; yum clean all
 RUN yum -y install epel-release.noarch; yum clean all

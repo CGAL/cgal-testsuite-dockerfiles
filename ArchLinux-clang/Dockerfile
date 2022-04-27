@@ -1,5 +1,6 @@
 FROM cgal/testsuite-docker:archlinux
 ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN pacman -Syyu --noconfirm && pacman -S --noconfirm clang && pacman -Scc --noconfirm
 

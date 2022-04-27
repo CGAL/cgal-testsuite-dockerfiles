@@ -1,5 +1,6 @@
 FROM fedora:latest
 ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN dnf -y update; dnf clean all
 RUN dnf -y install \

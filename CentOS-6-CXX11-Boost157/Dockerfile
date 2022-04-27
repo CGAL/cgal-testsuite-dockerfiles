@@ -1,5 +1,6 @@
 FROM cgal/testsuite-docker:centos6
 ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 # cgal/testsuite-docker:centos6 has a boost installation, remove it
 RUN rm -rf /usr/local/include/boost

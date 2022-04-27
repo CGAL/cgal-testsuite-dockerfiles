@@ -1,5 +1,6 @@
 FROM cgal/testsuite-docker:debian-stable
 ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN apt-get update && apt-get install -y \
     gcc-arm-linux-gnueabihf \

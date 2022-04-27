@@ -1,5 +1,6 @@
 FROM fedora:rawhide
 ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN rpm --import https://src.fedoraproject.org/rpms/fedora-repos/blob/main/f/RPM-GPG-KEY-fedora-35-primary && \
     echo "install make cmake gcc-c++ \

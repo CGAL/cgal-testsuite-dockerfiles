@@ -1,5 +1,6 @@
 FROM cgal/testsuite-docker:ubuntu
 ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN apt-get update && apt-get install -y \
     build-essential \

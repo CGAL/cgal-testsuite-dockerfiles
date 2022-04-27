@@ -1,6 +1,7 @@
 FROM cgal/testsuite-docker:ubuntu
 
 ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 #install the necessary packages
 RUN apt-get update \

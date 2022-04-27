@@ -1,6 +1,7 @@
 FROM cgal/testsuite-docker:fedora
 
 ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 #install the necessary packages
 RUN dnf -y update; dnf clean all
