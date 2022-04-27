@@ -1,5 +1,5 @@
 FROM fedora:latest
-MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
+ARG dockerfile_url
 
 RUN dnf -y update; dnf clean all
 RUN dnf -y install \

@@ -1,5 +1,5 @@
 FROM cgal/testsuite-docker:fedora-rawhide
-MAINTAINER Maxime Gimeno <maxime.gimeno@gmail.com>
+ARG dockerfile_url
 RUN dnf -y install \
     libasan.x86_64 \
     tar && dnf clean all

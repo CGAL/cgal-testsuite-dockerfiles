@@ -1,6 +1,6 @@
 FROM cgal/testsuite-docker:ubuntu
 
-MAINTAINER Maxime Gimeno
+ARG dockerfile_url
 
 #install the necessary packages
 RUN apt-get update \

@@ -1,5 +1,5 @@
 FROM debian:stable
-MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
+ARG dockerfile_url
 
 RUN apt-get update && apt-get install -y \
     build-essential \

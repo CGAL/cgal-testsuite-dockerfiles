@@ -1,5 +1,5 @@
 FROM centos:centos5
-MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
+ARG dockerfile_url
 
 RUN yum -y update; yum clean all
 RUN yum -y install \

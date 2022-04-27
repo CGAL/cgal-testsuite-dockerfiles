@@ -1,6 +1,6 @@
 # This image can run the cgal-testsuite with the latest clang and libc++
 FROM cgal/testsuite-docker:archlinux
-MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
+ARG dockerfile_url
 
 # Tools needed to build llvm
 RUN pacman -Syyu --noconfirm

@@ -1,4 +1,5 @@
 FROM ubuntu:latest
+ARG dockerfile_url
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential cmake \

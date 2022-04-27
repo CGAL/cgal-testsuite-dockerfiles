@@ -1,5 +1,5 @@
 FROM cgal/testsuite-docker:centos6
-MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
+ARG dockerfile_url
 
 # cgal/testsuite-docker:centos6 has a boost installation, remove it
 RUN rm -rf /usr/local/include/boost

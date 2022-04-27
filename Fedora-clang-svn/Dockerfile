@@ -1,6 +1,6 @@
 FROM cgal/testsuite-docker:fedora
 
-MAINTAINER Maxime Gimeno
+ARG dockerfile_url
 
 #install the necessary packages
 RUN dnf -y update; dnf clean all

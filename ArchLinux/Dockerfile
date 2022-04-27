@@ -1,4 +1,5 @@
 FROM archlinux:base-devel
+ARG dockerfile_url
 
 # Install additional packages beyond the baseline.
 # Install dependencies of the AUR (user repository) packages to be built from source later
