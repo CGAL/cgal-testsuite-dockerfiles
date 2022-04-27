@@ -22,7 +22,7 @@ RUN git clone https://github.com/STORM-IRIT/OpenGR.git --depth 1 \
  && cd ../.. \
  && rm -rf ./OpenGR
 
-RUN git clone git://github.com/ethz-asl/libnabo.git \
+RUN git clone https://github.com/ethz-asl/libnabo.git \
  && cd libnabo \
  && SRC_DIR=`pwd` && BUILD_DIR=${SRC_DIR}/build \
  && mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} \
@@ -30,7 +30,7 @@ RUN git clone git://github.com/ethz-asl/libnabo.git \
  && make && make install \
  && cd ../.. && rm -rf libnado
 
-RUN git clone git://github.com/ethz-asl/libpointmatcher.git \
+RUN git clone https://github.com/ethz-asl/libpointmatcher.git \
  && cd libpointmatcher \
  && SRC_DIR=`pwd` \
  && BUILD_DIR=${SRC_DIR}/build \

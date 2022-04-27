@@ -21,7 +21,7 @@ RUN pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
                  tcsh \
     && pacman -Scc
 #Install latest cmake from the `next` branch on github
-RUN git clone git://github.com/Kitware/CMake.git --depth 1 \
+RUN git clone https://github.com/Kitware/CMake.git --depth 1 \
  && cd ./CMake \
  && git branch next \
  && mkdir build \
