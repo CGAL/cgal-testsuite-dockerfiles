@@ -1,5 +1,4 @@
 FROM ubuntu:latest
-MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential cmake \
@@ -8,7 +7,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     tar \
     libboost-all-dev libgmp10-dev \
     libmpfr-dev zlib1g-dev \
-    libeigen3-dev libglew1.5-dev libipe-dev \
+    libeigen3-dev libipe-dev \
     libmpfi-dev libqglviewer-dev-qt5 \
     libinsighttoolkit4-dev libtbb-dev git
 
