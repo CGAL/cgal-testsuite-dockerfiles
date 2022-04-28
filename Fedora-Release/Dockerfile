@@ -1,5 +1,6 @@
 FROM cgal/testsuite-docker:fedora
-MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
+ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 ENV CGAL_TEST_PLATFORM="Fedora-Release"
 ENV CGAL_CMAKE_FLAGS="('-DCMAKE_BUILD_TYPE=Release' '-DCMAKE_CXX_FLAGS_RELEASE=-msse3 -O3 -DCGAL_NDEBUG' '-DWITH_GMPXX=ON')"

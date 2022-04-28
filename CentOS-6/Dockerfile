@@ -1,5 +1,6 @@
 FROM centos:centos6
-MAINTAINER Laurent Rineau <laurent.rineau@cgal.org>
+ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN yum -y install epel-release.noarch; yum -y update; yum clean all
 RUN yum -y install \

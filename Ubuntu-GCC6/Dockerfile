@@ -1,5 +1,6 @@
 FROM cgal/testsuite-docker:ubuntu
-MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
+ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -12,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN buildDeps='bison flex libmpc-dev g++ ' \
  && apt-get update && apt-get install -y $buildDeps --no-install-recommends \
- && git clone git://github.com/gcc-mirror/gcc.git --depth 1 \
+ && git clone https://github.com/gcc-mirror/gcc.git --depth 1 \
  && cd gcc \
  && mkdir objdir \
  && cd objdir \

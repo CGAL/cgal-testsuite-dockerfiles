@@ -1,5 +1,6 @@
 FROM ubuntu:latest
-MAINTAINER Philipp Moeller <bootsarehax@gmail.com>
+ARG dockerfile_url
+ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential cmake \
@@ -8,7 +9,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     tar \
     libboost-all-dev libgmp10-dev \
     libmpfr-dev zlib1g-dev \
-    libeigen3-dev libglew1.5-dev libipe-dev \
+    libeigen3-dev libipe-dev \
     libmpfi-dev libqglviewer-dev-qt5 \
     libinsighttoolkit4-dev libtbb-dev git
 
@@ -23,7 +24,7 @@ RUN git clone https://github.com/STORM-IRIT/OpenGR.git --depth 1 \
  && cd ../.. \
  && rm -rf ./OpenGR
 
-RUN git clone git://github.com/ethz-asl/libnabo.git \
+RUN git clone https://github.com/ethz-asl/libnabo.git \
  && cd libnabo \
  && SRC_DIR=`pwd` && BUILD_DIR=${SRC_DIR}/build \
  && mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} \
@@ -31,7 +32,7 @@ RUN git clone git://github.com/ethz-asl/libnabo.git \
  && make && make install \
  && cd ../.. && rm -rf libnado
 
-RUN git clone git://github.com/ethz-asl/libpointmatcher.git \
+RUN git clone https://github.com/ethz-asl/libpointmatcher.git \
  && cd libpointmatcher \
  && SRC_DIR=`pwd` \
  && BUILD_DIR=${SRC_DIR}/build \
