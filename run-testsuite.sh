@@ -60,9 +60,11 @@ fi
 cd "${CGAL_SRC_BUILD_DIR}"
 if [ -n "$DOCKERFILE_URL" ]; then
     echo "Docker image built from ${DOCKERFILE_URL}" | tee "installation.log"
+else
+    echo "Docker container" > installation.log
 fi
 cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DRUNNING_CGAL_AUTO_TEST=TRUE \
-      "${CGAL_CMAKE_FLAGS[@]}" "${CGAL_RELEASE_DIR}" 2>&1 | tee "installation.log"
+      "${CGAL_CMAKE_FLAGS[@]}" "${CGAL_RELEASE_DIR}" 2>&1 | tee -a "installation.log"
 make VERBOSE=ON -k -fMakefile 2>&1 | tee -a "installation.log"
 
 # Build and Execute the Tests
