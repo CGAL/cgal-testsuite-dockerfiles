@@ -4,7 +4,7 @@ ENV DOCKERFILE_URL=$dockerfile_url
 
 # Install additional packages beyond the baseline.
 # Install dependencies of the AUR (user repository) packages to be built from source later
-#   ipe: freetype2, lua, poppler, python2, zlib
+#   ipe: freetype2, lua, poppler, python3, zlib
 #   leda-free: tcsh
 # and clean up the package cache
 RUN pacman --noconfirm -Syu archlinux-keyring
@@ -19,7 +19,7 @@ RUN pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
               qt5-base qt5-script qt5-svg qt5-tools \
 	      intel-tbb \
     && pacman -S --needed --noconfirm --asdeps \
-                 freetype2 lua poppler python2 zlib \
+                 freetype2 lua poppler python3 zlib \
                  tcsh \
     && pacman -Scc
 #Install latest cmake from the `next` branch on github
