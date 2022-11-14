@@ -29,7 +29,7 @@ RUN dnf -y install \
     qt5-qtsvg-devel.i686 \
     qt5-qttools-devel.i686 \
     tar \
-    tbb-devel \
+    tbb-devel.i686 \
     diffutils \
     zlib-devel.i686 && dnf clean all
 
