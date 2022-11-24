@@ -22,7 +22,7 @@ RUN rpm --import https://src.fedoraproject.org/rpms/fedora-repos/blob/main/f/RPM
                    tar" >> dnf-cmd && \
     echo update >> dnf-cmd && \
     echo run >> dnf-cmd && \
-    dnf -y shell dnf-cmd && rm dnf-cmd && \
+    dnf -y --refresh shell dnf-cmd && rm dnf-cmd && \
     dnf clean all
 
 ENV CGAL_TEST_PLATFORM="Fedora-rawhide"
