@@ -17,22 +17,22 @@ RUN pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
               glew glu mesa \
               gmp mpfr mpfi ntl \
               qt5-base qt5-script qt5-svg qt5-tools \
-	      intel-tbb \
+	          intel-tbb \
     && pacman -S --needed --noconfirm --asdeps \
                  freetype2 lua poppler python3 zlib \
                  tcsh \
     && pacman -Scc
 #Install latest cmake from the `next` branch on github
 RUN git clone https://github.com/Kitware/CMake.git --depth 1 \
- && cd ./CMake \
- && git branch next \
- && mkdir build \
- && cd build \
- && env CC=cc CXX=c++ ../bootstrap \
- && make -j"$(nproc)" \
- && make install \
- && cd ../.. \
- && rm -rf ./CMake
+    && cd ./CMake \
+    && git branch next \
+    && mkdir build \
+    && cd build \
+    && env CC=cc CXX=c++ ../bootstrap \
+    && make -j"$(nproc)" \
+    && make install \
+    && cd ../.. \
+    && rm -rf ./CMake
 
 # create a group for building AUR (user contributed) packages from sources
 # (not allowed as root for security reasons)
@@ -63,18 +63,18 @@ WORKDIR /tmp/makepkg
 RUN pacman -U --noconfirm *.pkg.tar.zst && \
     rm *.pkg.tar.zst
 
- RUN pacman -Sy --noconfirm unzip \
- && cd /tmp \
- && curl -sSL "https://github.com/CGAL/LAStools/archive/LAStools-2020-11-09.zip" -o master.zip \
- && unzip master.zip \
- && cd ./LAStools-LAStools-2020-11-09 \
- && cmake -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ -DCMAKE_CXX_FLAGS=-std=c++11 . \
- && make -j "$(nproc)" \
- && make install \
- && cd .. \
- && rm -rf LAStools-LAStools-2020-11-09 \
- && rm -rf master.zip \
- && pacman -Scc
+RUN pacman -Sy --noconfirm unzip \
+    && cd /tmp \
+    && curl -sSL "https://github.com/CGAL/LAStools/archive/LAStools-2020-11-09.zip" -o master.zip \
+    && unzip master.zip \
+    && cd ./LAStools-LAStools-2020-11-09 \
+    && cmake -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ -DCMAKE_CXX_FLAGS=-std=c++11 . \
+    && make -j "$(nproc)" \
+    && make install \
+    && cd .. \
+    && rm -rf LAStools-LAStools-2020-11-09 \
+    && rm -rf master.zip \
+    && pacman -Scc
 
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
