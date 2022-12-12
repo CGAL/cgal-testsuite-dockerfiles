@@ -1,9 +1,3 @@
-FROM archlinux:base-devel as get-testing-mpfr
-COPY pacman.sed .
-RUN sed -i -f pacman.sed /etc/pacman.conf
-RUN pacman --noconfirm -Syu archlinux-keyring
-RUN pacman -Sy
-
 FROM archlinux:base-devel
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
@@ -14,17 +8,14 @@ ENV DOCKERFILE_URL=$dockerfile_url
 #   leda-free: tcsh
 # and clean up the package cache
 RUN pacman --noconfirm -Syu archlinux-keyring
-COPY --from=get-testing-mpfr /var/cache/pacman/pkg/mpfr-4.1.1.p1-1-x86_64.pkg.tar.zst .
-RUN pacman -Syu --noconfirm \
-    && pacman -U --noconfirm mpfr-4.1.1.p1-1-x86_64.pkg.tar.zst \
-    && pacman -S --needed --noconfirm \
+RUN pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
               base-devel \
               coreutils \
               git \
               boost \
               eigen \
               glew glu mesa \
-              gmp mpfi ntl \
+              gmp mpfr mpfi ntl \
               qt5-base qt5-script qt5-svg qt5-tools \
 	          intel-tbb \
     && pacman -S --needed --noconfirm --asdeps \
