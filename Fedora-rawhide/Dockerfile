@@ -13,7 +13,6 @@ RUN rpm --import https://src.fedoraproject.org/rpms/fedora-repos/blob/main/f/RPM
                    qt5-qtscript-devel.x86_64 \
                    qt5-qtsvg-devel.x86_64 \
                    qt5-qttools-devel.x86_64 \
-                   libQGLViewer-qt5-devel.x86_64 \
                    mesa-libGLU-devel \
                    OpenMesh-devel \
                    tbb-devel \

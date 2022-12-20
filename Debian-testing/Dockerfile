@@ -15,7 +15,6 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     libipe-dev \
     libmpfi-dev \
     libmpfr-dev \
-    libqglviewer-dev-qt5 \
     qtbase5-dev \
     qtscript5-dev \
     qttools5-dev \
@@ -27,6 +26,5 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     zlib1g-dev
 
 ENV CGAL_TEST_PLATFORM="Debian-Testing"
-ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake

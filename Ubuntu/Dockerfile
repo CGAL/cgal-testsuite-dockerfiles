@@ -10,7 +10,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libboost-all-dev libgmp10-dev \
     libmpfr-dev zlib1g-dev \
     libeigen3-dev libipe-dev \
-    libmpfi-dev libqglviewer-dev-qt5 \
+    libmpfi-dev \
     libinsighttoolkit4-dev libtbb-dev git
 
 RUN git clone https://github.com/STORM-IRIT/OpenGR.git --depth 1 \

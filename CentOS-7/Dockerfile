@@ -31,11 +31,6 @@ RUN cd /usr \
 RUN cd /usr \
 && ./cmake.sh --skip-license
 
-RUN cd /etc/yum.repos.d/ && \
-    curl -s -SLO https://copr.fedoraproject.org/coprs/rineau/libQGLViewer-qt5/repo/epel-7/rineau-libQGLViewer-qt5-epel-7.repo && \
-    rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg && \
-    yum -y install libQGLViewer-qt5-devel.x86_64; yum clean all
-
 #
 # The CMAKE_GENERATOR trick is used to pass a CMake variable to each CMake
 # run by the testsuite.
