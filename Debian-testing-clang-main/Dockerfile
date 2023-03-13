@@ -8,7 +8,7 @@ RUN apt-get update -y \
 && apt-get clean all \
 && cd .. && wget https://apt.llvm.org/llvm.sh \
 && chmod +x llvm.sh \
-&& ./llvm.sh 16 \
+&& bash -x ./llvm.sh 16 \
 && rm ./llvm.sh 
 
 ENV CXX=/usr/bin/clang++-16
