@@ -31,24 +31,20 @@ CGAL_DATA_DIR="${CGAL_RELEASE_DIR}data/"
 
 # The directory where testresults are stored.
 CGAL_TESTRESULTS="/mnt/testresults/"
-# The actual logfile.
-CGAL_LOG_FILE="${CGAL_TESTRESULTS}${CGAL_TEST_PLATFORM}"
 
-# The directory of the build tree. The layout is so convoluted so
-# satisfy collect_cgal_testresults_from_cmake.
-#
-# It assumes the build directory containing CMakeCache.txt,
-# include/CGAL/compiler_config.h, etc. to be the parent directory.
 CGAL_DIR="$HOME/build/src/cmake/platforms/${CGAL_TEST_PLATFORM}/"
+# The directory where the release is built.
 CGAL_SRC_BUILD_DIR="${CGAL_DIR}"
+# The directory where the tests are built.
 CGAL_TEST_BUILD_DIR="$HOME/build/src/cmake/platforms/${CGAL_TEST_PLATFORM}/test/"
+PLATFORM="$CGAL_TEST_PLATFORM"
 
 export CGAL_DIR
 export CGAL_TEST_PLATFORM
 export CGAL_DATA_DIR
 
 # Create the binary directories
-if [ ! -d "${CGAL_SRC_BUILD_DIR}" ]; then 
+if [ ! -d "${CGAL_SRC_BUILD_DIR}" ]; then
     mkdir -p "${CGAL_SRC_BUILD_DIR}"
 fi
 if [ ! -d "${CGAL_TEST_BUILD_DIR}" ]; then
@@ -57,31 +53,80 @@ fi
 
 # Build CGAL. The CGAL_CMAKE_FLAGS used here will affect all other
 # builds using this binary directory.
+
 cd "${CGAL_SRC_BUILD_DIR}"
 if [ -n "$DOCKERFILE_URL" ]; then
-    echo "Docker image built from ${DOCKERFILE_URL}" | tee "installation.log"
+    echo "Docker image built from ${DOCKERFILE_URL}" | tee "${CGAL_TESTRESULTS}installation.log"
 else
-    echo "Docker container" > installation.log
+    echo "Docker container" > ${CGAL_TESTRESULTS}installation.log
 fi
-cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DRUNNING_CGAL_AUTO_TEST=TRUE \
-      "${CGAL_CMAKE_FLAGS[@]}" "${CGAL_RELEASE_DIR}" 2>&1 | tee -a "installation.log"
-make VERBOSE=ON -k -fMakefile 2>&1 | tee -a "installation.log"
 
-# Build and Execute the Tests
+cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON -DWITH_tests=ON -DCGAL_TEST_SUITE=ON $CGAL_RELEASE_DIR >${CGAL_TESTRESULTS}installation.log 2>&1
+rm CMakeCache.txt
+CMAKE_OPTS="-DCGAL_TEST_SUITE=ON -DCMAKE_VERBOSE_MAKEFILE=ON -DWITH_tests=ON"
+if [ -z "${SHOW_PROGRESS}" ]; then
+  cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON ${CMAKE_OPTS} $CGAL_RELEASE_DIR >${CGAL_TESTRESULTS}package_installation.log 2>&1
+else
+  cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON ${CMAKE_OPTS} $CGAL_RELEASE_DIR 2>&1 |tee ${CGAL_TESTRESULTS}package_installation.log
+fi
 
-# We need to make a copy of the whole test dir because the current
-# scripts don't allow out of source builds.
-cp -r "${CGAL_TEST_DIR}/." "${CGAL_TEST_BUILD_DIR}"
-cd "${CGAL_TEST_BUILD_DIR}"
-make -j ${CGAL_NUMBER_OF_JOBS} -k -fmakefile2
+LIST_TEST_FILE="${CGAL_TESTRESULTS}list_test_packages"
+if [ -f ${LIST_TEST_FILE} ]; then
+  LIST_TEST_PACKAGES=$(source ${LIST_TEST_FILE})
+fi
+INIT=""
+for pkg in $LIST_TEST_PACKAGES; do
+  if [ -z "$INIT" ]; then
+    TO_TEST=$pkg
+    INIT="y"
+  else
+    TO_TEST="${TO_TEST}|$pkg"
+  fi
+done
+#unsets the limit of 1024 bits for the logs through ssh
+echo "SET(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 1000000000)" > CTestCustom.cmake
+echo "SET(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 1000000000)" >> CTestCustom.cmake
+CTEST_OPTS="-T Start -T Test --timeout 1200 ${DO_NOT_TEST:+-E execution___of__}"
+if [ -z "${SHOW_PROGRESS}" ]; then
+    ctest ${TO_TEST:+-L ${TO_TEST} } ${CTEST_OPTS} -j${NUMBER_OF_PROCESSORS} ${KEEP_TESTS:+-FC .}>tmp.txt
+else
+    ctest ${TO_TEST:+-L ${TO_TEST} } ${CTEST_OPTS} -j${NUMBER_OF_PROCESSORS} ${KEEP_TESTS:+-FC .}|tee tmp.txt
+fi
 
-# Copy version.h, so that collect_cgal_testresults_from_cmake can find it.
-mkdir -p "$HOME/build/src/include/CGAL"
-cp "${CGAL_RELEASE_DIR}/include/CGAL/version.h" "$HOME/build/src/include/CGAL"
-cp "${CGAL_RELEASE_DIR}"/.scm* "$HOME/build/src/"
+TAG_DIR=$(awk '/^Create new tag: /{print $4F}' tmp.txt)
+rm tmp.txt
+cd Testing/${TAG_DIR}
+RESULT_FILE=./"results_${CGAL_TESTER}_${PLATFORM}.txt"
+rm -f "$RESULT_FILE"
+touch "$RESULT_FILE"
 
-./collect_cgal_testresults_from_cmake
+sed -n '/The CXX compiler/s/-- The CXX compiler identification is/COMPILER_VERSION =/p' < "${CGAL_TESTRESULTS}installation.log" |sed -E "s/ = (.*)/\ = '\1\'/">> "$RESULT_FILE"
+sed -n '/CGAL_VERSION /s/#define //p' < "${CGAL_RELEASE_DIR}include/CGAL/version.h" >> "$RESULT_FILE"
+echo "TESTER ${CGAL_TESTER}" >> "$RESULT_FILE"
+echo "TESTER_NAME ${CGAL_TESTER}" >> "$RESULT_FILE"
+echo "TESTER_ADDRESS ${TESTER_ADDRESS}" >> "$RESULT_FILE"
+echo "CGAL_TEST_PLATFORM ${PLATFORM}" >> "$RESULT_FILE"
+grep -e "^-- USING " "${CGAL_TESTRESULTS}installation.log"|sort -u >> $RESULT_FILE
+#Use sed to get the content of DEBUG or RELEASE CXX FLAGS so that Multiconfiguration platforms do provide their CXXXFLAGS to the testsuite page (that greps USING CXXFLAGS to get info)
+sed -i -E 's/(^-- USING )(DEBUG|RELEASE) (CXXFLAGS)/\1\3/' $RESULT_FILE
+echo "------------" >> "$RESULT_FILE"
+touch ../../../../../.scm-branch
+python3 ${CGAL_RELEASE_DIR}test/parse-ctest-dashboard-xml.py $CGAL_TESTER $PLATFORM
 
-# Those are the files generated by collect_cgal_testresults_from_cmake.
-cp "results_${CGAL_TESTER}_${CGAL_TEST_PLATFORM}.tar.gz" "results_${CGAL_TESTER}_${CGAL_TEST_PLATFORM}.txt" \
-   "${CGAL_TESTRESULTS}/"
+for file in $(ls|grep _Tests); do
+  mv $file "$(echo "$file" | sed 's/_Tests//g')"
+done
+OUTPUT_FILE=results_${CGAL_TESTER}_${PLATFORM}.tar
+TEST_REPORT="TestReport_${CGAL_TESTER}_${PLATFORM}"
+mkdir -p Installation
+chmod 777 Installation
+cat "${CGAL_TESTRESULTS}package_installation.log" >> "Installation/${TEST_REPORT}"
+
+#call the python script to complete the results report.
+python3 ${CGAL_RELEASE_DIR}test/post_process_ctest_results.py Installation/${TEST_REPORT} ${TEST_REPORT} results_${CGAL_TESTER}_${PLATFORM}.txt
+rm -f $OUTPUT_FILE $OUTPUT_FILE.gz
+rm ../../../../../.scm-branch
+tar cf $OUTPUT_FILE results_${CGAL_TESTER}_${PLATFORM}.txt */"$TEST_REPORT"
+echo
+gzip -9f $OUTPUT_FILE
+cp "${OUTPUT_FILE}.gz" "results_${CGAL_TESTER}_${PLATFORM}.txt" "${CGAL_TESTRESULTS}"
