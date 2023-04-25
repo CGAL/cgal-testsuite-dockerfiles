@@ -14,7 +14,6 @@ RUN dnf -y install \
     gmp-devel.i686 \
     ipe.i686 \
     ipe-devel.i686 \
-    libQGLViewer-devel.i686 \
     libstdc++-devel.i686 \
     libstdc++-devel.x86_64 \
     make \
