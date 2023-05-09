@@ -3,6 +3,7 @@ ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN echo "install  make cmake gcc-c++ \
+                   util-linux \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    boost-devel.x86_64 \
                    ntl-devel.x86_64 \
