@@ -6,7 +6,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential cmake \
     libopencv-dev \
     libsuitesparse-dev \
-    tar libgoogle-glog-dev \
+    tar \
     libboost-all-dev libgmp10-dev \
     libmpfr-dev zlib1g-dev \
     libeigen3-dev libipe-dev \
@@ -75,7 +75,7 @@ RUN git clone https://ceres-solver.googlesource.com/ceres-solver \
  && cd ceres-solver \
  && mkdir build \
  && cd build \
- && cmake .. \
+ && cmake -DMINIGLOG=ON .. \
  && make -j"$(nproc)" \
  && make install \
  && cd .. \
