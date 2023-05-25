@@ -50,7 +50,37 @@ RUN git clone --recursive https://github.com/oxfordcontrol/osqp \
  && make install \
  && cd ../.. \
  && rm -rf osqp
-
+ 
+RUN git clone https://github.com/scipopt/soplex \
+ && cd soplex \
+ && mkdir build \
+ && cd build \
+ && cmake .. \
+ && make -j"$(nproc)" \
+ && make install \
+ && cd .. \
+ && rm -rf soplex
+ 
+RUN git clone https://github.com/scipopt/scip \
+ && cd scip \
+ && mkdir build \
+ && cd build \
+ && cmake -DAUTOBUILD=ON .. \
+ && make -j"$(nproc)" \
+ && make install \
+ && cd .. \
+ && rm -rf scip
+ 
+RUN git clone https://ceres-solver.googlesource.com/ceres-solver \
+ && cd ceres-solver \
+ && mkdir build \
+ && cd build \
+ && cmake -DMINIGLOG=ON .. \
+ && make -j"$(nproc)" \
+ && make install \
+ && cd .. \
+ && rm -rf ceres-solver
+ 
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt5:BOOL=OFF\")"
 ENV INIT_FILE=/tmp/init.cmake
