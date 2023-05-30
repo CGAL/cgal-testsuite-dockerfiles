@@ -75,7 +75,7 @@ RUN git clone https://ceres-solver.googlesource.com/ceres-solver \
  && cd ceres-solver \
  && mkdir build \
  && cd build \
- && cmake -DMINIGLOG=ON .. \
+ && cmake -DMINIGLOG=ON -DMINIGLOG_MAX_LOG_LEVEL=0 .. \
  && make -j"$(nproc)" \
  && make install \
  && cd .. \
