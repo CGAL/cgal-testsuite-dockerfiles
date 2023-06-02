@@ -37,10 +37,10 @@ RUN git clone https://github.com/ethz-asl/libpointmatcher.git \
  && SRC_DIR=`pwd` \
  && BUILD_DIR=${SRC_DIR}/build \
  && mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} \
- && cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release ${SRC_DIR} \
+ && cmake -DBUILD_SHARED_LIBS=ON -DBoost_USE_STATIC_LIBS=OFF -DCMAKE_BUILD_TYPE=Release ${SRC_DIR} \
  && make -j"$(nproc)" && make install \
  && cd ../.. && rm -rf libpointmatcher
- 
+
 RUN git clone --recursive https://github.com/oxfordcontrol/osqp \
  && cd ./osqp \
  && mkdir build \
@@ -50,7 +50,7 @@ RUN git clone --recursive https://github.com/oxfordcontrol/osqp \
  && make install \
  && cd ../.. \
  && rm -rf osqp
- 
+
 RUN git clone https://github.com/scipopt/soplex \
  && cd soplex \
  && mkdir build \
@@ -60,7 +60,7 @@ RUN git clone https://github.com/scipopt/soplex \
  && make install \
  && cd .. \
  && rm -rf soplex
- 
+
 RUN git clone https://github.com/scipopt/scip \
  && cd scip \
  && mkdir build \
@@ -70,7 +70,7 @@ RUN git clone https://github.com/scipopt/scip \
  && make install \
  && cd .. \
  && rm -rf scip
- 
+
 RUN git clone https://ceres-solver.googlesource.com/ceres-solver \
  && cd ceres-solver \
  && mkdir build \
@@ -80,7 +80,7 @@ RUN git clone https://ceres-solver.googlesource.com/ceres-solver \
  && make install \
  && cd .. \
  && rm -rf ceres-solver
- 
+
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt5:BOOL=OFF\")"
 ENV INIT_FILE=/tmp/init.cmake
