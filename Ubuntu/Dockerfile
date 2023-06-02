@@ -34,7 +34,7 @@ RUN git clone https://github.com/ethz-asl/libnabo.git \
 
 RUN git clone https://github.com/ethz-asl/libpointmatcher.git \
  && cd libpointmatcher \
- && sed -i 's/Boost_USE_STATIC_LIBS  ON/Boost_USE_STATIC_LIBS  OFF/' CMakeLists.txt
+ && sed -i 's/Boost_USE_STATIC_LIBS  ON/Boost_USE_STATIC_LIBS  OFF/' CMakeLists.txt \
  && SRC_DIR=`pwd` \
  && BUILD_DIR=${SRC_DIR}/build \
  && mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} \
