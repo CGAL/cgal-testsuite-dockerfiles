@@ -1,17 +1,14 @@
-FROM cgal/testsuite-docker:debian-testing
+FROM debian:testing
 ARG dockerfile_url
-ENV DOCKERFILE_URL=$dockerfile_url  
+ENV DOCKERFILE_URL=$dockerfile_url
 
-RUN apt-get update -y \
-&& apt-get install wget \
-&& apt-get install -y software-properties-common \
-&& apt-get clean all \
-&& cd .. && wget https://apt.llvm.org/llvm.sh \
-&& chmod +x llvm.sh \
-&& bash -x ./llvm.sh 16 \
-&& rm ./llvm.sh 
+RUN apt-get update -y && apt-get install -y wget \
+&& wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc \
+&& echo 'deb http://apt.llvm.org/unstable/ llvm-toolchain main' > /etc/apt/sources.list.d/llvm.list \
+&& apt-get update -y \
+&& apt-get install -y clang \
+&& apt-get clean all
 
-ENV CXX=/usr/bin/clang++-16
-ENV CC=/usr/bin/clang-16
+ENV CXX=/usr/bin/clang++
+ENV CC=/usr/bin/clang
 ENV CGAL_TEST_PLATFORM="Debian-testing-clang-main"
-
