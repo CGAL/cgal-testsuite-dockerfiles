@@ -30,14 +30,7 @@ RUN curl -s -SL http://sourceforge.net/projects/boost/files/boost/${BOOST_MAJOR}
     ./b2 -d0 --prefix=/usr/local/ install && \
     cd .. && rm -rf boost_*
 
-RUN cd /etc/yum.repos.d/ && \
-    curl -s -SLO https://copr.fedoraproject.org/coprs/rineau/libQGLViewer-qt5/repo/epel-6/rineau-libQGLViewer-qt5-epel-6.repo && \
-    rpm --import https://copr-be.cloud.fedoraproject.org/results/rineau/libQGLViewer-qt5/pubkey.gpg && \
-    yum -y install libQGLViewer-qt5-devel.x86_64 libQGLViewer-devel.x86_64 && \
-    yum clean all
-
 ENV CGAL_TEST_PLATFORM="CentOS6"
-ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake
 
