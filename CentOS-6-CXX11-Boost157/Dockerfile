@@ -13,6 +13,6 @@ RUN cd boost_${BOOST_MAJOR}_${BOOST_MINOR}_${BOOST_PATCH} && \
     ./b2 cxxflags="-std=c++0x" linkflags="-std=c++0x" --prefix=/usr/local/ install
 
 ENV CGAL_TEST_PLATFORM="CentOS6-CXX11-Boost157"
-ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\" \"-DCGAL_CXX_FLAGS=-Wall -std=c++0x\")"
+ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-Wall -std=c++0x\")"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake

@@ -1,4 +1,4 @@
-SET(CMAKE_CXX_FLAGS "-DDONT_USE_BOOST_PROGRAM_OPTIONS -Wall -Wno-expansion-to-defined -frounding-math" CACHE STRING "")
+SET(CMAKE_CXX_FLAGS "-DDONT_USE_BOOST_PROGRAM_OPTIONS -Wall -Wno-dangling-reference -Wno-expansion-to-defined -frounding-math" CACHE STRING "")
 SET(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "")
 SET(CMAKE_CXX_FLAGS_RELEASE "" CACHE STRING "")
 SET(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
