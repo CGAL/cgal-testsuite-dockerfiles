@@ -13,13 +13,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libmpfi-dev \
     libinsighttoolkit4-dev libtbb-dev git \
     libqt6qmlworkerscript6 \
-    qt6-svg-dev \
+    libqt6-svg-dev \
     qt6-base-dev \
     libqt6opengl6-dev \
     libqt6openglwidgets6 \
     libqt6qml6 \
-    qt6-websockets-dev \
-    qt6-networkauth-dev \
+    libqt6websockets6-dev \
+    libqt6networkauth6-dev \
     libqt6chartsqml6 \
     qt6-declarative-dev
 
