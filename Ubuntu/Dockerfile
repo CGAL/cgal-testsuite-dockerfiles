@@ -13,7 +13,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libmpfi-dev \
     libinsighttoolkit4-dev libtbb-dev git \
     libqt6qmlworkerscript6 \
-    libqt6-svg-dev \
+    libqt6svg6-dev \
     qt6-base-dev \
     libqt6opengl6-dev \
     libqt6openglwidgets6 \
