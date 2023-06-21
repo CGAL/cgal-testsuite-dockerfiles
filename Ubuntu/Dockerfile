@@ -11,7 +11,18 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libmpfr-dev zlib1g-dev \
     libeigen3-dev libipe-dev \
     libmpfi-dev \
-    libinsighttoolkit4-dev libtbb-dev git
+    libinsighttoolkit4-dev libtbb-dev git \
+    libqt6qmlworkerscript6 \
+    libqt6svg6-dev \
+    qt6-base-dev \
+    libqt6opengl6-dev \
+    libqt6openglwidgets6 \
+    libqt6qml6 \
+    libqt6websockets6-dev \
+    libqt6networkauth6-dev \
+    libqt6chartsqml6 \
+    qt6-declarative-dev
+
 
 RUN git clone https://github.com/STORM-IRIT/OpenGR.git --depth 1 \
  && cd ./OpenGR \
