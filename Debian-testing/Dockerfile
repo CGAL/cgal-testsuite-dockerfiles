@@ -15,7 +15,6 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     libipe-dev \
     libmpfi-dev \
     libmpfr-dev \
-    libqglviewer-dev-qt5 \
     qtbase5-dev \
     qtscript5-dev \
     qttools5-dev \
@@ -24,9 +23,19 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     libqt5opengl5-dev \
     tar \
     libtbb-dev \
-    zlib1g-dev
+    zlib1g-dev \
+    libqt6qmlworkerscript6 \
+    qt6-svg-dev \
+    qt6-base-dev \
+    libqt6opengl6-dev \
+    libqt6openglwidgets6 \
+    libqt6qml6 \
+    qt6-websockets-dev \
+    qt6-networkauth-dev \
+    libqt6chartsqml6 \
+    qt6-declarative-dev
+
 
 ENV CGAL_TEST_PLATFORM="Debian-Testing"
-ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF\")"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake

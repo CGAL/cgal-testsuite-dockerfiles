@@ -40,6 +40,7 @@ then
 elif [ "$1" = Debian-testing ]
 then
    docker push cgal/testsuite-docker:debian-testing
+   docker push cgal/testsuite-docker:debian-testing-clang-main
 elif [ "$1" = Fedora ]
 then
    docker push cgal/testsuite-docker:fedora

@@ -10,7 +10,6 @@ RUN apt-get update && apt-get install -y \
     libboost-program-options-dev \
     libboost-thread-dev \
     libeigen3-dev \
-    libglew1.5-dev \
     libgmp10-dev \
     libipe-dev \
     libmpfi-dev \
@@ -19,9 +18,20 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     libtbb-dev \
     cmake \
-    curl
+    curl \
+    libqt6qmlworkerscript6 \
+    qt6-svg-dev \
+    qt6-base-dev \
+    libqt6opengl6-dev \
+    libqt6openglwidgets6 \
+    libqt6qml6 \
+    qt6-websockets-dev \
+    qt6-networkauth-dev \
+    libqt6chartsqml6 \
+    qt6-declarative-dev
+
 
 ENV CGAL_TEST_PLATFORM="Debian-Stable"
-ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt3:BOOL=OFF -DWITH_CGAL_Qt5=OFF \")"
+ENV CGAL_CMAKE_FLAGS="(-DWITH_CGAL_Qt5=OFF \")"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake

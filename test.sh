@@ -62,6 +62,7 @@ then
 elif [ "$1" = Debian-testing ]
 then
   dockerbuild debian-testing Debian-testing
+  dockerbuild debian-testing-clang-main Debian-testing-clang-main
 elif [ "$1" = Fedora ]
 then
   dockerbuild fedora Fedora
