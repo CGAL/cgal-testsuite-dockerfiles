@@ -33,6 +33,18 @@ It is also possible to only test specific packages, but keep in mind that this w
                    --packages Core Mesh_2 Mesh_3
 
 
+Running the testsuite for one container
+---------------------------------------
+
+Use a command similar to that one:
+
+    docker run --rm -t -i -v $PWD/run-testsuite.sh:/mnt/run-testsuite.sh:z -v $HOME/Git/cgal-master:/mnt/testsuite:ro,z -v $PWD/testresults:/mnt/testresults:z cgal/testsuite-docker:debian-testing bash -x /mnt/run-testsuite.sh
+
+If you want a limited testsuite, you can have a file `testresults/list_test_packages` containing something like:
+
+    echo Mesh_2
+    echo Triangulation_2
+
 Default Arguments
 -----------------
 
