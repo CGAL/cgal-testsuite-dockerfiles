@@ -6,7 +6,7 @@ RUN apt-get update -y && apt-get install -y wget \
 && wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc \
 && echo 'deb http://apt.llvm.org/unstable/ llvm-toolchain main' > /etc/apt/sources.list.d/llvm.list \
 && apt-get update -y \
-&& apt-get install -y clang \
+&& apt-get install -y clang cmake make \
 && apt-get clean all
 
 ENV CXX=/usr/bin/clang++
