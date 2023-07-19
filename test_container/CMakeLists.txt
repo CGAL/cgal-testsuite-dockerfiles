@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.10)
+cmake_minimum_required(VERSION 3.11...3.22)
 project(TestCGAL C CXX) # To Enable Compiler Checks
 
 # We output results at the end, because some Find scripts do not
@@ -9,6 +9,7 @@ set(CGAL_MODULES_DIR $ENV{CGAL_MODULES_DIR})
 
 set(CMAKE_MODULE_PATH "${CGAL_MODULES_DIR}" ${CMAKE_MODULE_PATH})
 
+include(CGAL_Common)
 find_package(BLAS QUIET)
 find_package(Boost 1.39.0 OPTIONAL_COMPONENTS thread system program_options QUIET)
 find_package(ESBTL QUIET)
