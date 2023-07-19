@@ -25,6 +25,9 @@ function dockerbuild() {
 function dockerbuildandtest() {
   dockerbuild $1 $2
   docker run --rm -v $PWD/cgal:/cgal cgal/testsuite-docker:$1 bash -c 'cmake -DWITH_examples=ON /cgal && cmake --build . -t terrain'
+  if command -v python3 >/dev/null; then
+    python3 ./test_container/test_container.py --image cgal/testsuite-docker:$1 --cgal-dir $HOME/cgal
+  fi
 }
 
 if [ "$1" = ArchLinux ]
