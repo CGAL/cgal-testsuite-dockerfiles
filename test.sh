@@ -10,6 +10,10 @@ if command -v selinuxenabled >/dev/null && selinuxenabled; then
   chcon -Rt container_file_t cgal
 fi
 
+if command -v python3 >/dev/null; then
+  python3 -m pip install docker
+fi
+
 if [ -n "$GITHUB_SHA" ]; then
   COMMIT_URL=https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}
 fi
