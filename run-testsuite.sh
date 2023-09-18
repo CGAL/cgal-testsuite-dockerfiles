@@ -103,14 +103,15 @@ touch "$RESULT_FILE"
 sed -n '/The CXX compiler/s/-- The CXX compiler identification is/COMPILER_VERSION =/p' < "${CGAL_TESTRESULTS}installation.log" |sed -E "s/ = (.*)/\ = '\1\'/">> "$RESULT_FILE"
 sed -n '/CGAL_VERSION /s/#define //p' < "${CGAL_RELEASE_DIR}include/CGAL/version.h" >> "$RESULT_FILE"
 echo "TESTER ${CGAL_TESTER}" >> "$RESULT_FILE"
-echo "TESTER_NAME ${CGAL_TESTER}" >> "$RESULT_FILE"
-echo "TESTER_ADDRESS ${TESTER_ADDRESS}" >> "$RESULT_FILE"
+echo "TESTER_NAME ${CGAL_TESTER_NAME}" >> "$RESULT_FILE"
+echo "TESTER_ADDRESS ${CGAL_TESTER_ADDRESS}" >> "$RESULT_FILE"
 echo "CGAL_TEST_PLATFORM ${PLATFORM}" >> "$RESULT_FILE"
 grep -e "^-- USING " "${CGAL_TESTRESULTS}installation.log"|sort -u >> $RESULT_FILE
 #Use sed to get the content of DEBUG or RELEASE CXX FLAGS so that Multiconfiguration platforms do provide their CXXXFLAGS to the testsuite page (that greps USING CXXFLAGS to get info)
 sed -i -E 's/(^-- USING )(DEBUG|RELEASE) (CXXFLAGS)/\1\3/' $RESULT_FILE
 echo "------------" >> "$RESULT_FILE"
 touch ../../../../../.scm-branch
+cat /mnt/testsuite/.scm-branch >> ../../../../../.scm-branch
 python3 ${CGAL_RELEASE_DIR}test/parse-ctest-dashboard-xml.py $CGAL_TESTER $PLATFORM
 
 for file in $(ls|grep _Tests); do
