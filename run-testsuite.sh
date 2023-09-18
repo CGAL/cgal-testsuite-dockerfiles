@@ -111,6 +111,7 @@ grep -e "^-- USING " "${CGAL_TESTRESULTS}installation.log"|sort -u >> $RESULT_FI
 sed -i -E 's/(^-- USING )(DEBUG|RELEASE) (CXXFLAGS)/\1\3/' $RESULT_FILE
 echo "------------" >> "$RESULT_FILE"
 touch ../../../../../.scm-branch
+cat /mnt/testsuite/.scm-branch >> ../../../../../.scm-branch
 python3 ${CGAL_RELEASE_DIR}test/parse-ctest-dashboard-xml.py $CGAL_TESTER $PLATFORM
 
 for file in $(ls|grep _Tests); do
