@@ -4,3 +4,8 @@
 /secret.file
 testsuite/*
 .vscode
+/cgal/
+/cgal.tar.gz
+/testresults/installation.log
+/testresults/list_test_packages
+/testresults/package_installation.log

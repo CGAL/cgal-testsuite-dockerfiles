@@ -13,12 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test_platform: ['ArchLinux','CentOS-7','Debian-stable','Debian-testing','Fedora','Fedora-32','Fedora-rawhide','Ubuntu','Ubuntu-GCC-master']
+        test_platform: ['ArchLinux','Debian-stable','Debian-testing','Fedora','Fedora-32','Fedora-rawhide','Ubuntu','Ubuntu-GCC-master']
       fail-fast: false
 
     steps:
     - name: Git checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Compile images
       run: bash -x ./test.sh ${{ matrix.test_platform }}

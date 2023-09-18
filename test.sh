@@ -10,6 +10,10 @@ if command -v selinuxenabled >/dev/null && selinuxenabled; then
   chcon -Rt container_file_t cgal
 fi
 
+if command -v python3 >/dev/null; then
+  python3 -m pip install docker
+fi
+
 if [ -n "$GITHUB_SHA" ]; then
   COMMIT_URL=https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}
 fi
@@ -25,6 +29,9 @@ function dockerbuild() {
 function dockerbuildandtest() {
   dockerbuild $1 $2
   docker run --rm -v $PWD/cgal:/cgal cgal/testsuite-docker:$1 bash -c 'cmake -DWITH_examples=ON /cgal && cmake --build . -t terrain'
+  if command -v python3 >/dev/null; then
+    python3 ./test_container/test_container.py --image cgal/testsuite-docker:$1 --cgal-dir $HOME/cgal
+  fi
 }
 
 if [ "$1" = ArchLinux ]
