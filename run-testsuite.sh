@@ -1,9 +1,14 @@
 #!/bin/bash
 set -e
 
+if [ -z "${CGAL_TESTER}"]; then
+    export CGAL_TESTER=$(whoami)
+    echo 'CGAL_TESTER not set. Using `whoami`:'" $CGAL_TESTER"
+fi
+
 if [ -z "${CGAL_TEST_PLATFORM}" ]; then
     export CGAL_TEST_PLATFORM="${HOSTNAME}"
-    echo "CGAL_TEST_PLATFORM not set. Using HOSTNAME:${HOSTNAME}"
+    echo "CGAL_TEST_PLATFORM not set. Using HOSTNAME: ${HOSTNAME}"
 fi
 
 # HACK: We depend on this line to easily extract the platform name
@@ -28,6 +33,16 @@ CGAL_SRC_DIR="${CGAL_RELEASE_DIR}src/"
 CGAL_TEST_DIR="${CGAL_RELEASE_DIR}test/"
 # Directory where CGAL data are stored.
 CGAL_DATA_DIR="${CGAL_RELEASE_DIR}data/"
+# Directory where include/CGAL/version.h can be found.
+CGAL_VERSION_DIR="${CGAL_RELEASE_DIR}"
+if ! [ -f "${CGAL_VERSION_DIR}include/CGAL/version.h" ]; then
+    CGAL_VERSION_DIR="${CGAL_RELEASE_DIR}Installation/"
+fi
+# Directory Testsuite (if branch build), or CGAL_RELEASE_DIR
+CGAL_TESTSUITE_DIR="${CGAL_RELEASE_DIR}Testsuite/"
+if ! [ -d "${CGAL_TESTSUITE_DIR}" ]; then
+    CGAL_TESTSUITE_DIR="${CGAL_RELEASE_DIR}"
+fi
 
 # The directory where testresults are stored.
 CGAL_TESTRESULTS="/mnt/testresults/"
@@ -101,7 +116,7 @@ rm -f "$RESULT_FILE"
 touch "$RESULT_FILE"
 
 sed -n '/The CXX compiler/s/-- The CXX compiler identification is/COMPILER_VERSION =/p' < "${CGAL_TESTRESULTS}installation.log" |sed -E "s/ = (.*)/\ = '\1\'/">> "$RESULT_FILE"
-sed -n '/CGAL_VERSION /s/#define //p' < "${CGAL_RELEASE_DIR}include/CGAL/version.h" >> "$RESULT_FILE"
+sed -n '/CGAL_VERSION /s/#define //p' < "${CGAL_VERSION_DIR}include/CGAL/version.h" >> "$RESULT_FILE"
 echo "TESTER ${CGAL_TESTER}" >> "$RESULT_FILE"
 echo "TESTER_NAME ${CGAL_TESTER_NAME}" >> "$RESULT_FILE"
 echo "TESTER_ADDRESS ${CGAL_TESTER_ADDRESS}" >> "$RESULT_FILE"
@@ -111,8 +126,10 @@ grep -e "^-- USING " "${CGAL_TESTRESULTS}installation.log"|sort -u >> $RESULT_FI
 sed -i -E 's/(^-- USING )(DEBUG|RELEASE) (CXXFLAGS)/\1\3/' $RESULT_FILE
 echo "------------" >> "$RESULT_FILE"
 touch ../../../../../.scm-branch
-cat /mnt/testsuite/.scm-branch >> ../../../../../.scm-branch
-python3 ${CGAL_RELEASE_DIR}test/parse-ctest-dashboard-xml.py $CGAL_TESTER $PLATFORM
+if [ -f /mnt/testsuite/.scm-branch ]; then
+    cat /mnt/testsuite/.scm-branch >> ../../../../../.scm-branch
+fi
+python3 ${CGAL_TESTSUITE_DIR}test/parse-ctest-dashboard-xml.py $CGAL_TESTER $PLATFORM
 
 for file in $(ls|grep _Tests); do
   mv $file "$(echo "$file" | sed 's/_Tests//g')"
@@ -124,7 +141,7 @@ chmod 777 Installation
 cat "${CGAL_TESTRESULTS}package_installation.log" >> "Installation/${TEST_REPORT}"
 
 #call the python script to complete the results report.
-python3 ${CGAL_RELEASE_DIR}test/post_process_ctest_results.py Installation/${TEST_REPORT} ${TEST_REPORT} results_${CGAL_TESTER}_${PLATFORM}.txt
+python3 ${CGAL_TESTSUITE_DIR}test/post_process_ctest_results.py Installation/${TEST_REPORT} ${TEST_REPORT} results_${CGAL_TESTER}_${PLATFORM}.txt
 rm -f $OUTPUT_FILE $OUTPUT_FILE.gz
 rm ../../../../../.scm-branch
 tar cf $OUTPUT_FILE results_${CGAL_TESTER}_${PLATFORM}.txt */"$TEST_REPORT"
