@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [ -z "${CGAL_TESTER}"]; then
+if [ -z "${CGAL_TESTER}" ]; then
     export CGAL_TESTER=$(whoami)
     echo 'CGAL_TESTER not set. Using `whoami`:'" $CGAL_TESTER"
 fi
