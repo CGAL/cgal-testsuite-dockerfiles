@@ -76,13 +76,13 @@ else
     echo "Docker container" > ${CGAL_TESTRESULTS}installation.log
 fi
 
-cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON -DWITH_tests=ON -DCGAL_TEST_SUITE=ON $CGAL_RELEASE_DIR >${CGAL_TESTRESULTS}installation.log 2>&1
+cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON -DWITH_tests=ON -DCGAL_TEST_SUITE=ON $CGAL_RELEASE_DIR >${CGAL_TESTRESULTS}installation.log 2>&1 || :
 rm CMakeCache.txt
 CMAKE_OPTS="-DCGAL_TEST_SUITE=ON -DCMAKE_VERBOSE_MAKEFILE=ON -DWITH_tests=ON"
 if [ -z "${SHOW_PROGRESS}" ]; then
-  cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON ${CMAKE_OPTS} $CGAL_RELEASE_DIR >${CGAL_TESTRESULTS}package_installation.log 2>&1
+  cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON ${CMAKE_OPTS} $CGAL_RELEASE_DIR >${CGAL_TESTRESULTS}package_installation.log 2>&1 || :
 else
-  cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON ${CMAKE_OPTS} $CGAL_RELEASE_DIR 2>&1 |tee ${CGAL_TESTRESULTS}package_installation.log
+  cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON ${CMAKE_OPTS} $CGAL_RELEASE_DIR 2>&1 |tee ${CGAL_TESTRESULTS}package_installation.log || :
 fi
 
 LIST_TEST_FILE="${CGAL_TESTRESULTS}list_test_packages"
@@ -103,9 +103,9 @@ echo "SET(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 1000000000)" > CTestCusto
 echo "SET(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 1000000000)" >> CTestCustom.cmake
 CTEST_OPTS="-T Start -T Test --timeout 1200 ${DO_NOT_TEST:+-E execution___of__}"
 if [ -z "${SHOW_PROGRESS}" ]; then
-    ctest ${TO_TEST:+-L ${TO_TEST} } ${CTEST_OPTS} -j${CGAL_NUMBER_OF_JOBS} ${KEEP_TESTS:+-FC .}>tmp.txt
+    ctest ${TO_TEST:+-L ${TO_TEST} } ${CTEST_OPTS} -j${CGAL_NUMBER_OF_JOBS} ${KEEP_TESTS:+-FC .}>tmp.txt || :
 else
-    ctest ${TO_TEST:+-L ${TO_TEST} } ${CTEST_OPTS} -j${CGAL_NUMBER_OF_JOBS} ${KEEP_TESTS:+-FC .}|tee tmp.txt
+    ctest ${TO_TEST:+-L ${TO_TEST} } ${CTEST_OPTS} -j${CGAL_NUMBER_OF_JOBS} ${KEEP_TESTS:+-FC .}|tee tmp.txt || :
 fi
 
 TAG_DIR=$(awk '/^Create new tag: /{print $4F}' tmp.txt)
