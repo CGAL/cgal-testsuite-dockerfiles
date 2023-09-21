@@ -36,6 +36,9 @@ RUN dnf -y install \
     zlib-devel.i686 && dnf clean all
 
 RUN ln -s /usr/lib64/qt5/bin/qhelpgenerator /usr/lib/qt5/bin/qhelpgenerator
+RUN ln -s /usr/lib64/qt6/libexec/qhelpgenerator /usr/lib/qt6/libexec/qhelpgenerator
+RUN ln -s /usr/lib64/qt6/libexec/qtattributionsscanner /usr/lib/qt6/libexec/qtattributionsscanner
+RUN ln -s /usr/lib64/qt6/bin/qdoc /usr/lib/qt6/bin/qdoc
 
 ENV CC="gcc -m32" CXX="g++ -m32"
 ENV CGAL_TEST_PLATFORM="Fedora-32"
