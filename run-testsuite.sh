@@ -71,18 +71,18 @@ fi
 
 cd "${CGAL_SRC_BUILD_DIR}"
 if [ -n "$DOCKERFILE_URL" ]; then
-    echo "Docker image built from ${DOCKERFILE_URL}" | tee "${CGAL_TESTRESULTS}installation.log"
+    echo "Docker image built from ${DOCKERFILE_URL}" | tee "${CGAL_TESTRESULTS}installation-${CGAL_TEST_PLATFORM}.log"
 else
-    echo "Docker container" > ${CGAL_TESTRESULTS}installation.log
+    echo "Docker container" > ${CGAL_TESTRESULTS}installation-${CGAL_TEST_PLATFORM}.log
 fi
 
-cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON -DWITH_tests=ON -DCGAL_TEST_SUITE=ON $CGAL_RELEASE_DIR >${CGAL_TESTRESULTS}installation.log 2>&1 || :
+cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON -DWITH_tests=ON -DCGAL_TEST_SUITE=ON $CGAL_RELEASE_DIR >${CGAL_TESTRESULTS}installation-${CGAL_TEST_PLATFORM}.log 2>&1 || :
 rm CMakeCache.txt
 CMAKE_OPTS="-DCGAL_TEST_SUITE=ON -DCMAKE_VERBOSE_MAKEFILE=ON -DWITH_tests=ON"
 if [ -z "${SHOW_PROGRESS}" ]; then
-  cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON ${CMAKE_OPTS} $CGAL_RELEASE_DIR >${CGAL_TESTRESULTS}package_installation.log 2>&1 || :
+  cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON ${CMAKE_OPTS} $CGAL_RELEASE_DIR >${CGAL_TESTRESULTS}package_installation-${CGAL_TEST_PLATFORM}.log 2>&1 || :
 else
-  cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON ${CMAKE_OPTS} $CGAL_RELEASE_DIR 2>&1 |tee ${CGAL_TESTRESULTS}package_installation.log || :
+  cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON ${CMAKE_OPTS} $CGAL_RELEASE_DIR 2>&1 |tee ${CGAL_TESTRESULTS}package_installation-${CGAL_TEST_PLATFORM}.log || :
 fi
 
 LIST_TEST_FILE="${CGAL_TESTRESULTS}list_test_packages"
@@ -115,13 +115,13 @@ RESULT_FILE=./"results_${CGAL_TESTER}_${PLATFORM}.txt"
 rm -f "$RESULT_FILE"
 touch "$RESULT_FILE"
 
-sed -n '/The CXX compiler/s/-- The CXX compiler identification is/COMPILER_VERSION =/p' < "${CGAL_TESTRESULTS}installation.log" |sed -E "s/ = (.*)/\ = '\1\'/">> "$RESULT_FILE"
+sed -n '/The CXX compiler/s/-- The CXX compiler identification is/COMPILER_VERSION =/p' < "${CGAL_TESTRESULTS}installation-${CGAL_TEST_PLATFORM}.log" |sed -E "s/ = (.*)/\ = '\1\'/">> "$RESULT_FILE"
 sed -n '/CGAL_VERSION /s/#define //p' < "${CGAL_VERSION_DIR}include/CGAL/version.h" >> "$RESULT_FILE"
 echo "TESTER ${CGAL_TESTER}" >> "$RESULT_FILE"
 echo "TESTER_NAME ${CGAL_TESTER_NAME}" >> "$RESULT_FILE"
 echo "TESTER_ADDRESS ${CGAL_TESTER_ADDRESS}" >> "$RESULT_FILE"
 echo "CGAL_TEST_PLATFORM ${PLATFORM}" >> "$RESULT_FILE"
-grep -e "^-- USING " "${CGAL_TESTRESULTS}installation.log"|sort -u >> $RESULT_FILE
+grep -e "^-- USING " "${CGAL_TESTRESULTS}installation-${CGAL_TEST_PLATFORM}.log"|sort -u >> $RESULT_FILE
 #Use sed to get the content of DEBUG or RELEASE CXX FLAGS so that Multiconfiguration platforms do provide their CXXXFLAGS to the testsuite page (that greps USING CXXFLAGS to get info)
 sed -i -E 's/(^-- USING )(DEBUG|RELEASE) (CXXFLAGS)/\1\3/' $RESULT_FILE
 echo "------------" >> "$RESULT_FILE"
@@ -138,7 +138,7 @@ OUTPUT_FILE=results_${CGAL_TESTER}_${PLATFORM}.tar
 TEST_REPORT="TestReport_${CGAL_TESTER}_${PLATFORM}"
 mkdir -p Installation
 chmod 777 Installation
-cat "${CGAL_TESTRESULTS}package_installation.log" >> "Installation/${TEST_REPORT}"
+cat "${CGAL_TESTRESULTS}package_installation-${CGAL_TEST_PLATFORM}.log" >> "Installation/${TEST_REPORT}"
 
 #call the python script to complete the results report.
 python3 ${CGAL_TESTSUITE_DIR}test/post_process_ctest_results.py Installation/${TEST_REPORT} ${TEST_REPORT} results_${CGAL_TESTER}_${PLATFORM}.txt
