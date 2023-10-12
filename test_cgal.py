@@ -152,15 +152,15 @@ def main():
     # Setup the pidfile handling
     if os.path.isfile(pidfile):
         logging.warning('pidfile {} already exists. Killing other process.'.format(pidfile))
-        with open(pidfile, 'r') as pf:
-            oldpid = int(pf.read().strip())
         try:
+            with open(pidfile, 'r') as pf:
+                oldpid = int(pf.read().strip())
             os.kill(oldpid, signal.SIGTERM)
             # Wait for the process to terminate.
             while pid_exists(oldpid):
                 pass
-        except OSError:
-            logging.warning('pidfile {} did contain invalid pid {}.'.format(pidfile, oldpid))
+        except (OSError, ValueError):
+            logging.warning('pidfile {} did contain invalid pid.'.format(pidfile))
 
     with open(pidfile, 'w') as pf:
         pid = str(os.getpid())
