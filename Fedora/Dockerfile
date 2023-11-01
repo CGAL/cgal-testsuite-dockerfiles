@@ -24,6 +24,8 @@ RUN dnf -y install \
     qt6-qtbase-devel.x86_64 \
     qt6-qtsvg-devel.x86_64 \
     qt6-qttools-devel.x86_64 \
+    qt6-qtwebsockets-devel.x86_64 \
+    qt6-qtdeclarative-devel.x86_64 \
     tar \
     unzip \
     wget \
