@@ -103,13 +103,12 @@ echo "SET(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 1000000000)" > CTestCusto
 echo "SET(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 1000000000)" >> CTestCustom.cmake
 CTEST_OPTS="-T Start -T Test --timeout 1200 ${DO_NOT_TEST:+-E execution___of__}"
 if [ -z "${SHOW_PROGRESS}" ]; then
-    ctest ${TO_TEST:+-L ${TO_TEST} } ${CTEST_OPTS} -j${CGAL_NUMBER_OF_JOBS} ${KEEP_TESTS:+-FC .}>tmp.txt || :
+    ctest ${TO_TEST:+-L ${TO_TEST} } ${CTEST_OPTS} -j${CGAL_NUMBER_OF_JOBS} ${KEEP_TESTS:+-FC .}>${CGAL_TESTRESULTS}ctest-${CGAL_TEST_PLATFORM}.log || :
 else
-    ctest ${TO_TEST:+-L ${TO_TEST} } ${CTEST_OPTS} -j${CGAL_NUMBER_OF_JOBS} ${KEEP_TESTS:+-FC .}|tee tmp.txt || :
+    ctest ${TO_TEST:+-L ${TO_TEST} } ${CTEST_OPTS} -j${CGAL_NUMBER_OF_JOBS} ${KEEP_TESTS:+-FC .}|tee ${CGAL_TESTRESULTS}ctest-${CGAL_TEST_PLATFORM}.log || :
 fi
 
-TAG_DIR=$(awk '/^Create new tag: /{print $4F}' tmp.txt)
-rm tmp.txt
+TAG_DIR=$(awk '/^Create new tag: /{print $4F}' ${CGAL_TESTRESULTS}ctest-${CGAL_TEST_PLATFORM}.log)
 cd Testing/${TAG_DIR}
 RESULT_FILE=./"results_${CGAL_TESTER}_${PLATFORM}.txt"
 rm -f "$RESULT_FILE"

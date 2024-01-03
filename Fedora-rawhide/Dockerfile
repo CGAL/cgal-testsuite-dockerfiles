@@ -20,7 +20,7 @@ RUN dnf -y upgrade && \
                    qt6-qttools-devel.x86_64 \
                    mesa-libGLU-devel \
                    OpenMesh-devel \
-                   zlib-devel.x86_64 \
+                   zlib-ng-devel.x86_64 \
 		           diffutils \
                    wget \
                    tar && \
