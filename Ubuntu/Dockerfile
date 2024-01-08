@@ -11,7 +11,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libmpfr-dev zlib1g-dev \
     libeigen3-dev libipe-dev \
     libmpfi-dev \
-    libinsighttoolkit4-dev libtbb-dev git
+    libinsighttoolkit4-dev libtbb-dev git \
+    libyaml-cpp-dev
 
 # cgal.gf.com kernel does not seem compatible with qt6
 #    libgl-dev \
