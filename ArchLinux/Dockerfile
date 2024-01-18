@@ -86,5 +86,12 @@ RUN pacman -Sy --noconfirm unzip \
 #
 ENV CGAL_TEST_PLATFORM="ArchLinux" \
     LEDA_INC_DIR=/usr/include/LEDA
+
+# Try to fix a strange bug with clang
+# where make complains about files in /include:
+#
+#    Prerequisite '/include/c++/13.2.1/algorithm' of target 'test/AABB_tree_Demo/CMakeFiles/CGAL_Qt6_moc_and_resources.dir/CGAL_Qt6_moc_and_resources_autogen/mocs_compilation.cpp.o' does not exist.
+RUN ln -s /usr/include /include
+
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake
