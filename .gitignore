@@ -6,6 +6,7 @@ testsuite/*
 .vscode
 /cgal/
 /cgal.tar.gz
-/testresults/installation.log
+/testresults/installation*.log
 /testresults/list_test_packages
-/testresults/package_installation.log
+/testresults/package_installation*.log
+/testresults/ctest*.log
