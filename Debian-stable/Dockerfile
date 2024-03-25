@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
     libtbb-dev \
     cmake \
     curl \
+    git \
     libqt6qmlworkerscript6 \
     qt6-svg-dev \
     qt6-base-dev \
