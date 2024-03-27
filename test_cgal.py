@@ -15,7 +15,7 @@
 #
 # Author(s)     : Philipp Moeller
 
-from __future__ import division
+
 
 import logging
 from cgal_docker import *
@@ -87,7 +87,7 @@ def upload_results(local_path):
 
 def platform_from_container(client, cont_id):
     platform_regex = re.compile('^CGAL_TEST_PLATFORM=(.*)$')
-    for e in client.inspect_container(container=cont_id)[u'Config'][u'Env']:
+    for e in client.inspect_container(container=cont_id)['Config']['Env']:
         res = platform_regex.search(e)
         if res:
             return res.group(1)
@@ -178,7 +178,7 @@ def main():
     existing = [cont for cont in client.containers(filters = { 'status' : 'running'})]
     generic_name_regex = re.compile('CGAL-.+-testsuite')
     for cont in existing:
-        for name in cont[u'Names']:
+        for name in cont['Names']:
             if generic_name_regex.match(name):
                 info.error('Testsuite Container {} of previous suite still running. Aborting. NOTE: This could also be a name clash.')
                 sys.exit(0)
@@ -243,15 +243,15 @@ def main():
     try:
         for ev in client.events(since=before_start, decode=True):
             assert isinstance(ev, dict)
-            if ev[u'Type'] != u'container':
+            if ev['Type'] != 'container':
                 continue;
-            event_id = ev[u'id']
+            event_id = ev['id']
 
             if scheduler.is_ours(event_id): # we care
-                if ev[u'status'] == u'die':
-                    if ev[u'Actor'][u'Attributes'][u'exitCode']!='0':
+                if ev['status'] == 'die':
+                    if ev['Actor']['Attributes']['exitCode']!='0':
                         logging.warning('Could not parse exit status: {}. Assuming dirty death of the container.'
-                                        .format(ev[u'Actor'][u'Attributes'][u'exitCode']))
+                                        .format(ev['Actor']['Attributes']['exitCode']))
                     else:
                         logging.info('Container died cleanly, handling results.')
                         try:
@@ -280,7 +280,7 @@ def main():
     remove_pidfile()
 
     if scheduler.errors_encountered:
-      print (scheduler.error_buffer.getvalue())
+      print((scheduler.error_buffer.getvalue()))
       exit(33)
 
 if __name__ == "__main__":

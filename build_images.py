@@ -38,14 +38,14 @@ def main():
         fullnames = (os.path.join(os.getcwd(), name) for name in os.listdir(os.getcwd()))
         args.dirs = [name for name in fullnames if os.path.isfile(os.path.join(name, 'Dockerfile'))]
 
-    print args.dirs
+    print(args.dirs)
 
     for d in args.dirs:
         tag = 'cgal-testsuite/' + os.path.basename(d).lower()
-        print 'Building directory {} with tag {}'.format(d, tag)
+        print('Building directory {} with tag {}'.format(d, tag))
         response = client.build(path=d, rm=True, tag=tag, stream=False)
         for l in response:
-            print l
+            print(l)
     
 if __name__ == "__main__":
     main()
