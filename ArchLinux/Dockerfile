@@ -19,6 +19,7 @@ RUN pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
               qt5-base qt5-script qt5-svg qt5-tools \
               qt6-base qt6-tools qt6-svg qt6-websockets qt6-declarative \
 	          intel-tbb \
+                  nlohmann-json \
     && pacman -S --needed --noconfirm --asdeps \
                  freetype2 lua poppler python3 zlib \
                  tcsh \

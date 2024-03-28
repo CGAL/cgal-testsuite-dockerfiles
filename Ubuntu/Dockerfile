@@ -13,6 +13,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libeigen3-dev libipe-dev \
     libmpfi-dev \
     libinsighttoolkit4-dev libtbb-dev git \
+    nlohmann-json3-dev \
     libyaml-cpp-dev
 
 # cgal.gf.com kernel does not seem compatible with qt6

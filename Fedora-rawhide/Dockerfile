@@ -24,6 +24,7 @@ RUN dnf -y upgrade && \
 		           diffutils \
                    wget \
                    git \
+                   json-devel \
                    tar && \
     dnf clean all && \
     wget https://registrationcenter-download.intel.com/akdlm/irc_nas/19143/l_tbb_oneapi_p_2021.8.0.25334_offline.sh && \
