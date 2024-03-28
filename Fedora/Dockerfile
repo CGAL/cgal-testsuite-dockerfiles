@@ -33,7 +33,8 @@ RUN dnf -y install \
     zlib-devel.x86_64 \
     diffutils.x86_64 \
     git \
-    libssh-devel
+    libssh-devel \
+    json-devel
 
 RUN wget "https://github.com/CGAL/LAStools/archive/LAStools-2020-11-09.zip" -O laslib.zip \
  && unzip laslib.zip \

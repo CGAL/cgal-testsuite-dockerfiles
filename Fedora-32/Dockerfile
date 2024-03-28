@@ -32,6 +32,7 @@ RUN dnf -y install \
     tbb-devel.i686 \
     diffutils \
     git \
+    json-devel \
     zlib-devel.i686 && dnf clean all
 
 RUN ln -s /usr/lib64/qt5/bin/qhelpgenerator /usr/lib/qt5/bin/qhelpgenerator

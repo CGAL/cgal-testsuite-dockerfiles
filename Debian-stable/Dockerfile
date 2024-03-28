@@ -29,7 +29,8 @@ RUN apt-get update && apt-get install -y \
     qt6-websockets-dev \
     qt6-networkauth-dev \
     libqt6chartsqml6 \
-    qt6-declarative-dev
+    qt6-declarative-dev \
+    nlohmann-json3-dev
 
 
 ENV CGAL_TEST_PLATFORM="Debian-Stable"
