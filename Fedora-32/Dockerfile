@@ -33,7 +33,7 @@ RUN dnf -y install \
     diffutils \
     git \
     json-devel \
-    zlib-devel.i686 && dnf clean all
+    zlib-ng-devel.i686 && dnf clean all
 
 RUN ln -s /usr/lib64/qt5/bin/qhelpgenerator /usr/lib/qt5/bin/qhelpgenerator
 RUN ln -s /usr/lib64/qt6/libexec/qhelpgenerator /usr/lib/qt6/libexec/qhelpgenerator

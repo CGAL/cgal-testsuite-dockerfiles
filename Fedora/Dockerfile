@@ -30,7 +30,7 @@ RUN dnf -y install \
     unzip \
     wget \
     tbb-devel \
-    zlib-devel.x86_64 \
+    zlib-ng-devel.x86_64 \
     diffutils.x86_64 \
     git \
     libssh-devel \
