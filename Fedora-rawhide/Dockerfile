@@ -24,6 +24,7 @@ RUN dnf -y upgrade && \
 		           diffutils \
                    wget \
                    git \
+                   lsb-release \
                    json-devel \
                    tar && \
     dnf clean all && \

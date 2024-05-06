@@ -14,6 +14,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libmpfi-dev \
     libinsighttoolkit5-dev libtbb-dev git \
     nlohmann-json3-dev \
+    lsb-release \
     libyaml-cpp-dev
 
 # cgal.gf.com kernel does not seem compatible with qt6

@@ -35,6 +35,7 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     qt6-networkauth-dev \
     libqt6chartsqml6 \
     qt6-declarative-dev \
+    lsb-release \
     nlohmann-json3-dev
 
 

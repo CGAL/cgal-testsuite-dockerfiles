@@ -32,6 +32,7 @@ RUN dnf -y install \
     tbb-devel.i686 \
     diffutils \
     git \
+    lsb-release \
     json-devel \
     zlib-ng-devel.i686 && dnf clean all
 
