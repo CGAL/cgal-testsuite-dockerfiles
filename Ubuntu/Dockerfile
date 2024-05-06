@@ -12,7 +12,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libmpfr-dev zlib1g-dev \
     libeigen3-dev libipe-dev \
     libmpfi-dev \
-    libinsighttoolkit4-dev libtbb-dev git \
+    libinsighttoolkit5-dev libtbb-dev git \
     nlohmann-json3-dev \
     libyaml-cpp-dev
 
