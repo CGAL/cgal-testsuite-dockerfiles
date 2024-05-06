@@ -12,6 +12,7 @@ RUN pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
               base-devel \
               coreutils \
               git \
+              lsb-release \
               boost \
               eigen \
               glew glu mesa \
