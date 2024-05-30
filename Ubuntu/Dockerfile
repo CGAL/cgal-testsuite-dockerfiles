@@ -46,6 +46,7 @@ RUN git clone https://github.com/ethz-asl/libnabo.git \
 
 RUN git clone https://github.com/ethz-asl/libpointmatcher.git \
  && cd libpointmatcher \
+ && git switch -d e9a832d \
  && sed -i 's/Boost_USE_STATIC_LIBS  ON/Boost_USE_STATIC_LIBS  OFF/' CMakeLists.txt \
  && SRC_DIR=`pwd` \
  && BUILD_DIR=${SRC_DIR}/build \
@@ -53,6 +54,7 @@ RUN git clone https://github.com/ethz-asl/libpointmatcher.git \
  && cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DPOINTMATCHER_BUILD_EXAMPLES=OFF -DPOINTMATCHER_BUILD_EVALUATIONS=OFF ${SRC_DIR} \
  && make -j"$(nproc)" && make install \
  && cd ../.. && rm -rf libpointmatcher
+ # Commit e9a832d is 1.3.1-178-ge9a832d
 
 RUN git clone --recursive https://github.com/oxfordcontrol/osqp \
  && cd ./osqp \
