@@ -25,6 +25,7 @@ RUN yum -y update; yum -y install \
     qt6-qtsvg-devel.x86_64 \
     qt6-qttools-devel.x86_64 \
     tar \
+    git \
     zlib-devel.x86_64; yum clean all
 
 RUN curl -fSL "https://cmake.org/files/v3.6/cmake-3.6.2-Linux-x86_64.sh" -o /usr/cmake.sh

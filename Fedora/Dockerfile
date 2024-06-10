@@ -30,9 +30,12 @@ RUN dnf -y install \
     unzip \
     wget \
     tbb-devel \
-    zlib-devel.x86_64 \
+    zlib-ng-devel.x86_64 \
     diffutils.x86_64 \
-    libssh-devel
+    git \
+    libssh-devel \
+    lsb-release \
+    json-devel
 
 RUN wget "https://github.com/CGAL/LAStools/archive/LAStools-2020-11-09.zip" -O laslib.zip \
  && unzip laslib.zip \

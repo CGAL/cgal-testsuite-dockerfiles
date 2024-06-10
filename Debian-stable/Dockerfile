@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
     libtbb-dev \
     cmake \
     curl \
+    git \
     libqt6qmlworkerscript6 \
     qt6-svg-dev \
     qt6-base-dev \
@@ -28,7 +29,9 @@ RUN apt-get update && apt-get install -y \
     qt6-websockets-dev \
     qt6-networkauth-dev \
     libqt6chartsqml6 \
-    qt6-declarative-dev
+    qt6-declarative-dev \
+    lsb-release \
+    nlohmann-json3-dev
 
 
 ENV CGAL_TEST_PLATFORM="Debian-Stable"

@@ -22,6 +22,7 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     libqt5svg5-dev \
     libqt5opengl5-dev \
     tar \
+    git \
     libtbb-dev \
     zlib1g-dev \
     libqt6qmlworkerscript6 \
@@ -33,7 +34,9 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     qt6-websockets-dev \
     qt6-networkauth-dev \
     libqt6chartsqml6 \
-    qt6-declarative-dev
+    qt6-declarative-dev \
+    lsb-release \
+    nlohmann-json3-dev
 
 
 ENV CGAL_TEST_PLATFORM="Debian-Testing"
