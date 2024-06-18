@@ -2,7 +2,7 @@ FROM fedora:rawhide
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
 
-RUN dnf -y upgrade && \
+RUN trap "tail /var/log/dnf.rpm.log" EXIT && dnf -y upgrade && \
     [ -x /usr/bin/dnf ] || ln -s /usr/bin/dnf5 /usr/bin/dnf && \
     dnf -y install make cmake gcc-c++ \
                    util-linux \
