@@ -4,6 +4,7 @@ ENV DOCKERFILE_URL=$dockerfile_url
 
 RUN trap "cat /var/log/dnf.rpm.log" ERR && dnf -y upgrade && \
     [ -x /usr/bin/dnf ] || ln -s /usr/bin/dnf5 /usr/bin/dnf && \
+    df && \
     dnf -y install make cmake gcc-c++ \
                    util-linux \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
