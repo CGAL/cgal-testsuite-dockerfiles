@@ -86,6 +86,7 @@ RUN git clone https://github.com/scipopt/scip \
 
 RUN git clone https://ceres-solver.googlesource.com/ceres-solver \
  && cd ceres-solver \
+ && git submodule update --init --recursive \
  && mkdir build \
  && cd build \
  && cmake -DMINIGLOG=ON -DMINIGLOG_MAX_LOG_LEVEL=0 .. \
