@@ -28,16 +28,14 @@ RUN dnf -y upgrade && \
                    json-devel \
                    tar && \
     dnf clean all && \
-
-#install TBB
-wget https://github.com/oneapi-src/oneTBB/archive/refs/tags/v2021.8.0.tar.gz
-tar xf v2021.8.0.tar.gz
-mkdir build
-cd build
-sed -i '1i #include <cstdlib>' /oneTBB-2021.8.0/test/common/utils_assert.h
-cmake -DCMAKE_BUILD_TYPE=Release -DTBB_STRICT:BOOL=OFF -DTBB_TEST:BOOL=OFF ../oneTBB-2021.8.0
-make
-make install
+    wget https://github.com/oneapi-src/oneTBB/archive/refs/tags/v2021.8.0.tar.gz && \
+    tar xf v2021.8.0.tar.gz && \
+    mkdir build && \
+    cd build && \
+    sed -i '1i #include <cstdlib>' /oneTBB-2021.8.0/test/common/utils_assert.h && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DTBB_STRICT:BOOL=OFF -DTBB_TEST:BOOL=OFF ../oneTBB-2021.8.0 && \
+    make && \
+    make install
 
 ENV CGAL_TEST_PLATFORM="Fedora-rawhide"
 ENV CGAL_CMAKE_FLAGS="('-DCGAL_HEADER_ONLY:BOOL=TRUE')"
