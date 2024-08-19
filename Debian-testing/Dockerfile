@@ -36,6 +36,7 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     libqt6chartsqml6 \
     qt6-declarative-dev \
     lsb-release \
+    libvtk9-dev vtk9 \
     nlohmann-json3-dev
 
 
