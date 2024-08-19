@@ -28,9 +28,15 @@ RUN dnf -y upgrade && \
                    json-devel \
                    tar && \
     dnf clean all && \
-    wget https://registrationcenter-download.intel.com/akdlm/irc_nas/19143/l_tbb_oneapi_p_2021.8.0.25334_offline.sh && \
-    bash l_tbb_oneapi_p_2021.8.0.25334_offline.sh -a --action install --eula accept -s && \
-    rm l_tbb_oneapi_p_2021.8.0.25334_offline.sh
+    wget https://github.com/oneapi-src/oneTBB/archive/refs/tags/v2021.8.0.tar.gz && \
+    tar xf v2021.8.0.tar.gz && \
+    mkdir build && \
+    cd build && \
+    sed -i '1i #include <cstdlib>' /oneTBB-2021.8.0/test/common/utils_assert.h && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DTBB_STRICT:BOOL=OFF -DTBB_TEST:BOOL=OFF ../oneTBB-2021.8.0 && \
+    make && \
+    make install && \
+    cd .. && rm -rf v2021.8.0.tar.gz oneTBB-2021.8.0 build
 
 ENV CGAL_TEST_PLATFORM="Fedora-rawhide"
 ENV CGAL_CMAKE_FLAGS="('-DCGAL_HEADER_ONLY:BOOL=TRUE')"

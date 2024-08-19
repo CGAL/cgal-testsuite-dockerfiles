@@ -15,15 +15,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libinsighttoolkit5-dev libtbb-dev git \
     nlohmann-json3-dev \
     lsb-release \
-    libyaml-cpp-dev
-
-# cgal.gf.com kernel does not seem compatible with qt6
-#    libgl-dev \
-#    qt6-base-dev \
-#    qt6-declarative-dev \
-#    libqt6opengl6-dev \
-#    libqt6svg6-dev \
-#    libqt6websockets6-dev
+    libyaml-cpp-dev \
+    libgl-dev \
+    qt6-base-dev \
+    qt6-declarative-dev \
+    libqt6opengl6-dev \
+    libqt6svg6-dev \
+    libqt6websockets6-dev
 
 RUN git clone https://github.com/STORM-IRIT/OpenGR.git --depth 1 \
  && cd ./OpenGR \
@@ -88,6 +86,7 @@ RUN git clone https://github.com/scipopt/scip \
 
 RUN git clone https://ceres-solver.googlesource.com/ceres-solver \
  && cd ceres-solver \
+ && git checkout 2.2.0 \
  && mkdir build \
  && cd build \
  && cmake -DMINIGLOG=ON -DMINIGLOG_MAX_LOG_LEVEL=0 .. \
