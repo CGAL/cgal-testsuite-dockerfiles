@@ -33,7 +33,7 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     libqt6qml6 \
     qt6-websockets-dev \
     qt6-networkauth-dev \
-    libqt6chartsqml6 \
+    qml6-module-qtcharts \
     qt6-declarative-dev \
     lsb-release \
     libvtk9-dev vtk9 \
