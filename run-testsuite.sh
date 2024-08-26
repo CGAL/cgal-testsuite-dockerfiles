@@ -122,6 +122,7 @@ echo "TESTER_ADDRESS ${CGAL_TESTER_ADDRESS}" >> "$RESULT_FILE"
 echo "CGAL_TEST_PLATFORM ${PLATFORM}" >> "$RESULT_FILE"
 grep -e "^-- Operating system: " "${CGAL_TESTRESULTS}installation-${CGAL_TEST_PLATFORM}.log"|sort -u >> $RESULT_FILE
 grep -e "^-- USING " "${CGAL_TESTRESULTS}installation-${CGAL_TEST_PLATFORM}.log"|sort -u >> $RESULT_FILE
+sed -n '/^-- Third-party library /p' "${CGAL_TESTRESULTS}installation-${CGAL_TEST_PLATFORM}.log" >> $RESULT_FILE
 #Use sed to get the content of DEBUG or RELEASE CXX FLAGS so that Multiconfiguration platforms do provide their CXXXFLAGS to the testsuite page (that greps USING CXXFLAGS to get info)
 sed -i -E 's/(^-- USING )(DEBUG|RELEASE) (CXXFLAGS)/\1\3/' $RESULT_FILE
 echo "------------" >> "$RESULT_FILE"
