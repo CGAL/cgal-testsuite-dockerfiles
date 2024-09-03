@@ -37,7 +37,8 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     qt6-declarative-dev \
     lsb-release \
     libvtk9-dev vtk9 \
-    nlohmann-json3-dev
+    nlohmann-json3-dev \
+    wget
 
 #OpenMesh
 RUN  wget https://www.graphics.rwth-aachen.de/media/openmesh_static/Releases/11.0/OpenMesh-11.0.0.tar.gz && \
