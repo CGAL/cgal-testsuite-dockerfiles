@@ -37,7 +37,20 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     qt6-declarative-dev \
     lsb-release \
     libvtk9-dev vtk9 \
-    nlohmann-json3-dev
+    nlohmann-json3-dev \
+    wget
+
+#OpenMesh
+RUN  wget https://www.graphics.rwth-aachen.de/media/openmesh_static/Releases/11.0/OpenMesh-11.0.0.tar.gz && \
+     tar xf OpenMesh-11.0.0.tar.gz && \
+     cd OpenMesh-11.0.0/ && \
+     mkdir build && \
+     cd build && \
+     cmake -DCMAKE_BUILD_TYPE=Release .. && \
+     make
+
+ENV OpenMesh_DIR=/OpenMesh-11.0.0/build
+
 
 
 ENV CGAL_TEST_PLATFORM="Debian-Testing"
