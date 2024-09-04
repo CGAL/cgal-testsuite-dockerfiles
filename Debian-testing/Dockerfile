@@ -47,7 +47,8 @@ RUN  wget https://www.graphics.rwth-aachen.de/media/openmesh_static/Releases/11.
      mkdir build && \
      cd build && \
      cmake -DCMAKE_BUILD_TYPE=Release .. && \
-     make
+     make && make install && \
+     cd ../.. && rm -r OpenMesh-11.0.0*
 
 ENV OpenMesh_DIR=/OpenMesh-11.0.0/build
 
