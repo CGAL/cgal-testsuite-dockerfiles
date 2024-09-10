@@ -66,18 +66,19 @@ WORKDIR /tmp/makepkg
 RUN pacman -U --noconfirm *.pkg.tar.zst && \
     rm *.pkg.tar.zst
 
-RUN pacman -Sy --noconfirm unzip \
-    && cd /tmp \
-    && curl -sSL "https://github.com/CGAL/LAStools/archive/LAStools-2020-11-09.zip" -o master.zip \
-    && unzip master.zip \
-    && cd ./LAStools-LAStools-2020-11-09 \
-    && cmake -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ -DCMAKE_CXX_FLAGS=-std=c++11 . \
-    && make -j "$(nproc)" \
-    && make install \
-    && cd .. \
-    && rm -rf LAStools-LAStools-2020-11-09 \
-    && rm -rf master.zip \
-    && pacman -Scc
+RUN pacman -Sy --noconfirm unzip wget  && pacman -Scc
+
+RUN wget https://github.com/sloriot/LAStools/archive/refs/heads/fix_make_install.zip \
+ && unzip fix_make_install.zip \
+ && cd LAStools-fix_make_install \
+ && mkdir build \
+ && cd build \
+ && cmake -DCMAKE_BUILD_TYPE=Release .. \
+ && make -j "$(nproc)" \
+ && make install \
+ && cd .. \
+ && rm -rf LAStools-fix_make_install fix_make_install.zip
+
 
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
