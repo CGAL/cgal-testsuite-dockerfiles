@@ -19,16 +19,18 @@ RUN apt-get update \
  && cmake -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ ../llvm -DCMAKE_BUILD_TYPE=Release \
  && make -j"$(nproc)" \
  && make -j"$(nproc)" install \
- && cd /tmp && rm -rf build llvm \
- && wget "https://github.com/CGAL/LAStools/archive/LAStools-2020-11-09.zip" -O laslib.zip \
- && unzip laslib.zip \
- && cd ./LAStools-LAStools-2020-11-09 \
- && cmake -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ -DCMAKE_CXX_FLAGS=-std=c++11 . \
+ && cd /tmp && rm -rf build llvm
+
+RUN wget https://github.com/sloriot/LAStools/archive/refs/heads/fix_make_install.zip \
+ && unzip fix_make_install.zip \
+ && cd LAStools-fix_make_install \
+ && mkdir build \
+ && cd build \
+ && cmake -DCMAKE_BUILD_TYPE=Release .. \
  && make -j "$(nproc)" \
  && make install \
  && cd .. \
- && rm -rf LAStools-LAStools-2020-11-09 \
- && rm -rf laslib.zip
+ && rm -rf LAStools-fix_make_install fix_make_install.zip
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-clang-latest"
 ENV CXX=/usr/local/bin/clang++
