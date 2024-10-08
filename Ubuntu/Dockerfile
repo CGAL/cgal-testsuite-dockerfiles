@@ -21,7 +21,21 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     qt6-declarative-dev \
     libqt6opengl6-dev \
     libqt6svg6-dev \
-    libqt6websockets6-dev
+    libqt6websockets6-dev \
+    wget
+
+#install vtk 9.3 to work around an issue in vtk 9.3.1
+RUN wget https://www.vtk.org/files/release/9.3/VTK-9.3.1.tar.gz \
+ && tar xf VTK-9.3.1.tar.gz \
+ && cd VTK-9.3.1 \
+ && mkdir build \
+ && cd build/ \
+ && cmake -DCMAKE_BUILD_TYPE=Release .. \
+ && make -j6 \
+ && make install \
+ && cd ../.. \
+ && rm -rf VTK-9.3.1 \
+ && export VTK_DIR=/usr/local/lib/cmake/vtk-9.3
 
 RUN git clone https://github.com/STORM-IRIT/OpenGR.git --depth 1 \
  && cd ./OpenGR \
