@@ -12,7 +12,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libmpfr-dev zlib1g-dev \
     libeigen3-dev libipe-dev \
     libmpfi-dev \
-    libinsighttoolkit5-dev libtbb-dev git \
+    libtbb-dev git \
     nlohmann-json3-dev \
     lsb-release \
     libyaml-cpp-dev \
@@ -21,7 +21,37 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     qt6-declarative-dev \
     libqt6opengl6-dev \
     libqt6svg6-dev \
-    libqt6websockets6-dev
+    libqt6websockets6-dev \
+    wget
+
+#install vtk 9.3 to work around an issue in vtk 9.3.1
+RUN wget https://www.vtk.org/files/release/9.3/VTK-9.3.1.tar.gz \
+ && tar xf VTK-9.3.1.tar.gz \
+ && cd VTK-9.3.1 \
+ && sed -i 's/_M_chilren/m_children/g' /VTK-9.3.1/Utilities/octree/octree/octree_node.txx \
+ && mkdir build \
+ && cd build/ \
+ && cmake -DCMAKE_BUILD_TYPE=Release .. \
+ && make -j "$(nproc)" \
+ && make install \
+ && cd ../.. \
+ && rm -rf VTK-9.3.1 \
+ && rm  VTK-9.3.1.tar.gz
+
+#manually install ITK compiled with our vtk version
+RUN wget https://github.com/InsightSoftwareConsortium/ITK/releases/download/v5.3.0/InsightToolkit-5.3.0.tar.gz \
+ && tar xf InsightToolkit-5.3.0.tar.gz \
+ && cd InsightToolkit-5.3.0 \
+ && mkdir build \
+ && cd build/ \
+ && cmake -DCMAKE_BUILD_TYPE=Release .. \
+ && sed -i '1 i\#include <stdint.h>' /InsightToolkit-5.3.0/Modules/Core/Common/include/itkFloatingPointExceptions.h \
+ && sed -i '1 i\#include <stdint.h>' /InsightToolkit-5.3.0/Modules/Filtering/MathematicalMorphology/include/itkMathematicalMorphologyEnums.h \
+ && make -j "$(nproc)" \
+ && make install \
+ && cd ../.. \
+ && rm InsightToolkit-5.3.0 -r \
+ && rm InsightToolkit-5.3.0.tar.gz
 
 RUN git clone https://github.com/STORM-IRIT/OpenGR.git --depth 1 \
  && cd ./OpenGR \
