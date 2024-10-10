@@ -2,6 +2,8 @@
 
 set -e
 
+[ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+
 curl -o cgal.tar.gz  -L $(curl -s https://api.github.com/repos/CGAL/cgal/releases/latest | jq -r .tarball_url)
 mkdir -p cgal
 tar -xzf cgal.tar.gz -C cgal --strip-components=1
@@ -27,11 +29,13 @@ function dockerbuild() {
 }
 
 function dockerbuildandtest() {
+  echo "::group::Building and testing image $1 from $2/Dockerfile"
   dockerbuild $1 $2
   docker run --rm -v $PWD/cgal:/cgal cgal/testsuite-docker:$1 bash -c 'cmake -DWITH_examples=ON -S /cgal -B /build && cmake --build /build -t terrain -v'
   if command -v python3 >/dev/null; then
     python3 ./test_container/test_container.py --image cgal/testsuite-docker:$1 --cgal-dir $HOME/cgal
   fi
+  echo '::endgroup::'
 }
 
 if [ "$1" = ArchLinux ]

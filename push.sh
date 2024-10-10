@@ -2,6 +2,8 @@
 
 set -e
 
+[ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+
 if [ "$1" = ArchLinux ]
 then
    docker push cgal/testsuite-docker:archlinux
