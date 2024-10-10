@@ -4,24 +4,28 @@ set -e
 
 [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
 
-curl -o cgal.tar.gz  -L $(curl -s https://api.github.com/repos/CGAL/cgal/releases/latest | jq -r .tarball_url)
+CGAL_TARBALL=$(curl -s https://api.github.com/repos/CGAL/cgal/releases/latest | jq -r .tarball_url)
+echo "::group::Download and extract CGAL tarball from $CGAL_TARBALL"
+curl -o cgal.tar.gz  -L "$CGAL_TARBALL"
 mkdir -p cgal
 tar -xzf cgal.tar.gz -C cgal --strip-components=1
-
 if command -v selinuxenabled >/dev/null && selinuxenabled; then
   chcon -Rt container_file_t cgal
 fi
+echo '::endgroup::'
 
+echo "::group::Install docker-py"
 if command -v python3 >/dev/null; then
   python3 -m pip install docker
 fi
+echo '::endgroup::'
 
 if [ -n "$GITHUB_SHA" ]; then
   COMMIT_URL=https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}
 fi
 
 function dockerbuild() {
-  if [ -z "$GITHUB_SHA" ]; then
+  if [ -z "$COMMIT_URL" ]; then
     docker build -t cgal/testsuite-docker:$1 ./$2
   else
     docker build --build-arg dockerfile_url=${COMMIT_URL}/$2/Dockerfile -t cgal/testsuite-docker:$1 ./$2
