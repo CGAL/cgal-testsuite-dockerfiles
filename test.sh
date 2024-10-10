@@ -77,8 +77,6 @@ then
   dockerbuildandtest ubuntu-cxx11 Ubuntu-CXX11
   dockerbuildandtest ubuntu-no-deprecated-code Ubuntu-NO_DEPRECATED_CODE
   dockerbuildandtest ubuntu-no-gmp-no-leda Ubuntu-no-gmp-no-leda
-elif [ "$1" = Ubuntu-GCC-master ]
-then
   dockerbuildandtest ubuntu-gcc6 Ubuntu-GCC6
   dockerbuildandtest ubuntu-gcc6-cxx1z Ubuntu-GCC6-CXX1Z
   dockerbuildandtest ubuntu-gcc6-release Ubuntu-GCC6-Release

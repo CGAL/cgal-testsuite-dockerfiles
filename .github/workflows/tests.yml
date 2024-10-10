@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test_platform: ['ArchLinux','Debian-stable','Debian-testing','Fedora','Fedora-32','Fedora-rawhide','Ubuntu','Ubuntu-GCC-master']
+        test_platform: ['ArchLinux','Debian-stable','Debian-testing','Fedora','Fedora-32','Fedora-rawhide','Ubuntu']
       fail-fast: false
 
     steps:
