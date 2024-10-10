@@ -29,8 +29,11 @@ function dockerbuild() {
 }
 
 function dockerbuildandtest() {
-  echo "::group::Building and testing image $1 from $2/Dockerfile"
+  echo "::group::Build image $1 from $2/Dockerfile"
   dockerbuild $1 $2
+  echo '::endgroup::'
+
+  echo "::group::Test image $1"
   docker run --rm -v $PWD/cgal:/cgal cgal/testsuite-docker:$1 bash -c 'cmake -DWITH_examples=ON -S /cgal -B /build && cmake --build /build -t terrain -v'
   if command -v python3 >/dev/null; then
     python3 ./test_container/test_container.py --image cgal/testsuite-docker:$1 --cgal-dir $HOME/cgal
