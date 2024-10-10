@@ -44,36 +44,6 @@ then
   dockerbuildandtest archlinux-clang-cxx17-release ArchLinux-clang-CXX17-Release
   dockerbuildandtest archlinux-clang-cxx20-release ArchLinux-clang-CXX20-Release
   dockerbuildandtest archlinux-clang-release ArchLinux-clang-Release
-elif [ "$1" = CentOS-5 ]
-then
-  dockerbuildandtest centos5 CentOS-5
-elif [ "$1" = CentOS-6 ]
-then
-  dockerbuildandtest centos6 CentOS-6
-  dockerbuildandtest centos6-cxx11-boost157 CentOS-6-CXX11-Boost157
-elif [ "$1" = CentOS-6-32 ]
-then
-  dockerbuildandtest centos6-32 CentOS-6-32
-elif [ "$1" = CentOS-7-ICC-beta ]
-then
-    if [ -z "$ICC_BETA_ACTIVATION_SERIAL_NUMBER" -a -n "$TRAVIS_PULL_REQUEST" ]; then
-        echo "The build of this image is deactivated in pull-requests"
-    else
-        echo ACTIVATION_SERIAL_NUMBER=$ICC_BETA_ACTIVATION_SERIAL_NUMBER > secret.file
-        # Trick to share the secret with the building container, without
-        # having the secret appear in the history of the built image:
-        # transmit the secret at built time by http.
-        docker network inspect local || docker network create local
-        docker run --network local --name web -v $PWD/secret.file:/usr/share/nginx/html/index.html -d nginx
-        docker build --network local -t cgal/testsuite-docker:centos7-icc-beta ./CentOS-7-ICC-beta
-    fi
-elif [ "$1" = CentOS-7-ICC ]
-then
-  dockerbuildandtest centos7-icc CentOS-7-ICC
-elif [ "$1" = CentOS-7 ]
-then
-  dockerbuildandtest centos7 CentOS-7
-  dockerbuildandtest centos7-release CentOS-7-Release
 elif [ "$1" = Debian-stable ]
 then
   dockerbuildandtest debian-stable Debian-stable
