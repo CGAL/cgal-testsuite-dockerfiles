@@ -2,6 +2,8 @@
 
 set -e
 
+[ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+
 if [ "$1" = ArchLinux ]
 then
    docker push cgal/testsuite-docker:archlinux
@@ -12,26 +14,6 @@ then
    docker push cgal/testsuite-docker:archlinux-clang-cxx17-release
    docker push cgal/testsuite-docker:archlinux-clang-cxx20-release
    docker push cgal/testsuite-docker:archlinux-clang-release
-elif [ "$1" = CentOS-5 ]
-then
-   docker push cgal/testsuite-docker:centos5
-elif [ "$1" = CentOS-6 ]
-then
-   docker push cgal/testsuite-docker:centos6
-   docker push cgal/testsuite-docker:centos6-cxx11-boost157
-elif [ "$1" = CentOS-6-32 ]
-then
-   docker push cgal/testsuite-docker:centos6-32
-elif [ "$1" = CentOS-7-ICC-beta ]
-then
-  docker push cgal/testsuite-docker:centos7-icc-beta
-elif [ "$1" = CentOS-7-ICC ]
-then
-  docker push cgal/testsuite-docker:centos7-icc
-elif [ "$1" = CentOS-7 ]
-then
-   docker push cgal/testsuite-docker:centos7
-   docker push cgal/testsuite-docker:centos7-release
 elif [ "$1" = Debian-stable ]
 then
    docker push cgal/testsuite-docker:debian-stable
@@ -61,8 +43,6 @@ then
    docker push cgal/testsuite-docker:ubuntu-cxx11
    docker push cgal/testsuite-docker:ubuntu-no-deprecated-code
    docker push cgal/testsuite-docker:ubuntu-no-gmp-no-leda
-elif [ "$1" = Ubuntu-GCC-master ]
-then
    docker push cgal/testsuite-docker:ubuntu-gcc6
    docker push cgal/testsuite-docker:ubuntu-gcc6-cxx1z
    docker push cgal/testsuite-docker:ubuntu-gcc6-release

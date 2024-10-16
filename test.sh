@@ -2,24 +2,30 @@
 
 set -e
 
-curl -o cgal.tar.gz  -L $(curl -s https://api.github.com/repos/CGAL/cgal/releases/latest | jq -r .tarball_url)
+[ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+
+CGAL_TARBALL=$(curl -s https://api.github.com/repos/CGAL/cgal/releases/latest | jq -r .tarball_url)
+echo "::group::Download and extract CGAL tarball from $CGAL_TARBALL"
+curl -o cgal.tar.gz  -L "$CGAL_TARBALL"
 mkdir -p cgal
 tar -xzf cgal.tar.gz -C cgal --strip-components=1
-
 if command -v selinuxenabled >/dev/null && selinuxenabled; then
   chcon -Rt container_file_t cgal
 fi
+echo '::endgroup::'
 
+echo "::group::Install docker-py"
 if command -v python3 >/dev/null; then
   python3 -m pip install docker
 fi
+echo '::endgroup::'
 
 if [ -n "$GITHUB_SHA" ]; then
   COMMIT_URL=https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}
 fi
 
 function dockerbuild() {
-  if [ -z "$GITHUB_SHA" ]; then
+  if [ -z "$COMMIT_URL" ]; then
     docker build -t cgal/testsuite-docker:$1 ./$2
   else
     docker build --build-arg dockerfile_url=${COMMIT_URL}/$2/Dockerfile -t cgal/testsuite-docker:$1 ./$2
@@ -27,11 +33,16 @@ function dockerbuild() {
 }
 
 function dockerbuildandtest() {
+  echo "::group::Build image $1 from $2/Dockerfile"
   dockerbuild $1 $2
+  echo '::endgroup::'
+
+  echo "::group::Test image $1"
   docker run --rm -v $PWD/cgal:/cgal cgal/testsuite-docker:$1 bash -c 'cmake -DWITH_examples=ON -S /cgal -B /build && cmake --build /build -t terrain -v'
   if command -v python3 >/dev/null; then
     python3 ./test_container/test_container.py --image cgal/testsuite-docker:$1 --cgal-dir $HOME/cgal
   fi
+  echo '::endgroup::'
 }
 
 if [ "$1" = ArchLinux ]
@@ -44,36 +55,6 @@ then
   dockerbuildandtest archlinux-clang-cxx17-release ArchLinux-clang-CXX17-Release
   dockerbuildandtest archlinux-clang-cxx20-release ArchLinux-clang-CXX20-Release
   dockerbuildandtest archlinux-clang-release ArchLinux-clang-Release
-elif [ "$1" = CentOS-5 ]
-then
-  dockerbuildandtest centos5 CentOS-5
-elif [ "$1" = CentOS-6 ]
-then
-  dockerbuildandtest centos6 CentOS-6
-  dockerbuildandtest centos6-cxx11-boost157 CentOS-6-CXX11-Boost157
-elif [ "$1" = CentOS-6-32 ]
-then
-  dockerbuildandtest centos6-32 CentOS-6-32
-elif [ "$1" = CentOS-7-ICC-beta ]
-then
-    if [ -z "$ICC_BETA_ACTIVATION_SERIAL_NUMBER" -a -n "$TRAVIS_PULL_REQUEST" ]; then
-        echo "The build of this image is deactivated in pull-requests"
-    else
-        echo ACTIVATION_SERIAL_NUMBER=$ICC_BETA_ACTIVATION_SERIAL_NUMBER > secret.file
-        # Trick to share the secret with the building container, without
-        # having the secret appear in the history of the built image:
-        # transmit the secret at built time by http.
-        docker network inspect local || docker network create local
-        docker run --network local --name web -v $PWD/secret.file:/usr/share/nginx/html/index.html -d nginx
-        docker build --network local -t cgal/testsuite-docker:centos7-icc-beta ./CentOS-7-ICC-beta
-    fi
-elif [ "$1" = CentOS-7-ICC ]
-then
-  dockerbuildandtest centos7-icc CentOS-7-ICC
-elif [ "$1" = CentOS-7 ]
-then
-  dockerbuildandtest centos7 CentOS-7
-  dockerbuildandtest centos7-release CentOS-7-Release
 elif [ "$1" = Debian-stable ]
 then
   dockerbuildandtest debian-stable Debian-stable
@@ -103,8 +84,6 @@ then
   dockerbuildandtest ubuntu-cxx11 Ubuntu-CXX11
   dockerbuildandtest ubuntu-no-deprecated-code Ubuntu-NO_DEPRECATED_CODE
   dockerbuildandtest ubuntu-no-gmp-no-leda Ubuntu-no-gmp-no-leda
-elif [ "$1" = Ubuntu-GCC-master ]
-then
   dockerbuildandtest ubuntu-gcc6 Ubuntu-GCC6
   dockerbuildandtest ubuntu-gcc6-cxx1z Ubuntu-GCC6-CXX1Z
   dockerbuildandtest ubuntu-gcc6-release Ubuntu-GCC6-Release
