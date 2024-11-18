@@ -37,6 +37,12 @@ def main():
     else:
         chosen_name = 'CGAL-{}-test_container'.format(res.group(2))
 
+    try:
+        docker_client.remove_container(container=chosen_name, force=True)
+    except docker.errors.NotFound:
+        pass
+    except docker.errors.APIError as e:
+        logging.warning("Failed to remove container %s: %s", chosen_name, e)
     container = docker_client.create_container(
         image=args.image,
         name=chosen_name,
@@ -74,9 +80,16 @@ def main():
             # our container died, time to print the log
             break
 
-    log = docker_client.logs(container=container)
+    log = docker_client.logs(container=container).decode('utf-8')
     for line in log.splitlines():
         print(line)
+
+    exit_code = docker_client.inspect_container(container['Id'])['State']['ExitCode']
+    if exit_code != 0:
+        logging.error('Container exited with code {}'.format(exit_code))
+        exit(exit_code)
+    else:
+        logging.info('Container exited successfully')
 
 if __name__ == "__main__":
     main()

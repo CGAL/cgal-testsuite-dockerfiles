@@ -98,9 +98,19 @@ for pkg in $LIST_TEST_PACKAGES; do
     TO_TEST="${TO_TEST}|$pkg"
   fi
 done
-#unsets the limit of 1024 bits for the logs through ssh
-echo "SET(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 1000000000)" > CTestCustom.cmake
-echo "SET(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 1000000000)" >> CTestCustom.cmake
+
+# unset the limits of 1 KiB for the logs and set them to 1 GB instead
+cat <<EOF > CTestCustom.cmake
+set(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 1000000000)
+set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 1000000000)
+EOF
+
+# add a configuration file for the tests (required since CMake-3.32)
+cat <<EOF > CTestConfiguration.cmake
+SourceDirectory: ${CGAL_RELEASE_DIR}
+BuildDirectory: ${CGAL_SRC_BUILD_DIR}
+EOF
+
 CTEST_OPTS="-T Start -T Test --timeout 1200 ${DO_NOT_TEST:+-E execution___of__}"
 if [ -z "${SHOW_PROGRESS}" ]; then
     ctest ${TO_TEST:+-L ${TO_TEST} } ${CTEST_OPTS} -j${CGAL_NUMBER_OF_JOBS} ${KEEP_TESTS:+-FC .}>${CGAL_TESTRESULTS}ctest-${CGAL_TEST_PLATFORM}.log || :
@@ -123,7 +133,7 @@ echo "CGAL_TEST_PLATFORM ${PLATFORM}" >> "$RESULT_FILE"
 grep -e "^-- Operating system: " "${CGAL_TESTRESULTS}installation-${CGAL_TEST_PLATFORM}.log"|sort -u >> $RESULT_FILE
 grep -e "^-- USING " "${CGAL_TESTRESULTS}installation-${CGAL_TEST_PLATFORM}.log"|sort -u >> $RESULT_FILE
 sed -n '/^-- Third-party library /p' "${CGAL_TESTRESULTS}installation-${CGAL_TEST_PLATFORM}.log" >> $RESULT_FILE
-#Use sed to get the content of DEBUG or RELEASE CXX FLAGS so that Multiconfiguration platforms do provide their CXXXFLAGS to the testsuite page (that greps USING CXXFLAGS to get info)
+# Use sed to get the content of DEBUG or RELEASE CXX FLAGS so that Multi-config platforms do provide their CXXFLAGS to the testsuite page (that greps USING CXXFLAGS to get info)
 sed -i -E 's/(^-- USING )(DEBUG|RELEASE) (CXXFLAGS)/\1\3/' $RESULT_FILE
 echo "------------" >> "$RESULT_FILE"
 touch ../../../../../.scm-branch
