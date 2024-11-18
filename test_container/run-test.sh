@@ -1,5 +1,5 @@
-#!/bin/bash -l
+#!/bin/sh
 
-mkdir /cgal_test && cd /cgal_test
-cp /mnt/test/CMakeLists.txt .
-cmake .
+set -e
+
+cmake -S /mnt/test -B /cgal_test
