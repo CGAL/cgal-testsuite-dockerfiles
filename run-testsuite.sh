@@ -116,6 +116,7 @@ touch "$RESULT_FILE"
 
 sed -n '/The CXX compiler/s/-- The CXX compiler identification is/COMPILER_VERSION =/p' < "${CGAL_TESTRESULTS}installation-${CGAL_TEST_PLATFORM}.log" |sed -E "s/ = (.*)/\ = '\1\'/">> "$RESULT_FILE"
 sed -n '/CGAL_VERSION /s/#define //p' < "${CGAL_VERSION_DIR}include/CGAL/version.h" >> "$RESULT_FILE"
+echo "CGAL_SUMMARY_NAME ${CGAL_SUMMARY_NAME:-$CGAL_TEST_PLATFORM}" >> "$RESULT_FILE"
 echo "TESTER ${CGAL_TESTER}" >> "$RESULT_FILE"
 echo "TESTER_NAME ${CGAL_TESTER_NAME}" >> "$RESULT_FILE"
 echo "TESTER_ADDRESS ${CGAL_TESTER_ADDRESS}" >> "$RESULT_FILE"
