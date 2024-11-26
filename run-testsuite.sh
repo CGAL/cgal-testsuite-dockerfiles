@@ -106,7 +106,7 @@ set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 1000000000)
 EOF
 
 # add a configuration file for the tests (required since CMake-3.32)
-cat <<EOF > CTestConfiguration.cmake
+cat <<EOF > CTestConfiguration.ini
 SourceDirectory: ${CGAL_RELEASE_DIR}
 BuildDirectory: ${CGAL_SRC_BUILD_DIR}
 EOF
