@@ -1,0 +1,67 @@
+#!/bin/bash
+
+TEST_MACHINES=$(cat << 'HEREDOC'
+lrineau@bonnard
+lrineau@cgal
+cgaltest@friedrich
+lrineau@rubens
+HEREDOC
+)
+
+cat << HEREDOC
+# Test runner machines #
+
+The following machines are used to run the tests:
+HEREDOC
+
+machine_title () {
+        printf '\n## %s ##\n' $1
+}
+
+machine_tested_images () {
+        echo
+        echo '```plain'
+        ssh $1 cat /home/$2/.config/CGAL/test_cgal_docker_images
+        echo '```'
+}
+
+test_docker_is_active_cmd () {
+        echo 'systemctl is-active -q docker'
+}
+
+docker_ps_filter_option () {
+        echo '--filter name="CGAL-"'
+}
+
+docker_ps_format_option () {
+        echo '--format "table {{.Names}}\t{{.Image}}\t{{.CreatedAt}}\t{{.Status}}"'
+}
+
+docker_ps_cmd () {
+        printf 'docker ps -a %s %s' "$(docker_ps_filter_option)" "$(docker_ps_format_option)"
+}
+
+podman_ps_cmd () {
+        printf 'podman -r ps -a %s %s' "$(docker_ps_filter_option)" "$(docker_ps_format_option)"
+}
+
+docker_or_podman_ps_cmd () {
+        printf '%s && %s || %s' "$(test_docker_is_active_cmd)" "$(docker_ps_cmd)" "$(podman_ps_cmd)"
+}
+
+machine_list_cgal_test_container () {
+        echo
+        echo '```plain'
+        docker_or_podman_ps_cmd | ssh $1 bash -s
+        echo '```'
+}
+
+for machine in $TEST_MACHINES; do
+        USER=${machine%@*}
+        HOST=${machine#*@}
+        machine_title $machine
+        printf '\nTested images:\n'
+        machine_tested_images $HOST $USER
+        printf '\nCGAL test containers:\n'
+        machine_list_cgal_test_container $HOST $USER
+done
