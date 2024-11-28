@@ -38,7 +38,7 @@ Running the testsuite for one container
 
 Use a command similar to that one:
 
-    docker run --rm -t -i -v $PWD/run-testsuite.sh:/mnt/run-testsuite.sh:z -v $HOME/Git/cgal-master:/mnt/testsuite:ro,z -v $PWD/testresults:/mnt/testresults:z cgal/testsuite-docker:debian-testing bash -x /mnt/run-testsuite.sh
+    docker run --rm -t -i -v $HOME/Git/cgal-master:/mnt/testsuite:ro,z -v $PWD/docker-entrypoint.sh:/mnt/testsuite/docker-entrypoint.sh:ro,z -v $PWD/run-testsuite.sh:/mnt/testsuite/run-testsuite.sh:z -v $PWD/testresults:/mnt/testresults:z cgal/testsuite-docker:debian-testing bash /mnt/testsuite/docker-entrypoint.sh
 
 If you want a limited testsuite, you can have a file `testresults/list_test_packages` containing something like:
 
