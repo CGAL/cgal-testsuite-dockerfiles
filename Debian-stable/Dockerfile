@@ -35,6 +35,7 @@ RUN apt-get update && apt-get install -y \
 
 
 ENV CGAL_TEST_PLATFORM="Debian-Stable"
+ENV CGAL_SUMMARY_NAME="Debian-stable-Debug"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt5=OFF \")"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake

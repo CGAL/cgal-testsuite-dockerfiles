@@ -39,7 +39,7 @@ RUN dnf -y upgrade && \
     cd .. && rm -rf v2021.8.0.tar.gz oneTBB-2021.8.0 build
 
 ENV CGAL_TEST_PLATFORM="Fedora-rawhide"
-ENV CGAL_SUMMARY_NAME="Fedora-rawhide-Debug"
+ENV CGAL_SUMMARY_NAME="Fedora-testing-Debug"
 ENV CGAL_CMAKE_FLAGS="('-DCGAL_HEADER_ONLY:BOOL=TRUE')"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake

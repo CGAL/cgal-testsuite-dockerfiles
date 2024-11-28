@@ -55,5 +55,6 @@ ENV OpenMesh_DIR=/OpenMesh-11.0.0/build
 
 
 ENV CGAL_TEST_PLATFORM="Debian-Testing"
+ENV CGAL_SUMMARY_NAME="Debian-testing-Debug"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake
