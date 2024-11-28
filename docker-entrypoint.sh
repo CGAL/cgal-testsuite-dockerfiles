@@ -15,4 +15,8 @@ mkdir -p /home/cgal_tester
 chown cgal_tester:cgal_tester /home/cgal_tester
 
 cd /home/cgal_tester
-su cgal_tester -c '/bin/bash /mnt/testsuite/run-testsuite.sh'
+CMD="/bin/bash -$- /mnt/testsuite/run-testsuite.sh"
+if [ -n "$1" ]; then
+    CMD="$@"
+fi
+su cgal_tester -c "$CMD"

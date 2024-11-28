@@ -63,10 +63,10 @@ export CGAL_DATA_DIR
 
 # If the option xtrace (`set -x`) is not set,
 # then set it, and redirect all trace output to a log file.
-BASH_LOG=${CGAL_TESTRESULTS}/bash-xtrace-${CGAL_TEST_PLATFORM}.log
+BASH_LOG_FILE=${CGAL_TESTRESULTS}/bash-xtrace-${CGAL_TEST_PLATFORM}.log
 case "$-" in
   *x*) ;;
-  *) echo "Redirecting xtrace output to ${BASH_LOG}"; eval "exec ${BASH_XTRACEFD}>${BASH_LOG}"; set -x ;;
+  *) echo "Redirecting xtrace output to ${BASH_LOG_FILE}"; eval "exec ${BASH_XTRACEFD}>${BASH_LOG_FILE}"; set -x ;;
 esac
 
 # Create the binary directories
@@ -95,8 +95,8 @@ REDIRECT_TO() {
 
 REVERT_REDIRECTIONS() {
   [ -z "$_REDIRECTED" ] && return
-  [ -z "${SHOW_PROGRESS}" ] && echo "Reverting redirections of stdout and stderr"
   exec 1>&3 3>&- 2>&4 4>&-
+  [ -z "${SHOW_PROGRESS}" ] && echo "Reverting redirections of stdout and stderr"
   unset _REDIRECTED
 }
 
@@ -150,7 +150,7 @@ if [ -z "${_CMAKE_ERROR}" ]; then
   TAG_DIR=$(awk '/tag: /{print $4F}' "${CTEST_LOG_FILE}")
 else
   TAG_DIR="error"
-  mkdir Testing/${TAG_DIR}
+  mkdir -p Testing/${TAG_DIR}
 fi
 
 cd Testing/${TAG_DIR}
@@ -174,7 +174,9 @@ touch ../../../../../.scm-branch
 if [ -f /mnt/testsuite/.scm-branch ]; then
     cat /mnt/testsuite/.scm-branch >> ../../../../../.scm-branch
 fi
-python3 "${CGAL_TESTSUITE_DIR}/test/parse-ctest-dashboard-xml.py" "$CGAL_TESTER" "$PLATFORM"
+if [ -z "${_CMAKE_ERROR}" ]; then
+  python3 "${CGAL_TESTSUITE_DIR}/test/parse-ctest-dashboard-xml.py" "$CGAL_TESTER" "$PLATFORM"
+fi
 
 for file in $(ls|grep _Tests); do
   mv $file "$(echo "$file" | sed 's/_Tests//g')"
@@ -186,10 +188,19 @@ chmod 777 Installation
 cat "${CMAKE_LOG_FILE}" >> "Installation/${TEST_REPORT}"
 
 #call the python script to complete the results report.
-python3 "${CGAL_TESTSUITE_DIR}/test/post_process_ctest_results.py" "Installation/${TEST_REPORT}" "${TEST_REPORT}" "$RESULT_FILE"
+if [ -z "${_CMAKE_ERROR}" ]; then
+  python3 "${CGAL_TESTSUITE_DIR}/test/post_process_ctest_results.py" "Installation/${TEST_REPORT}" "${TEST_REPORT}" "$RESULT_FILE"
+else
+  REDIRECT_TO "Installation/${TEST_REPORT}"
+  printf "CMake configuration failed\n\nHere is the CMake log:\n\n"
+  cat "${CMAKE_LOG_FILE}"
+  printf "\n-----------------------\nHere is the Bash log:\n\n"
+  cat "${BASH_LOG_FILE}"
+  REVERT_REDIRECTIONS
+fi
 rm -f ./"$OUTPUT_FILE" ./"$OUTPUT_FILE.gz"
 rm ../../../../../.scm-branch
 tar cf $OUTPUT_FILE "$RESULT_FILE" */"$TEST_REPORT"
 echo
 gzip -9f $OUTPUT_FILE
-cp "${OUTPUT_FILE}.gz" "$RESULT_FILE" "${CGAL_TESTRESULTS}/"
+mv "${OUTPUT_FILE}.gz" "$RESULT_FILE" "${CGAL_TESTRESULTS}/"
