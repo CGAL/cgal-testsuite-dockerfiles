@@ -12,6 +12,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libqt6websockets6-dev
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest-NO_DEPRECATED_CODE"
+ENV CGAL_SUMMARY_NAME="Ubuntu-latest-NO_DEPRECATED_CODE"
 ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-DCGAL_NO_DEPRECATED_CODE\")"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake

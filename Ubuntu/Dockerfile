@@ -126,6 +126,7 @@ RUN git clone https://ceres-solver.googlesource.com/ceres-solver \
  && rm -rf ceres-solver
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest"
+ENV CGAL_SUMMARY_NAME="Ubuntu-latest-Debug"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt5:BOOL=OFF\")"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake
