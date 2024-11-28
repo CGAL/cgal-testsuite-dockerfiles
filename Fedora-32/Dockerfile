@@ -30,6 +30,7 @@ RUN dnf -y install \
 
 ENV CC="gcc -m32" CXX="g++ -m32"
 ENV CGAL_TEST_PLATFORM="Fedora-32"
+ENV CGAL_SUMMARY_NAME="Fedora-latest-32-Debug"
 ENV CGAL_CMAKE_FLAGS="('-DCGAL_HEADER_ONLY:BOOL=TRUE')"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake
