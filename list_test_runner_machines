@@ -50,9 +50,10 @@ docker_or_podman_ps_cmd () {
 }
 
 machine_list_cgal_test_container () {
+        cmd=$(docker_or_podman_ps_cmd)
         echo
         echo '```plain'
-        docker_or_podman_ps_cmd | ssh $1 bash -s
+        printf '%s\n' "$cmd" | ssh $1 bash -s
         echo '```'
 }
 
