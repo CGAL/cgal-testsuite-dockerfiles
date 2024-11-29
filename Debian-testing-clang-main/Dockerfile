@@ -12,3 +12,4 @@ RUN apt-get update -y && apt-get install -y wget \
 ENV CXX=/usr/bin/clang++
 ENV CC=/usr/bin/clang
 ENV CGAL_TEST_PLATFORM="Debian-testing-clang-main"
+ENV CGAL_SUMMARY_NAME="Debian-testing-clang-main"

@@ -51,6 +51,7 @@ RUN wget https://github.com/sloriot/LAStools/archive/refs/heads/fix_make_install
 
 
 ENV CGAL_TEST_PLATFORM="Fedora"
+ENV CGAL_SUMMARY_NAME="Fedora-latest-Debug"
 ENV CGAL_CMAKE_FLAGS=""
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake

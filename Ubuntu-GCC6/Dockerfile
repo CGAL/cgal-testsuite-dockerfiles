@@ -38,6 +38,7 @@ RUN git clone --depth=1 --shallow-submodules  https://gitlab.com/libeigen/eigen.
         cmake .. && make install && cd .. && rm -rf eigen
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-latest-GCC6"
+ENV CGAL_SUMMARY_NAME="Ubuntu-latest-GCC_master-Debug"
 ENV CGAL_CMAKE_FLAGS="(\"-DCGAL_CXX_FLAGS=-DDONT_USE_BOOST_PROGRAM_OPTIONS -Wall -Wno-expansion-to-defined\")"
 
 ENV INIT_FILE=/tmp/init.cmake
