@@ -36,7 +36,7 @@ docker_cmd() {
         if docker_is_active_cmd; then
                 docker $@
         else
-                podman -r $@
+                podman --url unix:/var/run/podman/podman.sock $@
         fi
 }
 declare -xf docker_cmd
