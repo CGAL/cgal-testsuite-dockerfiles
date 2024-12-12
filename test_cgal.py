@@ -32,6 +32,7 @@ import tempfile
 import docker
 import signal
 import subprocess
+import sdnotify
 
 def handle_results(client, cont_id, upload, testresult_dir, release, tester):
     platform=platform_from_container(client, cont_id)
@@ -172,6 +173,7 @@ def main():
     if not args.jobs:
         args.jobs = args.container_cpus
 
+    logging.info('Using docker at {}'.format(args.docker_url))
     client = docker.APIClient(base_url=args.docker_url, version='1.24', timeout=300)
 
     # Perform a check for existing, running containers.
@@ -190,6 +192,10 @@ def main():
         assert args.tester_address, 'When uploading a --tester-address has to be given'
         assert 'gztar' in (item[0] for item in shutil.get_archive_formats()), 'When uploading results, gztar needs to be available'
 
+    notifier = sdnotify.SystemdNotifier()
+    logging.info('Notifying systemd that we are ready.')
+    notifier.notify('READY=1')
+
     release = Release(args.testsuite, args.use_local, args.user, args.passwd)
 
     args.images = images(client, release, args.images)
@@ -199,6 +205,7 @@ def main():
         release.scrub(args.packages)
 
     logging.info('Extracted release {} is at {}'.format(release.version, release.path))
+    notifier.notify('STATUS=Extracted release {} is at {}'.format(release.version, release.path))
 
     local_dir = os.path.dirname(os.path.realpath(__file__))
     # Copy the entrypoint to the testsuite volume
@@ -210,7 +217,7 @@ def main():
 
     logging.info('Running a maximum of %i containers in parallel each using %i CPUs and using %i jobs' % (nb_parallel_containers, args.container_cpus, args.jobs))
 
-    runner = ContainerRunner(client, args.tester, args.tester_name,
+    runner = ContainerRunner(client, notifier, args.tester, args.tester_name,
                              args.tester_address, args.force_rm, args.jobs,
                              release, args.testresults, args.use_fedora_selinux_policy,
                              args.intel_license, args.mac_address)

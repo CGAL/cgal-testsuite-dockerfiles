@@ -69,12 +69,13 @@ class ContainerRunner:
     # ('user', 'name', 'tag')
     _image_name_regex = re.compile('(.*/)?([^:]*)(:.*)?')
 
-    def __init__(self, docker_client, tester, tester_name,
+    def __init__(self, docker_client, notifier, tester, tester_name,
                  tester_address, force_rm, nb_jobs, testsuite,
                  testresults, use_fedora_selinux_policy, intel_license, mac_address=None):
         assert path.isabs(testsuite.path), 'testsuite needs to be an absolute path'
         assert path.isabs(testresults), 'testresults needs to be an absolute path'
         self.docker_client = docker_client
+        self.notifier = notifier
         self.force_rm = force_rm
         self.use_fedora_selinux_policy = use_fedora_selinux_policy
         self.environment={"CGAL_TESTER" : tester,

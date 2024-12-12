@@ -10,3 +10,5 @@ testsuite/*
 /testresults/list_test_packages
 /testresults/package_installation*.log
 /testresults/ctest*.log
+/testresults/*.log
+/testresults/CGAL*.tar.*
