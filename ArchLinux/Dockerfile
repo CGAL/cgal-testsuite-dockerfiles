@@ -68,16 +68,16 @@ RUN pacman -U --noconfirm *.pkg.tar.zst && \
 
 RUN pacman -Sy --noconfirm unzip wget  && pacman -Scc
 
-RUN wget https://github.com/sloriot/LAStools/archive/refs/heads/fix_make_install.zip \
- && unzip fix_make_install.zip \
- && cd LAStools-fix_make_install \
+RUN wget https://github.com/LAStools/LAStools/archive/refs/heads/master.zip \
+ && unzip master.zip \
+ && cd LAStools-master \
  && mkdir build \
  && cd build \
  && cmake -DCMAKE_BUILD_TYPE=Release .. \
  && make -j "$(nproc)" \
  && make install \
  && cd .. \
- && rm -rf LAStools-fix_make_install fix_make_install.zip
+ && rm -rf LAStools-master master.zip
 
 
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
