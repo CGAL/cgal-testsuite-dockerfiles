@@ -21,16 +21,16 @@ RUN apt-get update \
  && make -j"$(nproc)" install \
  && cd /tmp && rm -rf build llvm
 
-RUN wget https://github.com/sloriot/LAStools/archive/refs/heads/fix_make_install.zip \
- && unzip fix_make_install.zip \
- && cd LAStools-fix_make_install \
+RUN wget https://github.com/LAStools/LAStools/archive/refs/heads/master.zip \
+ && unzip master.zip \
+ && cd LAStools-master \
  && mkdir build \
  && cd build \
  && cmake -DCMAKE_BUILD_TYPE=Release .. \
  && make -j "$(nproc)" \
  && make install \
  && cd .. \
- && rm -rf LAStools-fix_make_install fix_make_install.zip
+ && rm -rf LAStools-master master.zip
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-clang-latest"
 ENV CXX=/usr/local/bin/clang++
