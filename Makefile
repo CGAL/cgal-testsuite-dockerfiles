@@ -108,8 +108,8 @@ ubuntu-gcc_master_cxx20-release: ubuntu-gcc6
 	$(MAKE) dockerbuildandtest TARGET=ubuntu-gcc_master_cxx20-release DIR=Ubuntu-GCC_master_cpp20-Release
 
 download_cgal:
-	CGAL_TARBALL=$$(curl -s https://api.github.com/repos/CGAL/cgal/releases/latest | jq -r .tarball_url); \
-	@echo "::group::Download and extract CGAL tarball from $$CGAL_TARBALL"; \
+	@CGAL_TARBALL=$$(curl -s https://api.github.com/repos/CGAL/cgal/releases/latest | jq -r .tarball_url); \
+	echo "::group::Download and extract CGAL tarball from $$CGAL_TARBALL"; \
 	curl -o cgal.tar.gz -L "$$CGAL_TARBALL";
 	mkdir -p cgal;
 	tar -xzf cgal.tar.gz -C cgal --strip-components=1;
