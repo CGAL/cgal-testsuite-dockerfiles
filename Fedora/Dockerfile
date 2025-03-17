@@ -39,7 +39,7 @@ RUN dnf -y install \
     json-devel
 
 # Copy and run the script to install LAStools
-COPY --from=root install_lastools.sh /tmp/install_lastools.sh
+COPY --from=root install_lastools.sh LAStools.patch /tmp/
 RUN chmod +x /tmp/install_lastools.sh && bash /tmp/install_lastools.sh
 
 ENV CGAL_TEST_PLATFORM="Fedora"

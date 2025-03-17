@@ -1,0 +1,95 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e10d12c..2fcbdcf 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
++cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+ set(CMAKE_SUPPRESS_REGENERATION true)
+ set(CMAKE_CXX_STANDARD 17)
+ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+diff --git a/LASlib/CMakeLists.txt b/LASlib/CMakeLists.txt
+index 495ee5b..e41cb32 100644
+--- a/LASlib/CMakeLists.txt
++++ b/LASlib/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
++cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+ set(CMAKE_SUPPRESS_REGENERATION true)
+ project("LASlib")
+ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+diff --git a/LASlib/src/CMakeLists.txt b/LASlib/src/CMakeLists.txt
+index 0a0b347..b5ad81f 100644
+--- a/LASlib/src/CMakeLists.txt
++++ b/LASlib/src/CMakeLists.txt
+@@ -71,7 +71,7 @@ file(GLOB_RECURSE LAS_INCLUDES
+ 
+ add_library(LASlib ${LAS_SRC} ${LAZ_SRC_FULL})
+ set_property(TARGET LASlib PROPERTY POSITION_INDEPENDENT_CODE ON)
+-set_property(TARGET LASlib PROPERTY CXX_STANDARD 11)
++set_property(TARGET LASlib PROPERTY CXX_STANDARD 14)
+ 
+ if (BUILD_SHARED_LIBS)
+ 	target_compile_definitions(LASlib PRIVATE "COMPILE_AS_DLL")
+diff --git a/LASzip/src/mydefs.cpp b/LASzip/src/mydefs.cpp
+index fff8694..1fb8ca7 100644
+--- a/LASzip/src/mydefs.cpp
++++ b/LASzip/src/mydefs.cpp
+@@ -33,6 +33,9 @@
+ #include "lasmessage.hpp"
+ #include "laszip_common.h"
+ 
++#include <algorithm>
++#include <cmath>
++#include <cstdarg>
+ #include <cstring>
+ #include <filesystem>
+ #include <stdarg.h>
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index f5c5817..62f9760 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -10,6 +10,7 @@ add_definitions(-DNDEBUG )
+ include_directories(../LASzip/include/laszip)
+ include_directories(../LASzip/src)
+ include_directories(../LASlib/inc)
++include_directories(.)
+ 
+ set(GEOPROJECTION_TARGETS
+   laszip
+diff --git a/src/geoprojectionconverter.cpp b/src/geoprojectionconverter.cpp
+index ae067a7..e046f6d 100644
+--- a/src/geoprojectionconverter.cpp
++++ b/src/geoprojectionconverter.cpp
+@@ -33,6 +33,7 @@
+ */
+ #include "geoprojectionconverter.hpp"
+ 
++#include <algorithm>
+ #include <map>
+ #include <math.h>
+ #include <stdio.h>
+diff --git a/src/wktparser.cpp b/src/wktparser.cpp
+index 97d4dbd..af87d77 100644
+--- a/src/wktparser.cpp
++++ b/src/wktparser.cpp
+@@ -28,6 +28,7 @@
+ #include "mydefs.hpp"
+ 
+ #include <algorithm>
++#include <cmath>
+ #include <iostream>
+ #include <map>
+ #include <sstream>
+diff --git a/src/wktparser.h b/src/wktparser.h
+index 0ad36f7..dc9695d 100644
+--- a/src/wktparser.h
++++ b/src/wktparser.h
+@@ -28,6 +28,7 @@
+ #include <iostream>
+ #include <sstream>
+ #include <string>
++#include <vector>
+ #include <map>
+ #include <unordered_map>
+ 
