@@ -70,7 +70,7 @@ RUN pacman -U --noconfirm *.pkg.tar.zst && \
 RUN pacman -Sy --noconfirm unzip wget  && pacman -Scc
 
 # Copy and run the script to install LAStools
-COPY --from=root install_lastools.sh LAStools.patch /tmp/
+COPY --from=root install_lastools.sh /tmp/
 RUN chmod +x /tmp/install_lastools.sh && bash /tmp/install_lastools.sh
 
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...

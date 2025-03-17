@@ -19,7 +19,7 @@ RUN apt-get update \
  && cd /tmp && rm -rf build llvm
 
 # Copy and run the script to install LAStools
-COPY --from=root install_lastools.sh LAStools.patch /tmp/
+COPY --from=root install_lastools.sh /tmp/
 RUN chmod +x /tmp/install_lastools.sh && bash /tmp/install_lastools.sh
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-clang-latest"
