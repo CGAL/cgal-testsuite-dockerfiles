@@ -5,10 +5,7 @@ ENV DOCKERFILE_URL=$dockerfile_url
 
 #install the necessary packages
 RUN apt-get update \
- && apt-get install -y python \
- && apt-get install -y subversion \
- && apt-get install unzip \
- && apt-get install wget \
+ && apt-get install -y python subversion patch unzip wget \
  && apt-get clean -y \
  && cd /tmp \
  && svn co http://llvm.org/svn/llvm-project/llvm/trunk llvm \
@@ -21,16 +18,9 @@ RUN apt-get update \
  && make -j"$(nproc)" install \
  && cd /tmp && rm -rf build llvm
 
-RUN wget https://github.com/LAStools/LAStools/archive/refs/heads/master.zip \
- && unzip master.zip \
- && cd LAStools-master \
- && mkdir build \
- && cd build \
- && cmake -DCMAKE_BUILD_TYPE=Release .. \
- && make -j "$(nproc)" \
- && make install \
- && cd .. \
- && rm -rf LAStools-master master.zip
+# Copy and run the script to install LAStools
+COPY --from=root install_lastools.sh /tmp/install_lastools.sh
+RUN chmod +x /tmp/install_lastools.sh && bash /tmp/install_lastools.sh
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-clang-latest"
 ENV CXX=/usr/local/bin/clang++

@@ -26,9 +26,9 @@ fi
 
 function dockerbuild() {
   if [ -z "$COMMIT_URL" ]; then
-    docker build -t cgal/testsuite-docker:$1 ./$2
+    docker build  --build-context root=.  -t cgal/testsuite-docker:$1 ./$2
   else
-    docker build --build-arg dockerfile_url=${COMMIT_URL}/$2/Dockerfile -t cgal/testsuite-docker:$1 ./$2
+    docker build  --build-context root=.  --build-arg dockerfile_url=${COMMIT_URL}/$2/Dockerfile -t cgal/testsuite-docker:$1 ./$2
   fi
 }
 

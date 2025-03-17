@@ -7,9 +7,10 @@ ENV DOCKERFILE_URL=$dockerfile_url
 #   ipe: freetype2, lua, poppler, python3, zlib
 #   leda-free: tcsh
 # and clean up the package cache
-RUN pacman --noconfirm -Syu archlinux-keyring
+RUN pacman-key --init && pacman --noconfirm -Syu archlinux-keyring
 RUN pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
               base-devel \
+              patch \
               coreutils \
               git \
               lsb-release \
@@ -68,17 +69,9 @@ RUN pacman -U --noconfirm *.pkg.tar.zst && \
 
 RUN pacman -Sy --noconfirm unzip wget  && pacman -Scc
 
-RUN wget https://github.com/LAStools/LAStools/archive/refs/heads/master.zip \
- && unzip master.zip \
- && cd LAStools-master \
- && mkdir build \
- && cd build \
- && cmake -DCMAKE_BUILD_TYPE=Release .. \
- && make -j "$(nproc)" \
- && make install \
- && cd .. \
- && rm -rf LAStools-master master.zip
-
+# Copy and run the script to install LAStools
+COPY --from=root install_lastools.sh /tmp/install_lastools.sh
+RUN chmod +x /tmp/install_lastools.sh && bash /tmp/install_lastools.sh
 
 # LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
 # instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
