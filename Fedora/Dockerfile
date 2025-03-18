@@ -5,6 +5,7 @@ ENV DOCKERFILE_URL=$dockerfile_url
 RUN dnf -y update; dnf clean all
 RUN dnf -y install \
     boost-devel.x86_64 \
+    patch \
     cmake \
     eigen3-devel.noarch \
     gcc-c++ \
@@ -37,18 +38,9 @@ RUN dnf -y install \
     lsb-release \
     json-devel
 
-RUN wget https://github.com/LAStools/LAStools/archive/refs/heads/master.zip \
- && unzip master.zip \
- && cd LAStools-master \
- && mkdir build \
- && cd build \
- && cmake -DCMAKE_BUILD_TYPE=Release .. \
- && make -j "$(nproc)" \
- && make install \
- && cd .. \
- && rm -rf LAStools-master master.zip
-
-
+# Copy and run the script to install LAStools
+COPY --from=root install_lastools.sh LAStools.patch /tmp/
+RUN chmod +x /tmp/install_lastools.sh && bash /tmp/install_lastools.sh
 
 ENV CGAL_TEST_PLATFORM="Fedora"
 ENV CGAL_SUMMARY_NAME="Fedora-latest-Debug"
