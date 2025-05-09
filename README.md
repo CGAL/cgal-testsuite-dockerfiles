@@ -9,7 +9,7 @@ of building them locally:
     docker pull --all-tags cgal/testsuite-docker # get all images
     docker pull cgal/testsuite-docker:TAG # get a specific image by replacing TAG with some tag
 
-A list of available tags can [be found here](https://registry.hub.docker.com/u/cgal/testsuite-docker/tags/manage/).
+A list of available tags can [be found here](https://hub.docker.com/r/cgal/testsuite-docker/tags).
 
 Building Images locally
 -----------------------
