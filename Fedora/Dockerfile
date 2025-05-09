@@ -5,6 +5,7 @@ ENV DOCKERFILE_URL=$dockerfile_url
 RUN dnf -y update; dnf clean all
 RUN dnf -y install \
     boost-devel.x86_64 \
+    awk \
     patch \
     cmake \
     eigen3-devel.noarch \
