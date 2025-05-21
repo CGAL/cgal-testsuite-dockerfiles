@@ -128,7 +128,7 @@ dockerbuild:
 	  docker build --build-context root=. --build-arg dockerfile_url=$${COMMIT_URL}/$(DIR)/Dockerfile -t cgal/testsuite-docker:$(TARGET) ./$(DIR); \
 	fi
 
-dockerbuildandtest: dockerbuild download_cgal
+dockerbuildandtest: dockerbuild | download_cgal
 	@echo "::group::Build image $(TARGET) from $(DIR)/Dockerfile";
 	$(MAKE) dockerbuild TARGET=$(TARGET) DIR=$(DIR);
 	@echo '::endgroup::';
