@@ -9,7 +9,7 @@ RUN apt-get update -y && apt-get install -y wget \
 && apt-get install -y clang-22 \
 && apt-get clean all
 
-ENV CXX=/usr/bin/clang++
-ENV CC=/usr/bin/clang
+ENV CXX=/usr/bin/clang++-22
+ENV CC=/usr/bin/clang-22
 ENV CGAL_TEST_PLATFORM="Debian-testing-clang-main"
 ENV CGAL_SUMMARY_NAME="Debian-testing-clang-main"
