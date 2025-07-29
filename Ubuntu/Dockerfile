@@ -115,7 +115,7 @@ RUN git clone https://github.com/scipopt/scip --depth 1 \
  && cd .. \
  && rm -rf scip
 
-RUN git clone https://ceres-solver.googlesource.com/ceres-solver --depth 1 \
+RUN git clone https://ceres-solver.googlesource.com/ceres-solver \
  && cd ceres-solver \
  && git checkout 2.2.0 \
  && mkdir build \
