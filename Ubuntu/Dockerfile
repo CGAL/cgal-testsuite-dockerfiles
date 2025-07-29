@@ -64,7 +64,7 @@ RUN git clone https://github.com/STORM-IRIT/OpenGR.git --depth 1 \
  && cd ../.. \
  && rm -rf ./OpenGR
 
-RUN git clone https://github.com/ethz-asl/libnabo.git \
+RUN git clone https://github.com/ethz-asl/libnabo.git --depth 1 \
  && cd libnabo \
  && SRC_DIR=`pwd` && BUILD_DIR=${SRC_DIR}/build \
  && mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} \
@@ -76,15 +76,16 @@ RUN git clone https://github.com/ethz-asl/libpointmatcher.git \
  && cd libpointmatcher \
  && git switch -d 3eb448330b \
  && sed -i 's/Boost_USE_STATIC_LIBS  ON/Boost_USE_STATIC_LIBS  OFF/' CMakeLists.txt \
+ && sed -i 's|Boost COMPONENTS thread system program_options date_time chrono REQUIRED|Boost COMPONENTS thread program_options date_time chrono REQUIRED|' libpointmatcherConfig.cmake.in \
  && SRC_DIR=`pwd` \
  && BUILD_DIR=${SRC_DIR}/build \
  && mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} \
- && cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DPOINTMATCHER_BUILD_EXAMPLES=OFF -DPOINTMATCHER_BUILD_EVALUATIONS=OFF ${SRC_DIR} \
+ && cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF -DBUILD_EVALUATIONS=OFF ${SRC_DIR} \
  && make -j"$(nproc)" && make install \
  && cd ../.. && rm -rf libpointmatcher
  # Commit 3eb448330b is 1.4.4
 
-RUN git clone --recursive https://github.com/oxfordcontrol/osqp \
+RUN git clone --recursive https://github.com/oxfordcontrol/osqp  --depth 1 \
  && cd ./osqp \
  && mkdir build \
  && cd build \
@@ -94,7 +95,7 @@ RUN git clone --recursive https://github.com/oxfordcontrol/osqp \
  && cd ../.. \
  && rm -rf osqp
 
-RUN git clone https://github.com/scipopt/soplex \
+RUN git clone https://github.com/scipopt/soplex --depth 1 \
  && cd soplex \
  && mkdir build \
  && cd build \
@@ -104,7 +105,7 @@ RUN git clone https://github.com/scipopt/soplex \
  && cd .. \
  && rm -rf soplex
 
-RUN git clone https://github.com/scipopt/scip \
+RUN git clone https://github.com/scipopt/scip --depth 1 \
  && cd scip \
  && mkdir build \
  && cd build \
@@ -114,7 +115,7 @@ RUN git clone https://github.com/scipopt/scip \
  && cd .. \
  && rm -rf scip
 
-RUN git clone https://ceres-solver.googlesource.com/ceres-solver \
+RUN git clone https://ceres-solver.googlesource.com/ceres-solver --depth 1 \
  && cd ceres-solver \
  && git checkout 2.2.0 \
  && mkdir build \
