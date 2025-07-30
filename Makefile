@@ -133,8 +133,8 @@ dockerbuildandtest: dockerbuild
 	$(MAKE) dockerbuild TARGET=$(TARGET) DIR=$(DIR);
 	@echo '::endgroup::';
 	@echo "::group::Display third-party libraries of $(TARGET)";
-	docker run --rm -v $$(pwd)/cgal:/cgal cgal/testsuite-docker:$(TARGET) cmake -S /cgal -B /build -DCGAL_TEST_SUITE=ON
+	docker run --rm -v $$(pwd)/cgal:/cgal cgal/testsuite-docker:$(TARGET) cmake -S /cgal -B /build -DCGAL_TEST_SUITE=ON -DCMAKE_DISABLE_FIND_PACKAGE_libpointmatcher=ON
 	@echo "::endgroup::"
 	@echo "::group::Test image $(TARGET)";
-	docker run --rm -v $$(pwd)/cgal:/cgal cgal/testsuite-docker:$(TARGET) bash -c 'cmake -DWITH_examples=ON -S /cgal -B /build && cmake --build /build -t terrain -v';
+	docker run --rm -v $$(pwd)/cgal:/cgal cgal/testsuite-docker:$(TARGET) bash -c 'cmake -DCMAKE_DISABLE_FIND_PACKAGE_libpointmatcher=ON -DWITH_examples=ON -S /cgal -B /build && cmake --build /build -t terrain -v';
 	@echo '::endgroup::'
