@@ -27,8 +27,6 @@ RUN buildDeps='bison flex libmpc-dev g++ ' \
  && apt-get purge -y --auto-remove $buildDeps
 
 RUN git clone -b develop --depth=1 --shallow-submodules --recursive https://github.com/boostorg/boost.git && \
-        sed -i 's|dynamic_bitset.tpp|dynamic_bitset.hpp|' boost/libs/dynamic_bitset/include/boost/dynamic_bitset/dynamic_bitset.hpp && \
-        mv boost/libs/dynamic_bitset/include/boost/dynamic_bitset/impl/dynamic_bitset.tpp  boost/libs/dynamic_bitset/include/boost/dynamic_bitset/impl/dynamic_bitset.hpp && \
         cd boost && git submodule update -q && \
         ./bootstrap.sh --prefix=/usr/local/boost --with-libraries=container,filesystem,system,serialization,iostreams,program_options,thread,date_time,chrono && \
         ./b2 -d0 install -j4 && \
