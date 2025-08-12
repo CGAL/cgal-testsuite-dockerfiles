@@ -64,25 +64,25 @@ RUN git clone https://github.com/STORM-IRIT/OpenGR.git --depth 1 \
  && cd ../.. \
  && rm -rf ./OpenGR
 
-RUN git clone https://github.com/ethz-asl/libnabo.git --depth 1 \
- && cd libnabo \
- && SRC_DIR=`pwd` && BUILD_DIR=${SRC_DIR}/build \
- && mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} \
- && cmake -DCMAKE_BUILD_TYPE=Release -DUSE_OPEN_MP=False ${SRC_DIR} \
- && make && make install \
- && cd ../.. && rm -rf libnado
+#RUN git clone https://github.com/ethz-asl/libnabo.git --depth 1 \
+# && cd libnabo \
+# && SRC_DIR=`pwd` && BUILD_DIR=${SRC_DIR}/build \
+# && mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} \
+# && cmake -DCMAKE_BUILD_TYPE=Release -DUSE_OPEN_MP=False ${SRC_DIR} \
+# && make && make install \
+# && cd ../.. && rm -rf libnado
 
-RUN git clone https://github.com/ethz-asl/libpointmatcher.git \
- && cd libpointmatcher \
- && git switch -d 3eb448330b \
- && sed -i 's/Boost_USE_STATIC_LIBS  ON/Boost_USE_STATIC_LIBS  OFF/' CMakeLists.txt \
- && sed -i 's|Boost COMPONENTS thread system program_options date_time chrono REQUIRED|Boost COMPONENTS thread program_options date_time chrono REQUIRED|' libpointmatcherConfig.cmake.in \
- && SRC_DIR=`pwd` \
- && BUILD_DIR=${SRC_DIR}/build \
- && mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} \
- && cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF -DBUILD_EVALUATIONS=OFF ${SRC_DIR} \
- && make -j"$(nproc)" && make install \
- && cd ../.. && rm -rf libpointmatcher
+#RUN git clone https://github.com/ethz-asl/libpointmatcher.git \
+# && cd libpointmatcher \
+# && git switch -d 3eb448330b \
+# && sed -i 's/Boost_USE_STATIC_LIBS  ON/Boost_USE_STATIC_LIBS  OFF/' CMakeLists.txt \
+# && sed -i 's|Boost COMPONENTS thread system program_options date_time chrono REQUIRED|Boost COMPONENTS thread program_options date_time chrono REQUIRED|' libpointmatcherConfig.cmake.in \
+# && SRC_DIR=`pwd` \
+# && BUILD_DIR=${SRC_DIR}/build \
+# && mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} \
+# && cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF -DBUILD_EVALUATIONS=OFF ${SRC_DIR} \
+# && make -j"$(nproc)" && make install \
+# && cd ../.. && rm -rf libpointmatcher
  # Commit 3eb448330b is 1.4.4
 
 RUN git clone --recursive https://github.com/oxfordcontrol/osqp  --depth 1 \
