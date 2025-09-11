@@ -57,8 +57,9 @@ def _not_existing_images(docker_client, images):
     return [img for img in images if len(docker_client.images(name=img.rsplit(':')[0])) == 0]
 
 def _image_to_ignore(docker_client, image, release):
-    labels = docker_client.inspect_image(image)['Config']['Labels']
-    if labels != None and 'org.cgal.releases_to_ignore' in labels:
+    config = docker_client.inspect_image(image).get('Config', {})
+    labels = config.get('Labels')
+    if labels and 'org.cgal.releases_to_ignore' in labels:
         if re.match(labels['org.cgal.releases_to_ignore'], release.version):
             print('Image {} will be ignored for release {}'.format(image, release.version))
             return True
