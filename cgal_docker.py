@@ -1,8 +1,8 @@
 from os import path
-import logging
-import docker
 import re
 import io
+import logging
+import docker
 
 class TestsuiteException(Exception):
     pass
@@ -10,71 +10,84 @@ class TestsuiteException(Exception):
 class TestsuiteWarning(TestsuiteException):
     """Warning exceptions thrown in this module."""
     def __init__(self, value):
+        super().__init__(value)
         self.value = value
     def __str__(self):
-        return 'Testsuite Warning: ' + repr(self.value)
+        return f'Testsuite Warning: {self.value!r}'
 
 class TestsuiteError(TestsuiteException):
     """Error exceptions thrown in this module."""
     def __init__(self, value):
+        super().__init__(value)
         self.value = value
     def __str__(self):
-        return 'Testsuite Error: ' + repr(self.value)
+        return f'Testsuite Error: {self.value!r}'
 
-def container_by_id(docker_client, Id):
+def container_by_id(docker_client, container_id):
     """Returns a container given an `Id`. Raises `TestsuiteError` if the
     `Id` cannot be found."""
-    contlist = [cont for cont in docker_client.containers(all=True) if Id == cont['Id']]
+    contlist = [cont for cont in docker_client.containers(all=True) if container_id == cont['Id']]
     if len(contlist) != 1:
-        raise TestsuiteError('Requested Container Id ' + Id + 'does not exist')
+        raise TestsuiteError(f'Requested Container Id {container_id} does not exist')
     return contlist[0]
 
-def images(docker_client, release, images):
+def images(docker_client, release, image_list):
     """If `images` is `None`, returns a list of default images, else
     validates the list of images and returns it. Raises an exception
     if an invalid image is found.
     """
-    if not images:
+    if image_list is None:
         return _default_images(docker_client)
-    not_existing = _not_existing_images(docker_client, images)
-    if len(not_existing) != 0:
-        raise TestsuiteError('Could not find specified images: ' + ', '.join(not_existing))
-
-    return [ img for img in images if _image_to_ignore(docker_client, img, release) == False ]
+    not_existing = _not_existing_images(docker_client, image_list)
+    if not_existing:
+        for img in not_existing:
+            try:
+                logging.info('Image %s not found locally. Pulling...', img)
+                docker_client.pull(img)
+            except Exception as e:
+                raise TestsuiteError(f'Could not pull image {img}: {e}') from e
+        # Re-check if images are now present
+        still_missing = _not_existing_images(docker_client, image_list)
+        if still_missing:
+            raise TestsuiteError('Could not find or pull specified images: ' + ', '.join(still_missing))
+    return [img for img in image_list if not _image_to_ignore(docker_client, img, release)]
 
 def _default_images(docker_client):
-    images = []
+    """Return a list of default CGAL testsuite image tags."""
+    image_names = []
     for img in docker_client.images():
-        tag = next((x for x in img['RepoTags'] if x.startswith('cgal-testsuite/')), None)
+        tag = next((x for x in img.get('RepoTags', []) if x.startswith('cgal-testsuite/')), None)
         if tag:
-            images.append(tag)
-    return images
+            image_names.append(tag)
+    return image_names
 
-def _not_existing_images(docker_client, images):
+def _not_existing_images(docker_client, image_list):
     """Checks if each image in the list `images` is actually a name
     for a docker image. Returns a list of not existing names."""
     # Since img might contain a :TAG we need to work it a little.
-    return [img for img in images if len(docker_client.images(name=img.rsplit(':')[0])) == 0]
+    return [img for img in image_list if not docker_client.images(name=img.rsplit(':')[0])]
 
 def _image_to_ignore(docker_client, image, release):
+    """Return True if image should be ignored for the given release."""
     config = docker_client.inspect_image(image).get('Config', {})
     labels = config.get('Labels')
-    if labels and 'org.cgal.releases_to_ignore' in labels:
+    if labels is not None and 'org.cgal.releases_to_ignore' in labels:
         if re.match(labels['org.cgal.releases_to_ignore'], release.version):
-            print('Image {} will be ignored for release {}'.format(image, release.version))
+            logging.info('Image %s will be ignored for release %s', image, release.version)
             return True
     return False
 
 class ContainerRunner:
-    # A regex to decompose the name of an image into the groups
-    # ('user', 'name', 'tag')
-    _image_name_regex = re.compile('(.*/)?([^:]*)(:.*)?')
+    # A regex to decompose the name of an image into the groups ('user', 'name', 'tag')
+    _image_name_regex = re.compile(r'(.*/)?([^:]*)(:.*)?')
 
     def __init__(self, docker_client, notifier, tester, tester_name,
                  tester_address, force_rm, nb_jobs, testsuite,
                  testresults, use_fedora_selinux_policy, intel_license, mac_address=None):
-        assert path.isabs(testsuite.path), 'testsuite needs to be an absolute path'
-        assert path.isabs(testresults), 'testresults needs to be an absolute path'
+        if not path.isabs(testsuite.path):
+            raise ValueError('testsuite needs to be an absolute path')
+        if not path.isabs(testresults):
+            raise ValueError('testresults needs to be an absolute path')
         self.docker_client = docker_client
         self.notifier = notifier
         self.force_rm = force_rm
@@ -97,19 +110,20 @@ class ContainerRunner:
             }
         }
         if intel_license and path.isdir(intel_license):
-            assert path.isabs(intel_license), 'intel_license needs to be an absolute path'
+            if not path.isabs(intel_license):
+                raise ValueError('intel_license needs to be an absolute path')
             self.bind[intel_license] = {
                 'bind': '/opt/intel/licenses',
                 'ro': True
             }
-            logging.info('Using {} as intel license directory'.format(intel_license))
+            logging.info('Using %s as intel license directory', intel_license)
         else:
             logging.info('Not using an intel license directory')
 
 
         self.mac_address = mac_address
         if mac_address:
-            logging.info('Using custom MAC address: {}'.format(mac_address))
+            logging.info('Using custom MAC address: %s', mac_address)
         else:
             logging.info('Not using custom MAC address')
 
@@ -118,8 +132,7 @@ class ContainerRunner:
 
         container_id = self._create_container(image, cpuset)
         cont = container_by_id(self.docker_client, container_id)
-        logging.info('Created container: {0} with id {1[Id]} from image {1[Image]} on cpus {2}'
-                     .format(', '.join(cont['Names']), cont, cpuset))
+        logging.info('Created container: %s with id %s from image %s on cpus %s', ', '.join(cont['Names']), cont['Id'], cont['Image'], cpuset)
         self.docker_client.start(container_id)
         return container_id
 
@@ -138,13 +151,13 @@ class ContainerRunner:
         assert len(existing) == 0 or len(existing) == 1, 'Length of existing containers is odd'
 
         if len(existing) != 0 and 'Exited' in existing[0]['Status']:
-            logging.info('An Exited container with name {} already exists. Removing.'.format(chosen_name))
+            logging.info('An Exited container with name %s already exists. Removing.', chosen_name)
             self.docker_client.remove_container(container=chosen_name)
         elif len(existing) != 0 and self.force_rm:
-            logging.info('A non-Exited container with name {} already exists. Forcing exit and removal.'.format(chosen_name))
+            logging.info('A non-Exited container with name %s already exists. Forcing exit and removal.', chosen_name)
             self.docker_client.remove_container(container=chosen_name, force=True)
         elif len(existing) != 0:
-            raise TestsuiteWarning('A non-Exited container with name {} already exists. Skipping.'.format(chosen_name))
+            raise TestsuiteWarning('A non-Exited container with name %s already exists. Skipping.' % chosen_name)
 
         config = self.docker_client.create_host_config(binds=self.bind,
                                                        cpuset_cpus=cpuset)
@@ -163,14 +176,14 @@ class ContainerRunner:
         )
 
         if container['Warnings']:
-            logging.warning('Container of image {} got created with warnings: {}'.format(img, container['Warnings']))
+            logging.warning('Container of image %s got created with warnings: %s', img, container['Warnings'])
 
         return container['Id']
 
 class ContainerScheduler:
-    def __init__(self, runner, images, cpusets):
+    def __init__(self, runner, container_images, cpusets):
         self.runner = runner
-        self.images = images
+        self.images = container_images
         self.available_cpusets = cpusets
         self.running_containers = {}
         # error handling
@@ -203,13 +216,13 @@ class ContainerScheduler:
             except docker.errors.APIError as e:
                 run_no_exception=False
                 self.errors_encountered = True
-                logging.error("There was a fatal error while trying to run testsuite on "+image_to_launch)
-                logging.error("Error message is: "+e.explanation)
-                self.error_logger.error("There was a fatal error while trying to run testsuite on "+image_to_launch)
-                self.error_logger.error("Error message is: "+e.explanation)
-                nb_images-=1
-                if nb_images==0:
-                  return False
+                logging.error("There was a fatal error while trying to run testsuite on %s", image_to_launch)
+                logging.error("Error message is: %s", e.explanation)
+                self.error_logger.error("There was a fatal error while trying to run testsuite on %s", image_to_launch)
+                self.error_logger.error("Error message is: %s", e.explanation)
+                nb_images -= 1
+                if nb_images == 0:
+                    return False
             if run_no_exception:
                 self.running_containers[cont_id] = self.available_cpusets.pop()
 
@@ -219,7 +232,7 @@ class ContainerScheduler:
         """Indicate that a container has finished and its cpuset is available again."""
         cpuset = self.running_containers.pop(container_id, None)
         if not cpuset:
-            logging.warning('Container ID {} never launched by scheduler.'.format(container_id))
+            logging.warning('Container ID %s never launched by scheduler.', container_id)
             return
         self.available_cpusets.append(cpuset)
 
@@ -236,7 +249,7 @@ class ContainerScheduler:
     def kill_all(self):
         """Kill all still running containers."""
         for cont in self.running_containers:
-            logging.info('Killing Container ID {}'.format(cont))
+            logging.info('Killing Container ID %s', cont)
             self.runner.docker_client.kill(cont)
 
 if __name__ == "__main__":
