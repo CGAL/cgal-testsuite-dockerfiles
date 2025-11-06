@@ -113,6 +113,7 @@ download_cgal:
 	curl -o cgal.tar.gz -L "$$CGAL_TARBALL";
 	mkdir -p cgal;
 	tar -xzf cgal.tar.gz -C cgal --strip-components=1;
+	find cgal -name 'CMakeLists.txt' | xargs grep -l "find_package(Eigen3 3.1.0 REQUIRED)"  | xargs sed -i 's/find_package(Eigen3 3.1.0 REQUIRED)/find_package(Eigen3 3.1.0 QUIET)/'
 	if command -v selinuxenabled >/dev/null && selinuxenabled; then \
 	  chcon -Rt container_file_t cgal; \
 	fi;
