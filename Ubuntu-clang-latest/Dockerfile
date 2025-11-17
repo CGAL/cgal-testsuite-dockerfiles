@@ -1,7 +1,9 @@
 FROM cgal/testsuite-docker:ubuntu
 
 ARG dockerfile_url
+ARG image_tag
 ENV DOCKERFILE_URL=$dockerfile_url
+ENV IMAGE_TAG=$image_tag
 
 #install the necessary packages
 RUN apt-get update \

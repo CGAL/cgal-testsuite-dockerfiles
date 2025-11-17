@@ -1,6 +1,8 @@
 FROM debian:testing
 ARG dockerfile_url
+ARG image_tag
 ENV DOCKERFILE_URL=$dockerfile_url
+ENV IMAGE_TAG=$image_tag
 
 RUN apt-get clean && apt-get update && apt-get install -y \
     build-essential \

@@ -1,6 +1,8 @@
 FROM ubuntu:latest
 ARG dockerfile_url
+ARG image_tag
 ENV DOCKERFILE_URL=$dockerfile_url
+ENV IMAGE_TAG=$image_tag
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential cmake \

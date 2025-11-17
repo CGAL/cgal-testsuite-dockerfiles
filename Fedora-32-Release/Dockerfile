@@ -1,6 +1,8 @@
 FROM cgal/testsuite-docker:fedora-32
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
+ARG image_tag
+ENV IMAGE_TAG=$image_tag
 
 ENV CGAL_TEST_PLATFORM="Fedora-32-Release"
 ENV CGAL_SUMMARY_NAME="Fedora-latest-32-Release"

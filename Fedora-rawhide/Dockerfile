@@ -1,6 +1,8 @@
 FROM fedora:rawhide
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
+ARG image_tag
+ENV IMAGE_TAG=$image_tag
 
 RUN dnf -y upgrade && \
     [ -x /usr/bin/dnf ] || ln -s /usr/bin/dnf5 /usr/bin/dnf && \

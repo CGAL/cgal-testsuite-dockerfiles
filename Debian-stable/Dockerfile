@@ -1,6 +1,8 @@
 FROM debian:stable
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
+ARG image_tag
+ENV IMAGE_TAG=$image_tag
 
 RUN apt-get update && apt-get install -y \
     build-essential \

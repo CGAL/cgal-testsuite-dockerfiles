@@ -106,9 +106,8 @@ REDIRECT_TO "${CMAKE_LOG_FILE}"
 
 if [ -n "$DOCKERFILE_URL" ]; then
     echo "Docker image built from ${DOCKERFILE_URL}"
-else
-    echo "Docker container"
 fi
+echo "Docker container running image ${IMAGE_TAG}"
 
 # Configure CGAL.
 cmake ${INIT_FILE:+"-C${INIT_FILE}"} -DBUILD_TESTING=ON -DCGAL_TEST_SUITE=ON -DCMAKE_VERBOSE_MAKEFILE=ON -DWITH_tests=ON "$CGAL_RELEASE_DIR" || _CMAKE_ERROR=$?

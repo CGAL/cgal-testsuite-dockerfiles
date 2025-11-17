@@ -1,6 +1,8 @@
 FROM cgal/testsuite-docker:fedora
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
+ARG image_tag
+ENV IMAGE_TAG=$image_tag
 
 RUN dnf -y install libasan && dnf clean all
 

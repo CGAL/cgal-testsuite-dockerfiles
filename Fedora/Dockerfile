@@ -1,6 +1,8 @@
 FROM fedora:latest
 ARG dockerfile_url
+ARG image_tag
 ENV DOCKERFILE_URL=$dockerfile_url
+ENV IMAGE_TAG=$image_tag
 
 RUN dnf -y update; dnf clean all
 RUN dnf -y install \

@@ -1,6 +1,8 @@
 FROM archlinux:base-devel
 ARG dockerfile_url
+ARG image_tag
 ENV DOCKERFILE_URL=$dockerfile_url
+ENV IMAGE_TAG=$image_tag
 
 # Install additional packages beyond the baseline.
 # Install dependencies of the AUR (user repository) packages to be built from source later

@@ -123,11 +123,7 @@ dockerbuild:
 	if [ -n "$$GITHUB_SHA" ]; then \
 	  COMMIT_URL=https://github.com/$${GITHUB_REPOSITORY}/blob/$${GITHUB_SHA}; \
 	fi; \
-	if [ -z "$$COMMIT_URL" ]; then \
-	  docker build --build-context root=. -t cgal/testsuite-docker:$(TARGET) ./$(DIR); \
-	else \
-	  docker build --build-context root=. --build-arg dockerfile_url=$${COMMIT_URL}/$(DIR)/Dockerfile -t cgal/testsuite-docker:$(TARGET) ./$(DIR); \
-	fi
+	docker build --build-context root=. --build-arg dockerfile_url=$${COMMIT_URL}/$(DIR)/Dockerfile --build-arg image_tag=cgal/testsuite-docker:$(TARGET) -t cgal/testsuite-docker:$(TARGET) ./$(DIR);
 
 dockerbuildandtest: dockerbuild
 	@echo "::group::Build image $(TARGET) from $(DIR)/Dockerfile";

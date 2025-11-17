@@ -1,6 +1,8 @@
 FROM cgal/testsuite-docker:ubuntu
 ARG dockerfile_url
+ARG image_tag
 ENV DOCKERFILE_URL=$dockerfile_url
+ENV IMAGE_TAG=$image_tag
 
 #add qt6 as it is not run on cgal.gf.com
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \

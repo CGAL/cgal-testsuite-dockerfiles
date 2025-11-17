@@ -1,6 +1,8 @@
 FROM cgal/testsuite-docker:ubuntu-gcc6
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
+ARG image_tag
+ENV IMAGE_TAG=$image_tag
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-GCC_master_CXX20-Release"
 ENV CGAL_SUMMARY_NAME="Ubuntu-latest-GCC_master-CXX2a"
