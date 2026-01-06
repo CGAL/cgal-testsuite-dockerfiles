@@ -9,7 +9,8 @@ on:
     - cron: '0 1 * * SUN'
 
 jobs:
-  testing:
+  compile-and-push-docker-images:
+    name: Docker images
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -23,12 +24,36 @@ jobs:
     - name: Compile images
       run: bash ./test.sh ${{ matrix.test_platform }}
 
+    - name: Summary
+      run: |
+        set -e
+        prefix=$(echo "${{ matrix.test_platform }}" | tr 'A-Z' 'a-z')
+        images=$(docker images --format '{{.Repository}}:{{.Tag}}' cgal/testsuite-docker | grep "^cgal/testsuite-docker:${prefix}" || true)
+
+        {
+          echo "## Platform: ${{ matrix.test_platform }}"
+          echo "\n### Images and compiler versions"
+        } >> "$GITHUB_STEP_SUMMARY"
+
+        if [ -z "$images" ]; then
+          echo "- No matching images found in local cache." >> "$GITHUB_STEP_SUMMARY"
+        else
+          for image in $images; do
+            compiler=$(docker run --rm "$image" sh -c "c++ --version 2>/dev/null | head -n 1 || g++ --version 2>/dev/null | head -n 1 || echo unknown")
+            echo "- ${image}: ${compiler}" >> "$GITHUB_STEP_SUMMARY"
+          done
+        fi
+
     - name: Push images
+      if: ${{ (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master' }}
       run: |
         [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
-        if ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'}} && ${{ github.ref == 'refs/heads/master' }}; then
-          docker login -u maxgimeno -p ${{ secrets.PASSWD }}
-          bash ./push.sh ${{ matrix.test_platform }}
-        else
-          echo "Don't upload on pull_requests"
-        fi
+        docker login -u maxgimeno -p ${{ secrets.PASSWD }}
+        bash ./push.sh ${{ matrix.test_platform }}
+        echo '### Images pushed successfully.' >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Skip push on pull requests
+      if: ${{ !(github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') || github.ref != 'refs/heads/master' }}
+      run: |
+        echo "Don't upload on pull_requests"
+        echo '### Push skipped (not a push to master branch).' >> "$GITHUB_STEP_SUMMARY"
