@@ -9,17 +9,14 @@ RUN dnf -y install \
     cmake \
     eigen3-devel.noarch \
     gcc-c++.i686 \
-    gcc-c++.x86_64 \
     glew-devel.i686 \
     glibc-devel.i686 \
     gmp-devel.i686 \
     libstdc++-devel.i686 \
-    libstdc++-devel.x86_64 \
     make \
     mesa-libGL-devel.i686 \
     mesa-libGLU-devel.i686 \
     mpfr-devel.i686 \
-    ntl-devel.i686 \
     tar \
     tbb-devel.i686 \
     diffutils \
