@@ -19,7 +19,6 @@ RUN dnf -y install \
     mesa-libGL-devel.i686 \
     mesa-libGLU-devel.i686 \
     mpfr-devel.i686 \
-    ntl-devel.i686 \
     tar \
     tbb-devel.i686 \
     diffutils \
