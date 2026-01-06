@@ -22,38 +22,49 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Compile images
-      run: bash ./test.sh ${{ matrix.test_platform }}
+      run: bash -$- ./test.sh ${{ matrix.test_platform }}
 
     - name: Summary
       run: |
         set -e
+        [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+        function quote() {
+          printf '`%s`' "$1"
+        }
+        exec >> "$GITHUB_STEP_SUMMARY"
         prefix=$(echo "${{ matrix.test_platform }}" | tr 'A-Z' 'a-z')
         images=$(docker images --format '{{.Repository}}:{{.Tag}}' cgal/testsuite-docker | grep "^cgal/testsuite-docker:${prefix}" || true)
 
-        {
-          echo "## Platform: ${{ matrix.test_platform }}"
-          echo "\n### Images and compiler versions"
-        } >> "$GITHUB_STEP_SUMMARY"
+        echo "## Platform: ${{ matrix.test_platform }}"
+        echo
+        echo "### Images and compiler versions"
+        echo
 
         if [ -z "$images" ]; then
-          echo "- No matching images found in local cache." >> "$GITHUB_STEP_SUMMARY"
+          echo '**No matching images found in local cache.**'
         else
+          echo '| Image | Compiler |'
+          echo '|-------|----------|'
           for image in $images; do
             compiler=$(docker run --rm "$image" sh -c "c++ --version 2>/dev/null | head -n 1 || g++ --version 2>/dev/null | head -n 1 || echo unknown")
-            echo "- ${image}: ${compiler}" >> "$GITHUB_STEP_SUMMARY"
+            echo "| $(quote "${image}") | $(quote "${compiler}") |"
           done
         fi
 
     - name: Push images
       if: ${{ (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master' }}
       run: |
+        set -e
         [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
         docker login -u maxgimeno -p ${{ secrets.PASSWD }}
-        bash ./push.sh ${{ matrix.test_platform }}
-        echo '### Images pushed successfully.' >> "$GITHUB_STEP_SUMMARY"
+        bash -$- ./push.sh ${{ matrix.test_platform }}
+        exec >> "$GITHUB_STEP_SUMMARY"
+        echo
+        echo '### Images pushed successfully.'
 
     - name: Skip push on pull requests
       if: ${{ !(github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') || github.ref != 'refs/heads/master' }}
       run: |
         echo "Don't upload on pull_requests"
-        echo '### Push skipped (not a push to master branch).' >> "$GITHUB_STEP_SUMMARY"
+        exec >> "$GITHUB_STEP_SUMMARY"
+        echo '### Push skipped (not a push to master branch).'
