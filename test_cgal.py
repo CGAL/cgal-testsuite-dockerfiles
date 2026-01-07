@@ -196,7 +196,7 @@ def main():
     logging.info('Notifying systemd that we are ready.')
     notifier.notify('READY=1')
 
-    release = Release(args.testsuite, args.use_local, args.user, args.passwd)
+    release = Release(args.testsuite, args.use_local)
 
     args.images = images(client, release, args.images)
     logging.info('Using images {}'.format(', '.join(args.images)))

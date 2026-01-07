@@ -13,15 +13,7 @@ class Release:
     _release_url = 'https://cgal.geometryfactory.com/CGAL/Members/Releases/'
     _latest_url = os.path.join(_release_url, 'LATEST')
 
-    def __init__(self, testsuite, use_local, user, passwd):
-        if not use_local and user and passwd:
-            logging.info('Setting up user and password for download.')
-            password_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-            password_mgr.add_password(None, Release._release_url, user, passwd)
-            handler = urllib.request.HTTPBasicAuthHandler(password_mgr)
-            opener = urllib.request.build_opener(handler)
-            urllib.request.install_opener(opener)
-
+    def __init__(self, testsuite, use_local):
         if use_local:
             logging.info('Using local CGAL release at {}'.format(testsuite))
             self.path = testsuite
@@ -36,8 +28,6 @@ class Release:
                 logging.info('Removing {}'.format(path_to_tar))
                 os.remove(path_to_tar)
             except urllib.error.URLError as e:
-                if hasattr(e, 'code') and e.code == 401:
-                    logging.warning('URLError 401: Did you forget to provide --user and --passwd?')
                 raise
 
         assert os.path.isdir(self.path), '{} is not a directory'.format(self.path)
