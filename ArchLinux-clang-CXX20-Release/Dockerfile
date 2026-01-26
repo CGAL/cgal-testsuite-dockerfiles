@@ -10,7 +10,7 @@ COPY init.cmake /tmp/init.cmake
 
 RUN git clone -b develop --depth=1 --shallow-submodules --recursive https://github.com/boostorg/boost.git && \
         cd boost && git submodule update && \
-        ./bootstrap.sh --with-toolset=clang --prefix=/usr/local/boost --with-libraries=container,filesystem,system,serialization,iostreams,program_options,thread && \
+        ./bootstrap.sh --with-toolset=clang --prefix=/usr/local/boost --with-libraries=container,filesystem,serialization,iostreams,program_options,thread && \
         ./b2 -d0 install -j4 && \
         cd .. && rm -rf boost
 
