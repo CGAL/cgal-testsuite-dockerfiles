@@ -6,7 +6,7 @@ ENV IMAGE_TAG=$image_tag
 
 RUN dnf -y upgrade && \
     [ -x /usr/bin/dnf ] || ln -s /usr/bin/dnf5 /usr/bin/dnf && \
-    dnf -y install make cmake gcc-c++ \
+    dnf -y install --refresh make cmake gcc-c++ \
                    gawk util-linux \
                    gmp-devel.x86_64 mpfr-devel.x86_64 \
                    boost-devel.x86_64 \
