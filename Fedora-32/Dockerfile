@@ -8,6 +8,7 @@ RUN dnf -y install \
     boost-devel.i686 \
     cmake \
     eigen3-devel.noarch \
+    libatomic.i686 \
     gcc-c++.i686 \
     gcc-c++.x86_64 \
     glew-devel.i686 \
