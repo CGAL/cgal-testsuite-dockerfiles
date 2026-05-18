@@ -3,6 +3,7 @@ ARG dockerfile_url
 ARG image_tag
 ENV DOCKERFILE_URL=$dockerfile_url
 ENV IMAGE_TAG=$image_tag
+ENV CMAKE_POLICY_VERSION_MINIMUM=3.5
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential cmake \
@@ -45,10 +46,10 @@ RUN wget https://github.com/InsightSoftwareConsortium/ITK/releases/download/v5.3
  && cd InsightToolkit-5.3.0 \
  && mkdir build \
  && cd build/ \
- && cmake -DCMAKE_BUILD_TYPE=Release .. \
+ && export CFLAGS="-std=gnu17"; cmake -DCMAKE_BUILD_TYPE=Release .. \
  && sed -i '1 i\#include <stdint.h>' /InsightToolkit-5.3.0/Modules/Core/Common/include/itkFloatingPointExceptions.h \
  && sed -i '1 i\#include <stdint.h>' /InsightToolkit-5.3.0/Modules/Filtering/MathematicalMorphology/include/itkMathematicalMorphologyEnums.h \
- && make -j "$(nproc)" \
+ && make -j "$(nproc)" VERBOSE=1\
  && make install \
  && cd ../.. \
  && rm InsightToolkit-5.3.0 -r \
