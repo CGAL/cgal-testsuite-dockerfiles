@@ -21,9 +21,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libgl-dev \
     qt6-base-dev \
     qt6-declarative-dev \
-    libqt6opengl6-dev \
-    libqt6svg6-dev \
-    libqt6websockets6-dev \
+    qt6-svg-dev \
+    qt6-websockets-dev \
     wget
 
 #install vtk 9.3 to work around an issue in vtk 9.3.1
