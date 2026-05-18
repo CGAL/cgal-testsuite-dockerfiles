@@ -17,6 +17,7 @@ RUN pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
               git \
               lsb-release \
               boost \
+              boost-libs \
               eigen \
               glew glu mesa \
               gmp mpfr mpfi ntl \
