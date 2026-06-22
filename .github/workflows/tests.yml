@@ -19,7 +19,7 @@ jobs:
 
     steps:
     - name: Git checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Compile images
       run: bash -$- ./test.sh ${{ matrix.test_platform }}
