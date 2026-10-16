@@ -21,10 +21,8 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86
  && cd /home  \
  && git clone https://github.com/NVIDIA/cuda-samples.git \
  && git clone -b test_cgal https://gitlab.informatik.uni-bremen.de/cgvr_public/protosphereextended.git \
- && cd protosphereextended \
- && mkdir build \
- && cd build/ \
- && cmake -DCMAKE_BUILD_TYPE=Release -DCUDA_EXAMPLE_INCLUDE_DIR=/home/cuda-samples/Common .. \
- && make -j "$(nproc)" \
- && make install \
+ && cmake -S protosphereextended -B protosphereextended/build -DCMAKE_BUILD_TYPE=Release -DCUDA_EXAMPLE_INCLUDE_DIR=/home/cuda-samples/Common .. \
+ && cmake --build protosphereextended/build -j "$(nproc)" \
+ && cmake --build protosphereextended/build -j "$(nproc)" -t install \
+ && rm -rf  protosphereextended cuda-samples
  
