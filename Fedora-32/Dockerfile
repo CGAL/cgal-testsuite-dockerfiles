@@ -26,7 +26,8 @@ RUN dnf -y install \
     git \
     lsb-release \
     json-devel \
-    zlib-ng-devel.i686 && dnf clean all
+    'zlib-static(x86-32)' \
+    'zlib-devel(x86-32)' && dnf clean all
 
 ENV CC="gcc -m32" CXX="g++ -m32"
 ENV CGAL_TEST_PLATFORM="Fedora-32"

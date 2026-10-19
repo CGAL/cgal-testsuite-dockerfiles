@@ -22,8 +22,8 @@ RUN dnf -y upgrade && \
                    qt6-qttools-devel.x86_64 \
                    mesa-libGLU-devel \
                    OpenMesh-devel \
-                   zlib-ng-devel.x86_64 \
-		           diffutils \
+                   'zlib-devel(x86-64)' \
+		   diffutils \
                    wget \
                    git \
                    lsb-release \
