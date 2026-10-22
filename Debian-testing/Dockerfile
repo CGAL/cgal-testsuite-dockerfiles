@@ -43,8 +43,9 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     wget
 
 #OpenMesh
-RUN  wget https://www.graphics.rwth-aachen.de/media/openmesh_static/Releases/11.0/OpenMesh-11.0.0.tar.gz && \
-     tar xf OpenMesh-11.0.0.tar.gz && \
+# https://www.graphics.rwth-aachen.de/media/openmesh_static/Releases/11.0/OpenMesh-11.0.0.tar.gz
+RUN  wget https://src.fedoraproject.org/repo/pkgs/rpms/OpenMesh/OpenMesh-11.0.0.tar.bz2/sha512/4667ef9ae935403455a57277bd81dd61eb967f81dcbcc8ce5a84d537d60db37b0155dc7c118b14f90e142e44b0a453fd98984de17e20fae62c86be2ddc6e9a69/OpenMesh-11.0.0.tar.bz2 && \
+     tar xf OpenMesh-11.0.0.tar.bz2 && \
      cd OpenMesh-11.0.0/ && \
      mkdir build && \
      cd build && \
