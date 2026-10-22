@@ -9,9 +9,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libgl-dev \
     qt6-base-dev \
     qt6-declarative-dev \
-    qt6-opengl6-dev \
-    qt6-svg6-dev \
-    qt6-websockets6-dev
+    qt6-svg-dev \
+    qt6-websockets-dev
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest-NO_DEPRECATED_CODE"
 ENV CGAL_SUMMARY_NAME="Ubuntu-latest-NO_DEPRECATED_CODE"
