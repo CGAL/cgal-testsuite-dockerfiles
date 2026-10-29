@@ -40,7 +40,8 @@ RUN dnf -y install \
     git \
     libssh-devel \
     lsb-release \
-    json-devel
+    json-devel \
+    InsightToolkit-devel
 
 # Copy and run the script to install LAStools
 COPY --from=root install_lastools.sh LAStools.patch /tmp/
