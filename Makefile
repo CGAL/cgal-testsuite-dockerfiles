@@ -110,7 +110,7 @@ ubuntu-gcc_master_cxx20-release: ubuntu-gcc6 | download_cgal
 download_cgal:
 	@CGAL_TARBALL=$$(curl -s https://api.github.com/repos/CGAL/cgal/releases/latest | jq -r .tarball_url); \
 	echo "::group::Download and extract CGAL tarball from $$CGAL_TARBALL"; \
-	curl -o cgal.tar.gz -L "$$CGAL_TARBALL";
+	curl -o cgal.tar.gz -L "$$CGAL_TARBALL";\
 	mkdir -p cgal;
 	tar -xzf cgal.tar.gz -C cgal --strip-components=1;
 	if command -v selinuxenabled >/dev/null && selinuxenabled; then \
@@ -119,15 +119,15 @@ download_cgal:
 	@echo '::endgroup::'
 
 dockerbuild:
+	@echo "::group::Build image $(TARGET) from $(DIR)/Dockerfile";
 	if [ -n "$$GITHUB_SHA" ]; then \
 	  COMMIT_URL=https://github.com/$${GITHUB_REPOSITORY}/blob/$${GITHUB_SHA}; \
-	fi; \
+	fi;
 	docker build --build-context root=. --build-arg dockerfile_url=$${COMMIT_URL}/$(DIR)/Dockerfile --build-arg image_tag=cgal/testsuite-docker:$(TARGET) -t cgal/testsuite-docker:$(TARGET) ./$(DIR);
+	@echo '::endgroup::';
 
 dockerbuildandtest: dockerbuild
-	@echo "::group::Build image $(TARGET) from $(DIR)/Dockerfile";
 	$(MAKE) dockerbuild TARGET=$(TARGET) DIR=$(DIR);
-	@echo '::endgroup::';
 	@echo "::group::Display third-party libraries of $(TARGET)";
 	docker run --rm -v $$(pwd)/cgal:/cgal cgal/testsuite-docker:$(TARGET) cmake -S /cgal -B /build -DCGAL_TEST_SUITE=ON -DCMAKE_DISABLE_FIND_PACKAGE_libpointmatcher=ON
 	@echo "::endgroup::"
