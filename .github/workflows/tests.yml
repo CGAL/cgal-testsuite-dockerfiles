@@ -15,6 +15,22 @@ jobs:
     strategy:
       matrix:
         test_platform: ['ArchLinux','Debian-stable','Debian-testing','Fedora','Fedora-32','Fedora-rawhide','Ubuntu']
+        include:
+          # Variants whose Toolbx image is built and checked on each platform
+          - test_platform: ArchLinux
+            toolbox_variants: ArchLinux ArchLinux-clang
+          - test_platform: Debian-stable
+            toolbox_variants: Debian-stable Debian-stable-cross-compilation-for-arm
+          - test_platform: Debian-testing
+            toolbox_variants: Debian-testing Debian-testing-clang-main
+          - test_platform: Fedora
+            toolbox_variants: Fedora Fedora-Release
+          - test_platform: Fedora-32
+            toolbox_variants: Fedora-32
+          - test_platform: Fedora-rawhide
+            toolbox_variants: Fedora-rawhide
+          - test_platform: Ubuntu
+            toolbox_variants: Ubuntu Ubuntu-GCC6 Ubuntu-NO_DEPRECATED_CODE
       fail-fast: false
 
     steps:
@@ -69,26 +85,12 @@ jobs:
         exec >> "$GITHUB_STEP_SUMMARY"
         echo '### Push skipped (not a push to master branch).'
 
-  toolbox-images:
-    name: Toolbx images
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # The *-clang-svn and Ubuntu-clang-latest variants are not listed:
-        # their base image cannot be built (obsolete packages or SVN URL).
-        test_platform: ['ArchLinux','ArchLinux-clang','Debian-stable','Debian-stable-cross-compilation-for-arm','Debian-testing','Debian-testing-clang-main','Fedora','Fedora-32','Fedora-Release','Fedora-rawhide','Fedora-rawhide-fsanitize','Ubuntu','Ubuntu-GCC6','Ubuntu-NO_DEPRECATED_CODE']
-      fail-fast: false
-
-    steps:
-    - name: Git checkout
-      uses: actions/checkout@v6
-
-    - name: Build the Toolbx image
-      run: bash -$- ./build.sh "${{ matrix.test_platform }}" --toolbox
-
-    - name: Check the Toolbx requirements
+    - name: Build and check the Toolbx images
       run: |
         set -eo pipefail
         [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
-        tag=$(echo "${{ matrix.test_platform }}" | tr 'A-Z_' 'a-z-')
-        bash -$- ./check-toolbox.sh "localhost/cgal/testsuite:${tag}-toolbox" | tee -a "$GITHUB_STEP_SUMMARY"
+        for variant in ${{ matrix.toolbox_variants }}; do
+          bash -$- ./build.sh "$variant" --toolbox
+          tag=$(echo "$variant" | tr 'A-Z_' 'a-z-')
+          bash -$- ./check-toolbox.sh "localhost/cgal/testsuite:${tag}-toolbox" | tee -a "$GITHUB_STEP_SUMMARY"
+        done
