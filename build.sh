@@ -5,11 +5,11 @@
 # multi-stage Dockerfile.
 #
 # Usage:
-#   ./build-toolbox.sh                          # Show help
-#   ./build-toolbox.sh debian-stable            # Build both variants
-#   ./build-toolbox.sh debian-stable --std-only # Build only standard
-#   ./build-toolbox.sh debian-stable --toolbox  # Build only toolbox
-#   ./build-toolbox.sh --all                    # Build all distributions
+#   ./build.sh                          # Show help
+#   ./build.sh debian-stable            # Build both variants
+#   ./build.sh debian-stable --std-only # Build only standard
+#   ./build.sh debian-stable --toolbox  # Build only toolbox
+#   ./build.sh --all                    # Build all distributions
 #
 
 set -e
@@ -107,96 +107,70 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-# Find variants
-find_variants() {
-  local variants=()
-  for dir in */; do
-    if [ -f "$dir/Dockerfile" ] && [ "$dir" != "Dockerfiles.toolbox/" ]; then
-      # Convert to lowercase variant name
-      local name
-      name=$(basename "$dir" | tr '[:upper:]' '[:lower:]' | tr '_' '-')
-      variants+=("$name:$dir")
-    fi
-  done
-  echo "${variants[@]}"
-}
-
 # Normalize variant name
 normalize_variant() {
   echo "$1" | tr '[:upper:]' '[:lower:]' | tr '_' '-'
 }
 
-# Check if variant directory exists
-get_variant_dir() {
-  local variant="$1"
+# List "variant:dir" pairs for all directories containing a Dockerfile
+find_variants() {
+  local dir
   for dir in */; do
-    local dirname
-    dirname=$(basename "$dir" | tr '[:upper:]' '[:lower:]' | tr '_' '-')
-    if [ "$dirname" = "$variant" ]; then
-      echo "$dir"
+    [ -f "$dir/Dockerfile" ] && echo "$(normalize_variant "${dir%/}"):${dir%/}"
+  done
+  return 0
+}
+
+# Print the directory of a variant, or fail if it does not exist
+get_variant_dir() {
+  local pair
+  while read -r pair; do
+    if [ "${pair%%:*}" = "$1" ]; then
+      echo "${pair#*:}"
       return 0
     fi
-  done
+  done < <(find_variants)
   return 1
 }
 
-# Build standard image
-build_standard() {
-  local variant="$1"
-  local dir="$2"
-  local image="${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${variant}"
+# Build (and optionally push) one image.
+# Arguments: variant, dir, Docker target, tag suffix ("" or "-toolbox")
+build_image() {
+  local variant="$1" dir="$2" target="$3" suffix="$4"
+  local image="${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${variant}${suffix}"
 
-  echo -e "${BLUE}Building standard image: ${variant}${NC}"
-  echo "  From: $dir/Dockerfile (target: cgal-base)"
+  echo -e "${BLUE}Building ${target} image: ${variant}${NC}"
+  echo "  From: $dir/Dockerfile (target: $target)"
   echo "  Tag:  $image"
   echo ""
 
-  if docker build --build-context root=. --target cgal-base -t "$image" "$dir"; then
-    echo -e "${GREEN}✓ Built: $image${NC}"
-
-    if [ "${PUSH_IMAGES:-0}" -eq 1 ]; then
-      echo -e "${BLUE}Pushing: $image${NC}"
-      if docker push "$image"; then
-        echo -e "${GREEN}✓ Pushed: $image${NC}"
-      else
-        echo -e "${RED}✗ Failed to push: $image${NC}"
-        return 1
-      fi
-    fi
-    return 0
-  else
+  if ! docker build --build-context root=. --target "$target" -t "$image" "$dir"; then
     echo -e "${RED}✗ Failed to build: $image${NC}"
     return 1
   fi
+  echo -e "${GREEN}✓ Built: $image${NC}"
+
+  if [ "${PUSH_IMAGES:-0}" -eq 1 ]; then
+    echo -e "${BLUE}Pushing: $image${NC}"
+    if ! docker push "$image"; then
+      echo -e "${RED}✗ Failed to push: $image${NC}"
+      return 1
+    fi
+    echo -e "${GREEN}✓ Pushed: $image${NC}"
+  fi
 }
 
-# Build toolbox variant
-build_toolbox() {
-  local variant="$1"
-  local dir="$2"
-  local image="${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${variant}-toolbox"
+# Build the requested images of one variant and update the counters
+build_variant() {
+  local variant="$1" dir="$2"
 
-  echo -e "${BLUE}Building toolbox variant: ${variant}${NC}"
-  echo "  From: $dir/Dockerfile (target: cgal-toolbox)"
-  echo "  Tag:  $image"
-  echo ""
-
-  if docker build --build-context root=. --target cgal-toolbox -t "$image" "$dir"; then
-    echo -e "${GREEN}✓ Built: $image${NC}"
-
-    if [ "${PUSH_IMAGES:-0}" -eq 1 ]; then
-      echo -e "${BLUE}Pushing: $image${NC}"
-      if docker push "$image"; then
-        echo -e "${GREEN}✓ Pushed: $image${NC}"
-      else
-        echo -e "${RED}✗ Failed to push: $image${NC}"
-        return 1
-      fi
-    fi
-    return 0
-  else
-    echo -e "${RED}✗ Failed to build: $image${NC}"
-    return 1
+  if [ $BUILD_STANDARD -eq 1 ]; then
+    echo ""
+    build_image "$variant" "$dir" cgal-base "" && : $((success_count++)) || : $((fail_count++))
+  fi
+  if [ $BUILD_TOOLBOX -eq 1 ]; then
+    echo ""
+    build_image "$variant" "$dir" cgal-toolbox "-toolbox" && : $((success_count++)) || : $((fail_count++))
   fi
 }
 
@@ -217,70 +191,32 @@ success_count=0
 fail_count=0
 
 if [ "$TARGET_VARIANT" = "all" ]; then
-  # Build all variants
   echo -e "${YELLOW}Finding all Dockerfile variants...${NC}"
-  echo ""
 
-  readarray -t variants_raw < <(find_variants)
-
-  if [ ${#variants_raw[@]} -eq 0 ]; then
+  readarray -t variants < <(find_variants)
+  if [ ${#variants[@]} -eq 0 ]; then
     echo -e "${RED}No Dockerfiles found!${NC}"
     exit 1
   fi
 
-  # Parse variant:dir pairs
-  declare -a variant_names
-  declare -a variant_dirs
-  for pair in "${variants_raw[@]}"; do
-    variant_names+=("${pair%%:*}")
-    variant_dirs+=("${pair##*:}")
+  echo -e "${YELLOW}Found ${#variants[@]} variant(s):${NC}"
+  for pair in "${variants[@]}"; do
+    echo "  - ${pair%%:*}"
   done
 
-  echo -e "${YELLOW}Found ${#variant_names[@]} variant(s):${NC}"
-  for v in "${variant_names[@]}"; do
-    echo "  - $v"
-  done
-  echo ""
-
-  # Build each variant
-  for i in "${!variant_names[@]}"; do
-    variant="${variant_names[$i]}"
-    dir="${variant_dirs[$i]}"
-
-    echo ""
-
-    if [ $BUILD_STANDARD -eq 1 ]; then
-      build_standard "$variant" "$dir" && : $((success_count++)) || : $((fail_count++))
-    fi
-
-    if [ $BUILD_TOOLBOX -eq 1 ]; then
-      echo ""
-      build_toolbox "$variant" "$dir" && : $((success_count++)) || : $((fail_count++))
-    fi
+  for pair in "${variants[@]}"; do
+    build_variant "${pair%%:*}" "${pair#*:}"
   done
 else
-  # Build specific variant
   variant=$(normalize_variant "$TARGET_VARIANT")
-  dir=$(get_variant_dir "$variant")
-
-  if [ -z "$dir" ]; then
+  if ! dir=$(get_variant_dir "$variant"); then
     echo -e "${RED}Error: Variant '$TARGET_VARIANT' not found${NC}"
     echo ""
     echo "Available variants:"
-    for pair in $(find_variants); do
-      echo "  - ${pair%%:*}"
-    done
+    find_variants | sed 's/:.*//; s/^/  - /'
     exit 1
   fi
-
-  if [ $BUILD_STANDARD -eq 1 ]; then
-    build_standard "$variant" "$dir" && : $((success_count++)) || : $((fail_count++))
-  fi
-
-  if [ $BUILD_TOOLBOX -eq 1 ]; then
-    echo ""
-    build_toolbox "$variant" "$dir" && : $((success_count++)) || : $((fail_count++))
-  fi
+  build_variant "$variant" "$dir"
 fi
 
 # Summary
