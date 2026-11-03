@@ -29,6 +29,15 @@ RUN dnf -y install \
     'zlib-static(x86-32)' \
     'zlib-devel(x86-32)' && dnf clean all
 
+RUN  git clone https://github.com/fastfloat/fast_float \
+ &&  cd fast_float \
+ &&  git checkout v8.3.3 \
+ &&  mkdir build \
+ &&  cd build \
+ &&  cmake .. \
+ &&  make install \
+ && cd .. && rm -rf fast_float
+
 ENV CC="gcc -m32" CXX="g++ -m32"
 ENV CGAL_TEST_PLATFORM="Fedora-32"
 ENV CGAL_SUMMARY_NAME="Fedora-latest-32-Debug"

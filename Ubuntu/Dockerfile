@@ -128,6 +128,15 @@ RUN git clone https://ceres-solver.googlesource.com/ceres-solver \
  && cd .. \
  && rm -rf ceres-solver
 
+RUN  git clone https://github.com/fastfloat/fast_float \
+ &&  cd fast_float \
+ &&  git checkout v8.3.3 \
+ &&  mkdir build \
+ &&  cd build \
+ &&  cmake .. \
+ &&  make install \
+ && cd .. && rm -rf fast_float
+
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest"
 ENV CGAL_SUMMARY_NAME="Ubuntu-latest-Debug"
 ENV CGAL_CMAKE_FLAGS="(\"-DWITH_CGAL_Qt5:BOOL=OFF\")"
