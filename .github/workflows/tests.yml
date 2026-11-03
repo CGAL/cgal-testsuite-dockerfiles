@@ -68,3 +68,27 @@ jobs:
         echo "Don't upload on pull_requests"
         exec >> "$GITHUB_STEP_SUMMARY"
         echo '### Push skipped (not a push to master branch).'
+
+  toolbox-images:
+    name: Toolbx images
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # The *-clang-svn and Ubuntu-clang-latest variants are not listed:
+        # their base image cannot be built (obsolete packages or SVN URL).
+        test_platform: ['ArchLinux','ArchLinux-clang','Debian-stable','Debian-stable-cross-compilation-for-arm','Debian-testing','Debian-testing-clang-main','Fedora','Fedora-32','Fedora-Release','Fedora-rawhide','Fedora-rawhide-fsanitize','Ubuntu','Ubuntu-GCC6','Ubuntu-NO_DEPRECATED_CODE']
+      fail-fast: false
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v6
+
+    - name: Build the Toolbx image
+      run: bash -$- ./build.sh "${{ matrix.test_platform }}" --toolbox
+
+    - name: Check the Toolbx requirements
+      run: |
+        set -eo pipefail
+        [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+        tag=$(echo "${{ matrix.test_platform }}" | tr 'A-Z_' 'a-z-')
+        bash -$- ./check-toolbox.sh "localhost/cgal/testsuite:${tag}-toolbox" | tee -a "$GITHUB_STEP_SUMMARY"
