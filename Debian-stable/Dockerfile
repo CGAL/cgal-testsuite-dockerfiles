@@ -35,6 +35,15 @@ RUN apt-get update && apt-get install -y \
     lsb-release \
     nlohmann-json3-dev
 
+RUN  git clone https://github.com/fastfloat/fast_float \
+ &&  cd fast_float \
+ &&  git checkout v8.3.3 \
+ &&  mkdir build \
+ &&  cd build \
+ &&  cmake .. \
+ &&  make install \
+ && cd .. && rm -rf fast_float
+
 
 ENV CGAL_TEST_PLATFORM="Debian-Stable"
 ENV CGAL_SUMMARY_NAME="Debian-stable-Debug"

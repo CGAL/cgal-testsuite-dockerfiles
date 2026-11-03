@@ -53,6 +53,15 @@ RUN  wget https://src.fedoraproject.org/repo/pkgs/rpms/OpenMesh/OpenMesh-11.0.0.
      make && make install && \
      cd ../.. && rm -r OpenMesh-11.0.0*
 
+RUN  git clone https://github.com/fastfloat/fast_float \
+ &&  cd fast_float \
+ &&  git checkout v8.3.3 \
+ &&  mkdir build \
+ &&  cd build \
+ &&  cmake .. \
+ &&  make install \
+ && cd .. && rm -rf fast_float
+
 ENV OpenMesh_DIR=/OpenMesh-11.0.0/build
 
 

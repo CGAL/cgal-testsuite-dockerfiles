@@ -13,3 +13,4 @@ ENV CXX=/usr/bin/clang++-22
 ENV CC=/usr/bin/clang-22
 ENV CGAL_TEST_PLATFORM="Debian-testing-clang-main"
 ENV CGAL_SUMMARY_NAME="Debian-testing-clang-main"
+ENV CGAL_WITH_FASTFLOAT="ON"
