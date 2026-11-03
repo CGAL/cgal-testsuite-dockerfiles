@@ -138,13 +138,23 @@ get_variant_dir() {
 build_image() {
   local variant="$1" dir="$2" target="$3" suffix="$4"
   local image="${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${variant}${suffix}"
+  local commit_url=""
+
+  # Same build arguments as the Makefile; user-provided --build-arg come last and win.
+  if [ -n "${GITHUB_SHA:-}" ]; then
+    commit_url="https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}"
+  fi
+  local auto_args=(
+    --build-arg "dockerfile_url=${commit_url}/${dir}/Dockerfile"
+    --build-arg "image_tag=${image}"
+  )
 
   echo -e "${BLUE}Building ${target} image: ${variant}${NC}"
   echo "  From: $dir/Dockerfile (target: $target)"
   echo "  Tag:  $image"
   echo ""
 
-  if ! docker build --build-context root=. --target "$target" -t "$image" "$dir"; then
+  if ! docker build --build-context root=. "${auto_args[@]}" --target "$target" -t "$image" "$dir"; then
     echo -e "${RED}✗ Failed to build: $image${NC}"
     return 1
   fi

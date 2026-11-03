@@ -56,7 +56,7 @@ fi
 
 # POSIX sh probe, run as root inside a throw-away container of the image.
 # It prints one "PASS|WARN|FAIL <message>" line per check.
-read -r -d '' PROBE <<'EOF'
+read -r -d '' PROBE <<'EOF' || true
 have() { command -v "$1" >/dev/null 2>&1; }
 pass() { echo "PASS $*"; }
 warn() { echo "WARN $*"; }
