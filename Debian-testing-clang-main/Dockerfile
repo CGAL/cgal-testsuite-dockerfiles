@@ -1,4 +1,4 @@
-FROM cgal/testsuite-docker:debian-testing as cgal-base
+FROM cgal/testsuite-docker:debian-testing AS cgal-base
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
 
@@ -17,7 +17,7 @@ ENV CGAL_WITH_FASTFLOAT="ON"
 
 # ===== STAGE 2: Toolbox Variant =====
 # Derived from cgal-base with toolbox-specific configurations
-FROM cgal-base as cgal-toolbox
+FROM cgal-base AS cgal-toolbox
 
 LABEL com.github.containers.toolbox="true" \
       name="cgal-toolbox" \

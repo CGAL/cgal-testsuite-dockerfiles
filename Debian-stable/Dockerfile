@@ -1,4 +1,4 @@
-FROM debian:stable as cgal-base
+FROM debian:stable AS cgal-base
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
 ARG image_tag
@@ -53,7 +53,7 @@ COPY init.cmake /tmp/init.cmake
 
 # ===== STAGE 2: Toolbox Variant =====
 # Derived from cgal-base with toolbox-specific configurations
-FROM cgal-base as cgal-toolbox
+FROM cgal-base AS cgal-toolbox
 
 LABEL com.github.containers.toolbox="true" \
       name="cgal-toolbox" \

@@ -13,11 +13,11 @@ Each Dockerfile has two build targets:
 
 ```dockerfile
 # Stage 1: Standard image
-FROM debian:stable as cgal-base
+FROM debian:stable AS cgal-base
 # ... standard CGAL configuration ...
 
 # Stage 2: Toolbox variant
-FROM cgal-base as cgal-toolbox
+FROM cgal-base AS cgal-toolbox
 # ... add toolbox-specific configurations ...
 ```
 
@@ -72,7 +72,7 @@ Here's the pattern for each distribution:
 
 ```dockerfile
 # STAGE 1: Standard CGAL testsuite image
-FROM debian:stable as cgal-base
+FROM debian:stable AS cgal-base
 
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
@@ -88,7 +88,7 @@ ENV CGAL_TEST_PLATFORM="Debian-Stable"
 COPY init.cmake /tmp/init.cmake
 
 # STAGE 2: Toolbox variant
-FROM cgal-base as cgal-toolbox
+FROM cgal-base AS cgal-toolbox
 
 LABEL com.github.containers.toolbox="true" \
       name="cgal-toolbox-debian" \
@@ -113,12 +113,12 @@ RUN mkdir -p /usr/share/empty /etc/pkcs11/modules
 
 ```dockerfile
 # STAGE 1: Standard CGAL testsuite image
-FROM fedora:latest as cgal-base
+FROM fedora:latest AS cgal-base
 
 # ... standard CGAL installation ...
 
 # STAGE 2: Toolbox variant
-FROM cgal-base as cgal-toolbox
+FROM cgal-base AS cgal-toolbox
 
 LABEL com.github.containers.toolbox="true" \
       name="cgal-toolbox-fedora"
@@ -282,7 +282,7 @@ To convert an existing single-stage Dockerfile:
 1. Add `as cgal-base` to the FROM line:
 
    ```dockerfile
-   FROM debian:stable as cgal-base
+   FROM debian:stable AS cgal-base
    ```
 
 2. Keep all existing configuration in stage 1
@@ -290,7 +290,7 @@ To convert an existing single-stage Dockerfile:
 3. Add stage 2 at the end:
 
    ```dockerfile
-   FROM cgal-base as cgal-toolbox
+   FROM cgal-base AS cgal-toolbox
    LABEL com.github.containers.toolbox="true" \
          # ... metadata ...
 
@@ -471,12 +471,12 @@ docker push localhost/cgal/testsuite:debian-stable-toolbox
 
 ### Q: Can I add more stages?
 
-**A:** Absolutely! Add another `FROM cgal-base as custom-variant` with your configurations.
+**A:** Absolutely! Add another `FROM cgal-base AS custom-variant` with your configurations.
 
 ## Next Steps
 
 1. **Update existing Dockerfiles** to add multi-stage support:
-   - Change `FROM debian:stable` to `FROM debian:stable as cgal-base`
+   - Change `FROM debian:stable` to `FROM debian:stable AS cgal-base`
    - Add toolbox stage at the end
 
 2. **Use the build script**: `./build.sh debian-stable`

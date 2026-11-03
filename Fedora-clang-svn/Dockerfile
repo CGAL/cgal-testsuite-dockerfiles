@@ -1,4 +1,4 @@
-FROM cgal/testsuite-docker:fedora as cgal-base
+FROM cgal/testsuite-docker:fedora AS cgal-base
 
 ARG dockerfile_url
 ARG image_tag
@@ -21,7 +21,7 @@ RUN dnf -y install \
  && cmake -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ ../llvm -DCMAKE_BUILD_TYPE=Release \
  && make -j"$(nproc)" \
  && make -j"$(nproc)" install \
- && cd /tmp && rm -rf build llvm 
+ && cd /tmp && rm -rf build llvm
 ENV CGAL_TEST_PLATFORM="Fedora-clang-latest"
 ENV CXX=/usr/local/bin/clang++
 ENV CC=/usr/local/bin/clang
@@ -32,7 +32,7 @@ COPY init.cmake /tmp/init.cmake
 
 # ===== STAGE 2: Toolbox Variant =====
 # Derived from cgal-base with toolbox-specific configurations
-FROM cgal-base as cgal-toolbox
+FROM cgal-base AS cgal-toolbox
 
 LABEL com.github.containers.toolbox="true" \
       name="cgal-toolbox" \

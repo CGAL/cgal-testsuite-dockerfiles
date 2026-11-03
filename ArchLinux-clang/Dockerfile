@@ -1,4 +1,4 @@
-FROM cgal/testsuite-docker:archlinux as cgal-base
+FROM cgal/testsuite-docker:archlinux AS cgal-base
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
 
@@ -12,7 +12,7 @@ COPY init.cmake /tmp/init.cmake
 
 # ===== STAGE 2: Toolbox Variant =====
 # Derived from cgal-base with toolbox-specific configurations
-FROM cgal-base as cgal-toolbox
+FROM cgal-base AS cgal-toolbox
 
 LABEL com.github.containers.toolbox="true" \
       name="cgal-toolbox" \
