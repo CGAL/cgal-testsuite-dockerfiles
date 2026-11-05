@@ -16,29 +16,37 @@ jobs:
       matrix:
         test_platform: ['ArchLinux','Debian-stable','Debian-testing','Fedora','Fedora-32','Fedora-rawhide','Ubuntu']
         include:
-          # Variants whose Toolbx image is built and checked on each platform
+          # Variants of each platform, base images before the images derived from them
           - test_platform: ArchLinux
-            toolbox_variants: ArchLinux ArchLinux-clang
+            variants: ArchLinux ArchLinux-CXX14 ArchLinux-CXX17-Release ArchLinux-clang ArchLinux-clang-CXX14 ArchLinux-clang-CXX17-Release ArchLinux-clang-CXX20-Release ArchLinux-clang-Release
           - test_platform: Debian-stable
-            toolbox_variants: Debian-stable Debian-stable-cross-compilation-for-arm
+            variants: Debian-stable Debian-stable-Release Debian-stable-cross-compilation-for-arm
           - test_platform: Debian-testing
-            toolbox_variants: Debian-testing Debian-testing-clang-main
+            variants: Debian-testing Debian-testing-clang-main
           - test_platform: Fedora
-            toolbox_variants: Fedora Fedora-Release
+            variants: Fedora Fedora-with-LEDA Fedora-Release Fedora-strict-ansi
           - test_platform: Fedora-32
-            toolbox_variants: Fedora-32
+            variants: Fedora-32 Fedora-32-Release
           - test_platform: Fedora-rawhide
-            toolbox_variants: Fedora-rawhide
+            variants: Fedora-rawhide Fedora-rawhide-Release
           - test_platform: Ubuntu
-            toolbox_variants: Ubuntu Ubuntu-GCC6 Ubuntu-NO_DEPRECATED_CODE
+            variants: Ubuntu Ubuntu-CXX11 Ubuntu-NO_DEPRECATED_CODE Ubuntu-no-gmp-no-leda Ubuntu-GCC6 Ubuntu-GCC6-CXX1Z Ubuntu-GCC6-Release Ubuntu-GCC_master_cpp20-Release
       fail-fast: false
 
     steps:
     - name: Git checkout
       uses: actions/checkout@v6
 
-    - name: Compile images
-      run: bash -$- ./test.sh ${{ matrix.test_platform }}
+    - name: Build standard and toolbox images
+      env:
+        REGISTRY: docker.io
+        NAMESPACE: cgal
+        IMAGE_NAME: testsuite-docker
+      run: |
+        set -e
+        [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+        bash -$- ./build.sh ${{ matrix.variants }}
+        docker images
 
     - name: Summary
       run: |
@@ -73,7 +81,7 @@ jobs:
         set -e
         [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
         docker login -u maxgimeno -p ${{ secrets.PASSWD }}
-        bash -$- ./push.sh ${{ matrix.test_platform }}
+        docker push --all-tags docker.io/cgal/testsuite-docker
         exec >> "$GITHUB_STEP_SUMMARY"
         echo
         echo '### Images pushed successfully.'
@@ -85,12 +93,10 @@ jobs:
         exec >> "$GITHUB_STEP_SUMMARY"
         echo '### Push skipped (not a push to master branch).'
 
-    - name: Build and check the Toolbx images
+    - name: Check the Toolbx images
       run: |
         set -eo pipefail
         [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
-        for variant in ${{ matrix.toolbox_variants }}; do
-          bash -$- ./build.sh "$variant" --toolbox
-          tag=$(echo "$variant" | tr 'A-Z_' 'a-z-')
-          bash -$- ./check-toolbox.sh "localhost/cgal/testsuite:${tag}-toolbox" | tee -a "$GITHUB_STEP_SUMMARY"
+        for image in $(docker images --format '{{.Repository}}:{{.Tag}}' cgal/testsuite-docker | grep -- '-toolbox$'); do
+          bash -$- ./check-toolbox.sh "$image" | tee -a "$GITHUB_STEP_SUMMARY"
         done

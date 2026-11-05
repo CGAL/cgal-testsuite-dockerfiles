@@ -27,7 +27,9 @@ NAMESPACE="${NAMESPACE:-cgal}"
 IMAGE_NAME="${IMAGE_NAME:-testsuite}"
 BUILD_STANDARD=1
 BUILD_TOOLBOX=1
-TARGET_VARIANT=""
+TARGET_VARIANTS=()
+BUILD_ALL=0
+PUSH_IMAGES=0
 
 # Show usage
 usage() {
@@ -35,7 +37,7 @@ usage() {
 ${BLUE}Build CGAL testsuite Docker images using multi-stage builds${NC}
 
 Usage:
-  $0 [VARIANT] [OPTIONS]
+  $0 [VARIANT...] [OPTIONS]
 
 Variants:
   debian-stable, ubuntu, fedora, archlinux, etc.
@@ -76,7 +78,7 @@ while [ $# -gt 0 ]; do
     exit 0
     ;;
   --all)
-    TARGET_VARIANT="all"
+    BUILD_ALL=1
     shift
     ;;
   --std-only)
@@ -101,7 +103,7 @@ while [ $# -gt 0 ]; do
     exit 1
     ;;
   *)
-    TARGET_VARIANT="$1"
+    TARGET_VARIANTS+=("$1")
     shift
     ;;
   esac
@@ -109,7 +111,15 @@ done
 
 # Normalize variant name
 normalize_variant() {
-  echo "$1" | tr '[:upper:]' '[:lower:]' | tr '_' '-'
+  local name
+  name=$(echo "$1" | tr '[:upper:]' '[:lower:]' | tr '_' '-')
+  # Keep the historical tag of this image
+  case "$name" in
+  ubuntu-gcc-master-cpp20-release | ubuntu-gcc-master-cxx20-release | ubuntu-gcc_master_cxx20-release)
+    name=ubuntu-gcc_master_cxx20-release
+    ;;
+  esac
+  echo "$name"
 }
 
 # List "variant:dir" pairs for all directories containing a Dockerfile
@@ -137,6 +147,7 @@ get_variant_dir() {
 # Arguments: variant, dir, Docker target, tag suffix ("" or "-toolbox")
 build_image() {
   local variant="$1" dir="$2" target="$3" suffix="$4"
+  local target_args=(--target "$target")
   local image="${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${variant}${suffix}"
   local commit_url=""
 
@@ -154,7 +165,12 @@ build_image() {
   echo "  Tag:  $image"
   echo ""
 
-  if ! docker build --build-context root=. "${auto_args[@]}" --target "$target" -t "$image" "$dir"; then
+  # Derived images (FROM another testsuite image) have a single, unnamed stage
+  if ! grep -q 'AS cgal-base' "$dir/Dockerfile"; then
+    target_args=()
+  fi
+
+  if ! docker build --build-context root=. "${auto_args[@]}" "${target_args[@]}" -t "$image" "$dir"; then
     echo -e "${RED}✗ Failed to build: $image${NC}"
     return 1
   fi
@@ -178,7 +194,7 @@ build_variant() {
     echo ""
     build_image "$variant" "$dir" cgal-base "" && : $((success_count++)) || : $((fail_count++))
   fi
-  if [ $BUILD_TOOLBOX -eq 1 ]; then
+  if [ $BUILD_TOOLBOX -eq 1 ] && grep -q 'AS cgal-toolbox' "$dir/Dockerfile"; then
     echo ""
     build_image "$variant" "$dir" cgal-toolbox "-toolbox" && : $((success_count++)) || : $((fail_count++))
   fi
@@ -200,7 +216,7 @@ echo ""
 success_count=0
 fail_count=0
 
-if [ "$TARGET_VARIANT" = "all" ]; then
+if [ $BUILD_ALL -eq 1 ]; then
   echo -e "${YELLOW}Finding all Dockerfile variants...${NC}"
 
   readarray -t variants < <(find_variants)
@@ -218,15 +234,17 @@ if [ "$TARGET_VARIANT" = "all" ]; then
     build_variant "${pair%%:*}" "${pair#*:}"
   done
 else
-  variant=$(normalize_variant "$TARGET_VARIANT")
-  if ! dir=$(get_variant_dir "$variant"); then
-    echo -e "${RED}Error: Variant '$TARGET_VARIANT' not found${NC}"
-    echo ""
-    echo "Available variants:"
-    find_variants | sed 's/:.*//; s/^/  - /'
-    exit 1
-  fi
-  build_variant "$variant" "$dir"
+  for target_variant in "${TARGET_VARIANTS[@]}"; do
+    variant=$(normalize_variant "$target_variant")
+    if ! dir=$(get_variant_dir "$variant"); then
+      echo -e "${RED}Error: Variant '$target_variant' not found${NC}"
+      echo ""
+      echo "Available variants:"
+      find_variants | sed 's/:.*//; s/^/  - /'
+      exit 1
+    fi
+    build_variant "$variant" "$dir"
+  done
 fi
 
 # Summary
