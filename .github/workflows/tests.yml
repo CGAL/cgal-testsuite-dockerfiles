@@ -48,6 +48,24 @@ jobs:
         bash -$- ./build.sh ${{ matrix.variants }}
         docker images
 
+    - name: Test standard images
+      run: |
+        set -e
+        [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+        prefix=$(echo "${{ matrix.test_platform }}" | tr 'A-Z' 'a-z')
+        images=$(docker images --format '{{.Repository}}:{{.Tag}}' cgal/testsuite-docker | grep "^cgal/testsuite-docker:${prefix}" | grep -v -- '-toolbox$' || true)
+        
+        if [ -z "$images" ]; then
+          echo "No standard images to test for ${prefix}"
+          exit 0
+        fi
+        
+        for image in $images; do
+          echo "Testing $image..."
+          docker run --rm -v "$(pwd)/cgal:/cgal" "$image" bash -c \
+            'cmake -DCMAKE_DISABLE_FIND_PACKAGE_libpointmatcher=ON -DWITH_examples=ON -S /cgal -B /build && cmake --build /build -t terrain -v'
+        done
+
     - name: Summary
       run: |
         set -e
