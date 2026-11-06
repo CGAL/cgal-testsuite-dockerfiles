@@ -48,6 +48,20 @@ jobs:
         bash -$- ./build.sh ${{ matrix.variants }}
         docker images
 
+    - name: Download CGAL
+      run: |
+        set -e
+        [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+        CGAL_TARBALL=$(curl -s https://api.github.com/repos/CGAL/cgal/releases/latest | jq -r .tarball_url)
+        echo "::group::Download and extract CGAL tarball from $CGAL_TARBALL"
+        curl -o cgal.tar.gz -L "$CGAL_TARBALL"
+        mkdir -p cgal
+        tar -xzf cgal.tar.gz -C cgal --strip-components=1
+        if command -v selinuxenabled >/dev/null && selinuxenabled; then
+          chcon -Rt container_file_t cgal
+        fi
+        echo "::endgroup::"
+
     - name: Test standard images
       run: |
         set -e
@@ -62,8 +76,8 @@ jobs:
         
         for image in $images; do
           echo "Testing $image..."
-          # Quick sanity check: verify cmake and compiler work
-          docker run --rm "$image" bash -c 'cmake --version && c++ --version'
+          docker run --rm -v "$(pwd)/cgal:/cgal" "$image" bash -c \
+            'cmake -DCMAKE_DISABLE_FIND_PACKAGE_libpointmatcher=ON -DWITH_examples=ON -S /cgal -B /build && cmake --build /build -t terrain -v'
         done
 
     - name: Summary
