@@ -177,7 +177,8 @@ build_image() {
     local base_image_default=$(grep '^ARG base_image=' "$dir/Dockerfile" | sed 's/^ARG base_image=//')
     # Replace the default registry/namespace/image with the actual ones we're using
     base_image_default=$(echo "$base_image_default" | sed "s|^cgal/testsuite-docker:|${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:|")
-    auto_args+=(--build-arg "base_image=${base_image_default}")
+    # The toolbox variant must derive from the toolbox variant of its base
+    auto_args+=(--build-arg "base_image=${base_image_default}${suffix}")
   fi
 
   if ! docker build --build-context root=. "${auto_args[@]}" "${target_args[@]}" -t "$image" "$dir"; then
