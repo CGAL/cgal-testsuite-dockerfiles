@@ -2,7 +2,8 @@
 # Build with: docker build --target cgal-base (or --target cgal-toolbox)
 # See the base variant Dockerfile for multi-stage definitions.
 
-FROM cgal/testsuite-docker:ubuntu
+ARG base_image=cgal/testsuite-docker:ubuntu
+FROM ${base_image}
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
 ARG image_tag

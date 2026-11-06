@@ -1,4 +1,5 @@
-FROM cgal/testsuite-docker:ubuntu AS cgal-base
+ARG base_image=cgal/testsuite-docker:ubuntu
+FROM ${base_image} AS cgal-base
 ARG dockerfile_url
 ARG image_tag
 ENV DOCKERFILE_URL=$dockerfile_url

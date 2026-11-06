@@ -168,6 +168,14 @@ build_image() {
   # Derived images (FROM another testsuite image) have a single, unnamed stage
   if ! grep -q 'AS cgal-base' "$dir/Dockerfile"; then
     target_args=()
+    # For derived images, we need to pass the base image as a build arg
+    # Extract the base image from the ARG line
+    if grep -q '^ARG base_image=' "$dir/Dockerfile"; then
+      local base_image_default=$(grep '^ARG base_image=' "$dir/Dockerfile" | sed 's/^ARG base_image=//')
+      # Replace the default registry/namespace/image with the actual ones we're using
+      base_image_default=$(echo "$base_image_default" | sed "s|^cgal/testsuite-docker:|${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:|")
+      auto_args+=(--build-arg "base_image=${base_image_default}")
+    fi
   fi
 
   if ! docker build --build-context root=. "${auto_args[@]}" "${target_args[@]}" -t "$image" "$dir"; then
