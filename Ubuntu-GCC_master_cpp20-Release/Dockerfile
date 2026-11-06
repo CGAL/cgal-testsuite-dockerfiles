@@ -3,7 +3,7 @@
 # See the base variant Dockerfile for multi-stage definitions.
 
 ARG base_image=cgal/testsuite-docker:ubuntu-gcc6
-FROM ${base_image}
+FROM ${base_image} AS cgal-base
 ARG dockerfile_url
 ENV DOCKERFILE_URL=$dockerfile_url
 ARG image_tag
@@ -16,3 +16,11 @@ ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake
 
 LABEL org.cgal.releases_to_ignore="^(4|5\\.0)"
+
+# ===== STAGE 2: Toolbox Variant =====
+# Derived from cgal-base with toolbox label
+FROM cgal-base AS cgal-toolbox
+
+LABEL com.github.containers.toolbox="true" \
+      name="cgal-toolbox" \
+      usage="This image is meant to be used with the toolbox command"

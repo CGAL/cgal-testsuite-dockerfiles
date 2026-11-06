@@ -165,17 +165,18 @@ build_image() {
   echo "  Tag:  $image"
   echo ""
 
-  # Derived images (FROM another testsuite image) have a single, unnamed stage
+  # Derived images (FROM another testsuite image) pass base_image as a build arg
   if ! grep -q 'AS cgal-base' "$dir/Dockerfile"; then
-    target_args=()
-    # For derived images, we need to pass the base image as a build arg
-    # Extract the base image from the ARG line
-    if grep -q '^ARG base_image=' "$dir/Dockerfile"; then
-      local base_image_default=$(grep '^ARG base_image=' "$dir/Dockerfile" | sed 's/^ARG base_image=//')
-      # Replace the default registry/namespace/image with the actual ones we're using
-      base_image_default=$(echo "$base_image_default" | sed "s|^cgal/testsuite-docker:|${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:|")
-      auto_args+=(--build-arg "base_image=${base_image_default}")
-    fi
+    # Not expected to reach here since we've updated all derived images
+    echo -e "${RED}Warning: $dir/Dockerfile is not multi-stage${NC}"
+  fi
+
+  # Extract the base image from the ARG line if this is a derived image
+  if grep -q '^ARG base_image=' "$dir/Dockerfile"; then
+    local base_image_default=$(grep '^ARG base_image=' "$dir/Dockerfile" | sed 's/^ARG base_image=//')
+    # Replace the default registry/namespace/image with the actual ones we're using
+    base_image_default=$(echo "$base_image_default" | sed "s|^cgal/testsuite-docker:|${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:|")
+    auto_args+=(--build-arg "base_image=${base_image_default}")
   fi
 
   if ! docker build --build-context root=. "${auto_args[@]}" "${target_args[@]}" -t "$image" "$dir"; then
@@ -202,7 +203,8 @@ build_variant() {
     echo ""
     build_image "$variant" "$dir" cgal-base "" && : $((success_count++)) || : $((fail_count++))
   fi
-  if [ $BUILD_TOOLBOX -eq 1 ] && grep -q 'AS cgal-toolbox' "$dir/Dockerfile"; then
+  
+  if [ $BUILD_TOOLBOX -eq 1 ]; then
     echo ""
     build_image "$variant" "$dir" cgal-toolbox "-toolbox" && : $((success_count++)) || : $((fail_count++))
   fi
