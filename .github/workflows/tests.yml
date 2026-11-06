@@ -48,17 +48,45 @@ jobs:
         bash -$- ./build.sh ${{ matrix.variants }}
         docker images
 
+        # Validate image count
+        prefix=$(echo "${{ matrix.test_platform }}" | tr 'A-Z' 'a-z')
+        all_images=$(docker images --format '{{.Repository}}:{{.Tag}}' cgal/testsuite-docker | grep "^cgal/testsuite-docker:${prefix}" | wc -l)
+        expected_images=$(($(echo "${{ matrix.variants }}" | wc -w) * 2))
+
+        if [ "$all_images" -ne "$expected_images" ]; then
+          echo "ERROR: Expected $expected_images images for ${{ matrix.test_platform }} but found $all_images"
+          echo "Expected variants: $(echo '${{ matrix.variants }}' | wc -w) × 2 (standard + toolbox)"
+          exit 1
+        fi
+
+        echo "✅ Image count validation passed: $all_images images (expected $expected_images)"
+
     - name: Download CGAL
       run: |
         set -e
         [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
         CGAL_TARBALL=$(curl -s https://api.github.com/repos/CGAL/cgal/releases/latest | jq -r .tarball_url)
+        echo "Downloading CGAL from: $CGAL_TARBALL"
         curl -o cgal.tar.gz -L "$CGAL_TARBALL"
         mkdir -p cgal
         tar -xzf cgal.tar.gz -C cgal --strip-components=1
         if command -v selinuxenabled >/dev/null && selinuxenabled; then
           chcon -Rt container_file_t cgal
         fi
+
+        # Validate CGAL extraction
+        if [ ! -f "cgal/CMakeLists.txt" ]; then
+          echo "ERROR: CGAL extraction failed - CMakeLists.txt not found"
+          ls -la cgal/ | head -20
+          exit 1
+        fi
+        if [ ! -d "cgal/cmake" ]; then
+          echo "ERROR: CGAL extraction failed - cmake directory not found"
+          ls -la cgal/ | head -20
+          exit 1
+        fi
+
+        echo "✅ CGAL extraction validated"
 
     - name: Test standard images
       run: |
