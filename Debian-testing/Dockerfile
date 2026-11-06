@@ -92,7 +92,7 @@ RUN apt-get update && apt-get install -y libnss-myhostname && apt-get clean && r
 RUN mkdir -p /usr/share/empty /etc/pkcs11/modules /etc/krb5.conf.d
 
 # Install sudo and zsh for toolbox environment
-RUN apt-get update && apt-get install -y sudo zsh libcap2-bin && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y sudo zsh libcap2-bin flatpak-xdg-utils p11-kit-modules libvte-2.91-common && ln -sf /usr/libexec/flatpak-xdg-utils/flatpak-spawn /usr/bin/flatpak-spawn && { [ -e /etc/profile.d/vte.sh ] || ln -s "$(ls /etc/profile.d/vte-*.sh | head -1)" /etc/profile.d/vte.sh; } && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Allow the Toolbx user to use sudo without a password
 RUN printf '%s\n' '%sudo ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/99-toolbox && chmod 0440 /etc/sudoers.d/99-toolbox

@@ -67,8 +67,8 @@ RUN set -e; \
 # install AUR packages and get rid of the build directories afterwards
 USER root
 WORKDIR /tmp/makepkg
-RUN pacman -U --noconfirm *.pkg.tar.zst && \
-    rm *.pkg.tar.zst
+RUN pacman -U --noconfirm ./*.pkg.tar.zst && \
+    rm ./*.pkg.tar.zst
 
 RUN pacman -Sy --noconfirm unzip wget  && pacman -Scc
 
@@ -110,7 +110,7 @@ RUN grep -Eq '^hosts:.*[[:space:]]myhostname([[:space:]]|$)' /etc/nsswitch.conf 
 RUN mkdir -p /usr/share/empty /etc/pkcs11/modules /etc/krb5.conf.d
 
 # Install sudo and zsh for toolbox environment
-RUN pacman -Syu --noconfirm sudo zsh systemd-libs libcap shadow && \
+RUN pacman -Syu --noconfirm sudo zsh systemd-libs libcap shadow flatpak-xdg-utils p11-kit vte-common && \
     printf '%s\n' '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/99-toolbox && \
     chmod 0440 /etc/sudoers.d/99-toolbox && \
     pacman -Scc --noconfirm && \

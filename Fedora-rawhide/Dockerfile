@@ -66,7 +66,7 @@ RUN grep -Eq '^hosts:.*[[:space:]]myhostname([[:space:]]|$)' /etc/nsswitch.conf 
 RUN mkdir -p /usr/share/empty /etc/pkcs11/modules /etc/krb5.conf.d
 
 # Install sudo and zsh for toolbox environment
-RUN dnf install -y sudo zsh && dnf clean all
+RUN dnf install -y sudo zsh flatpak-xdg-utils p11-kit-client vte-profile && dnf clean all
 
 # Allow the Toolbx user to use sudo without a password
 RUN printf '%s\n' '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/99-toolbox && chmod 0440 /etc/sudoers.d/99-toolbox
