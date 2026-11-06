@@ -59,7 +59,7 @@ jobs:
           exit 1
         fi
 
-        echo "✅ Image count validation passed: $all_images images (expected $expected_images)"
+        echo "✔️ Image count validation passed: $all_images images (expected $expected_images)"
 
     - name: Download CGAL
       run: |
@@ -86,7 +86,7 @@ jobs:
           exit 1
         fi
 
-        echo "✅ CGAL extraction validated"
+        echo "✔️ CGAL extraction validated"
 
     - name: Test standard images
       run: |
@@ -200,19 +200,19 @@ jobs:
           total_warn=$((total_warn + image_warn))
 
           if [ "$image_fail" -gt 0 ]; then
-            echo "- ❌ **$image_fail failure(s)**, ⚠️ $image_warn warning(s), ✅ $image_pass pass(es)"
+            echo "- ❌ **$image_fail failure(s)**, ⚠️ $image_warn warning(s), ✔️ $image_pass pass(es)"
           elif [ "$image_warn" -gt 0 ]; then
-            echo "- ⚠️ **$image_warn warning(s)**, ✅ $image_pass pass(es)"
+            echo "- ⚠️ **$image_warn warning(s)**, ✔️ $image_pass pass(es)"
           else
-            echo "- ✅ All checks passed ($image_pass)"
+            echo "- ✔️ All checks passed ($image_pass)"
           fi
 
-          echo "$result_output" | sed 's/^PASS/✅ PASS/; s/^FAIL/❌ FAIL/; s/^WARN/⚠️  WARN/' | sed "s/^/- [$image] /" >> "$detail_file"
+          echo "$result_output" | sed 's/^PASS/✔️ PASS/; s/^FAIL/❌ FAIL/; s/^WARN/⚠️  WARN/' | sed "s/^/- [$image] /" >> "$detail_file"
           echo
         done
 
         echo "#### Summary"
-        echo "- ✅ Passes: $total_pass"
+        echo "- ✔️ Passes: $total_pass"
         echo "- ⚠️ Warnings: $total_warn"
         echo "- ❌ Failures: $total_fail"
         echo
