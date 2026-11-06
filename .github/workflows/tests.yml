@@ -154,8 +154,49 @@ jobs:
         echo "### Toolbx image checks"
         echo
 
+        total_pass=0
+        total_fail=0
+        total_warn=0
+        detail_file=$(mktemp)
+
         for image in $toolbox_images; do
           echo "**Checking:** \`${image}\`"
-          bash -$- ./check-toolbox.sh "$image" 2>&1 | grep -E '(PASS|FAIL|WARN)' | sed 's/^PASS/✅ PASS/; s/^FAIL/❌ FAIL/; s/^WARN/⚠️  WARN/' | sed 's/^/- /' || true
+          result_output=$(bash -$- ./check-toolbox.sh "$image" 2>&1 | grep -E '(PASS|FAIL|WARN)' || true)
+
+          image_pass=$(echo "$result_output" | grep -c '^PASS' || true)
+          image_fail=$(echo "$result_output" | grep -c '^FAIL' || true)
+          image_warn=$(echo "$result_output" | grep -c '^WARN' || true)
+
+          total_pass=$((total_pass + image_pass))
+          total_fail=$((total_fail + image_fail))
+          total_warn=$((total_warn + image_warn))
+
+          if [ "$image_fail" -gt 0 ]; then
+            echo "- ❌ **$image_fail failure(s)**, ⚠️ $image_warn warning(s), ✅ $image_pass pass(es)"
+          elif [ "$image_warn" -gt 0 ]; then
+            echo "- ⚠️ **$image_warn warning(s)**, ✅ $image_pass pass(es)"
+          else
+            echo "- ✅ All checks passed ($image_pass)"
+          fi
+
+          echo "$result_output" | sed 's/^PASS/✅ PASS/; s/^FAIL/❌ FAIL/; s/^WARN/⚠️  WARN/' | sed "s/^/- [$image] /" >> "$detail_file"
           echo
         done
+
+        echo "#### Summary"
+        echo "- ✅ Passes: $total_pass"
+        echo "- ⚠️ Warnings: $total_warn"
+        echo "- ❌ Failures: $total_fail"
+        echo
+
+        if [ -s "$detail_file" ]; then
+          echo "<details>"
+          echo "<summary>Full check details</summary>"
+          echo ""
+          echo '```'
+          cat "$detail_file"
+          echo '```'
+          echo "</details>"
+        fi
+
+        rm -f "$detail_file"
