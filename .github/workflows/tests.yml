@@ -202,7 +202,7 @@ jobs:
             echo "- ✔️ All checks passed ($image_pass)"
           fi
 
-          echo "$result_output" | sed 's/^PASS/✔️ PASS/; s/^FAIL/❌ FAIL/; s/^WARN/⚠️  WARN/' | sed "s/^/- [$image] /" >> "$detail_file"
+          echo "$result_output" | sed 's/^PASS/✔️ PASS/; s/^FAIL/❌ FAIL/; s/^WARN/⚠️  WARN/' | sed "s|^|- [$image] |" >> "$detail_file"
           echo
         done
 
