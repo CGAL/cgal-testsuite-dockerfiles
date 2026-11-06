@@ -65,9 +65,12 @@ jobs:
       run: |
         set -e
         [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
-        CGAL_TARBALL=$(curl -s https://api.github.com/repos/CGAL/cgal/releases/latest | jq -r .tarball_url)
+        # The redirect of releases/latest avoids the rate-limited GitHub API
+        CGAL_TAG=$(curl -fsSL --retry 3 -o /dev/null -w '%{url_effective}' https://github.com/CGAL/cgal/releases/latest)
+        CGAL_TAG=${CGAL_TAG##*/}
+        CGAL_TARBALL="https://github.com/CGAL/cgal/archive/refs/tags/${CGAL_TAG}.tar.gz"
         echo "Downloading CGAL from: $CGAL_TARBALL"
-        curl -o cgal.tar.gz -L "$CGAL_TARBALL"
+        curl -fsSL --retry 3 -o cgal.tar.gz "$CGAL_TARBALL"
         mkdir -p cgal
         tar -xzf cgal.tar.gz -C cgal --strip-components=1
         if command -v selinuxenabled >/dev/null && selinuxenabled; then

@@ -36,6 +36,7 @@ RUN dnf -y install \
     tbb-devel \
     'zlib-devel(x86-64)' \
     'zlib-static(x86-64)' \
+    'libpng-static(x86-64)' \
     diffutils.x86_64 \
     git \
     libssh-devel \

@@ -24,6 +24,7 @@ RUN dnf -y upgrade && \
                    OpenMesh-devel \
                    'zlib-devel(x86-64)' \
                    'zlib-static(x86-64)' \
+                   'libpng-static(x86-64)' \
                    diffutils \
                    wget \
                    git \
