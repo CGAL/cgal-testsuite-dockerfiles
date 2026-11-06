@@ -53,14 +53,12 @@ jobs:
         set -e
         [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
         CGAL_TARBALL=$(curl -s https://api.github.com/repos/CGAL/cgal/releases/latest | jq -r .tarball_url)
-        echo "::group::Download and extract CGAL tarball from $CGAL_TARBALL"
         curl -o cgal.tar.gz -L "$CGAL_TARBALL"
         mkdir -p cgal
         tar -xzf cgal.tar.gz -C cgal --strip-components=1
         if command -v selinuxenabled >/dev/null && selinuxenabled; then
           chcon -Rt container_file_t cgal
         fi
-        echo "::endgroup::"
 
     - name: Test standard images
       run: |
@@ -68,12 +66,12 @@ jobs:
         [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
         prefix=$(echo "${{ matrix.test_platform }}" | tr 'A-Z' 'a-z')
         images=$(docker images --format '{{.Repository}}:{{.Tag}}' cgal/testsuite-docker | grep "^cgal/testsuite-docker:${prefix}" | grep -v -- '-toolbox$' || true)
-        
+
         if [ -z "$images" ]; then
           echo "No standard images to test for ${prefix}"
           exit 0
         fi
-        
+
         for image in $images; do
           echo "Testing $image..."
           docker run --rm -v "$(pwd)/cgal:/cgal" "$image" bash -c \
@@ -123,7 +121,7 @@ jobs:
         [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
         docker login -u maxgimeno -p ${{ secrets.PASSWD }}
         docker push --all-tags docker.io/cgal/testsuite-docker
-        
+
         exec >> "$GITHUB_STEP_SUMMARY"
         echo
         echo "### Images pushed to Docker Hub"
@@ -144,20 +142,20 @@ jobs:
         set -eo pipefail
         [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
         exec >> "$GITHUB_STEP_SUMMARY"
-        
+
         toolbox_images=$(docker images --format '{{.Repository}}:{{.Tag}}' cgal/testsuite-docker | grep -- '-toolbox$' || true)
-        
+
         if [ -z "$toolbox_images" ]; then
           echo "### Toolbx checks"
           echo "No toolbox images to check."
           exit 0
         fi
-        
+
         echo "### Toolbx image checks"
         echo
-        
+
         for image in $toolbox_images; do
           echo "**Checking:** \`${image}\`"
-          bash -$- ./check-toolbox.sh "$image" 2>&1 | grep -E '(PASS|FAIL|WARN)' | sed 's/^/- /' || true
+          bash -$- ./check-toolbox.sh "$image" 2>&1 | grep -E '(PASS|FAIL|WARN)' | sed 's/^PASS/✅ PASS/; s/^FAIL/❌ FAIL/; s/^WARN/⚠️  WARN/' | sed 's/^/- /' || true
           echo
         done
