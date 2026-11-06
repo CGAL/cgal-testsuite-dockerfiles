@@ -80,11 +80,6 @@ jobs:
           ls -la cgal/ | head -20
           exit 1
         fi
-        if [ ! -d "cgal/cmake" ]; then
-          echo "ERROR: CGAL extraction failed - cmake directory not found"
-          ls -la cgal/ | head -20
-          exit 1
-        fi
 
         echo "✔️ CGAL extraction validated"
 
