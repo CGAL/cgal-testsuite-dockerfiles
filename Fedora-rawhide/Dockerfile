@@ -23,7 +23,8 @@ RUN dnf -y upgrade && \
                    mesa-libGLU-devel \
                    OpenMesh-devel \
                    'zlib-devel(x86-64)' \
-		   diffutils \
+                   'zlib-static(x86-64)' \
+                   diffutils \
                    wget \
                    git \
                    lsb-release \

@@ -133,13 +133,14 @@ find_variants() {
 
 # Print the directory of a variant, or fail if it does not exist
 get_variant_dir() {
-  local pair
+  local pair pairs
+  pairs=$(find_variants)
   while read -r pair; do
     if [ "${pair%%:*}" = "$1" ]; then
       echo "${pair#*:}"
       return 0
     fi
-  done < <(find_variants)
+  done <<<"$pairs"
   return 1
 }
 
