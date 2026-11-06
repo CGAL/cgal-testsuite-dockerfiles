@@ -184,7 +184,7 @@ jobs:
 
         for image in $toolbox_images; do
           echo "**Checking:** \`${image}\`"
-          result_output=$(bash -$- ./check-toolbox.sh "$image" 2>&1 | grep -E '(PASS|FAIL|WARN)' || true)
+          result_output=$(bash -$- ./check-toolbox.sh "$image" 2>&1 | sed -E 's/^[[:space:]]+//' | grep -E '^(PASS|FAIL|WARN) ' || true)
 
           image_pass=$(echo "$result_output" | grep -c '^PASS' || true)
           image_fail=$(echo "$result_output" | grep -c '^FAIL' || true)
