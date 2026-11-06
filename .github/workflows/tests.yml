@@ -103,7 +103,7 @@ jobs:
         for image in $images; do
           echo "Testing $image..."
           docker run --rm -v "$(pwd)/cgal:/cgal" "$image" bash -c \
-            'cmake -DCMAKE_DISABLE_FIND_PACKAGE_libpointmatcher=ON -DWITH_examples=ON -S /cgal -B /build && cmake --build /build -t terrain -v'
+            'cmake -DCMAKE_DISABLE_FIND_PACKAGE_libpointmatcher=ON -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON -DWITH_examples=ON -S /cgal -B /build && cmake --build /build -t terrain -v'
         done
 
     - name: Summary
