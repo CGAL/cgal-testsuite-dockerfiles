@@ -1,4 +1,4 @@
-FROM archlinux:base-devel
+FROM archlinux:base-devel AS cgal-base
 ARG dockerfile_url
 ARG image_tag
 ENV DOCKERFILE_URL=$dockerfile_url
@@ -67,8 +67,8 @@ RUN set -e; \
 # install AUR packages and get rid of the build directories afterwards
 USER root
 WORKDIR /tmp/makepkg
-RUN pacman -U --noconfirm *.pkg.tar.zst && \
-    rm *.pkg.tar.zst
+RUN pacman -U --noconfirm ./*.pkg.tar.zst && \
+    rm ./*.pkg.tar.zst
 
 RUN pacman -Sy --noconfirm unzip wget  && pacman -Scc
 
@@ -94,3 +94,24 @@ RUN ln -s /usr/include /include
 ENV CGAL_SUMMARY_NAME="ArchLinux-basedevel-Debug"
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake
+
+# ===== STAGE 2: Toolbox Variant =====
+# Derived from cgal-base with toolbox-specific configurations
+FROM cgal-base AS cgal-toolbox
+
+LABEL com.github.containers.toolbox="true" \
+      name="cgal-toolbox" \
+      usage="This image is meant to be used with the toolbox command"
+
+# Configure hostname resolution for toolbox compatibility
+RUN grep -Eq '^hosts:.*[[:space:]]myhostname([[:space:]]|$)' /etc/nsswitch.conf || sed -Ei 's/^(hosts:.*\<files\>)/\1 myhostname/' /etc/nsswitch.conf
+
+# Create required directories for toolbox
+RUN mkdir -p /usr/share/empty /etc/pkcs11/modules /etc/krb5.conf.d
+
+# Install sudo and zsh for toolbox environment
+RUN pacman -Syu --noconfirm sudo zsh systemd-libs libcap shadow flatpak-xdg-utils p11-kit vte-common && \
+    printf '%s\n' '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/99-toolbox && \
+    chmod 0440 /etc/sudoers.d/99-toolbox && \
+    pacman -Scc --noconfirm && \
+    rm -rf /home/makepkg

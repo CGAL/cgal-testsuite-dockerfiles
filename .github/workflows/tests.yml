@@ -15,14 +15,94 @@ jobs:
     strategy:
       matrix:
         test_platform: ['ArchLinux','Debian-stable','Debian-testing','Fedora','Fedora-32','Fedora-rawhide','Ubuntu']
+        include:
+          # Variants of each platform, base images before the images derived from them
+          - test_platform: ArchLinux
+            variants: ArchLinux ArchLinux-CXX14 ArchLinux-CXX17-Release ArchLinux-clang ArchLinux-clang-CXX14 ArchLinux-clang-CXX17-Release ArchLinux-clang-CXX20-Release ArchLinux-clang-Release
+          - test_platform: Debian-stable
+            variants: Debian-stable Debian-stable-Release Debian-stable-cross-compilation-for-arm
+          - test_platform: Debian-testing
+            variants: Debian-testing Debian-testing-clang-main
+          - test_platform: Fedora
+            variants: Fedora Fedora-with-LEDA Fedora-Release Fedora-strict-ansi
+          - test_platform: Fedora-32
+            variants: Fedora-32 Fedora-32-Release
+          - test_platform: Fedora-rawhide
+            variants: Fedora-rawhide Fedora-rawhide-Release
+          - test_platform: Ubuntu
+            variants: Ubuntu Ubuntu-CXX11 Ubuntu-NO_DEPRECATED_CODE Ubuntu-no-gmp-no-leda Ubuntu-GCC6 Ubuntu-GCC6-CXX1Z Ubuntu-GCC6-Release Ubuntu-GCC_master_cpp20-Release
       fail-fast: false
 
     steps:
     - name: Git checkout
       uses: actions/checkout@v6
 
-    - name: Compile images
-      run: bash -$- ./test.sh ${{ matrix.test_platform }}
+    - name: Build standard and toolbox images
+      env:
+        REGISTRY: docker.io
+        NAMESPACE: cgal
+        IMAGE_NAME: testsuite-docker
+      run: |
+        set -e
+        [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+        bash -$- ./build.sh ${{ matrix.variants }}
+        docker images
+
+        # Validate image count
+        prefix=$(echo "${{ matrix.test_platform }}" | tr 'A-Z' 'a-z')
+        all_images=$(docker images --format '{{.Repository}}:{{.Tag}}' cgal/testsuite-docker | grep "^cgal/testsuite-docker:${prefix}" | wc -l)
+        expected_images=$(($(echo "${{ matrix.variants }}" | wc -w) * 2))
+
+        if [ "$all_images" -ne "$expected_images" ]; then
+          echo "ERROR: Expected $expected_images images for ${{ matrix.test_platform }} but found $all_images"
+          echo "Expected variants: $(echo '${{ matrix.variants }}' | wc -w) × 2 (standard + toolbox)"
+          exit 1
+        fi
+
+        echo "✔️ Image count validation passed: $all_images images (expected $expected_images)"
+
+    - name: Download CGAL
+      run: |
+        set -e
+        [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+        # The redirect of releases/latest avoids the rate-limited GitHub API
+        CGAL_TAG=$(curl -fsSL --retry 3 -o /dev/null -w '%{url_effective}' https://github.com/CGAL/cgal/releases/latest)
+        CGAL_TAG=${CGAL_TAG##*/}
+        CGAL_TARBALL="https://github.com/CGAL/cgal/archive/refs/tags/${CGAL_TAG}.tar.gz"
+        echo "Downloading CGAL from: $CGAL_TARBALL"
+        curl -fsSL --retry 3 -o cgal.tar.gz "$CGAL_TARBALL"
+        mkdir -p cgal
+        tar -xzf cgal.tar.gz -C cgal --strip-components=1
+        if command -v selinuxenabled >/dev/null && selinuxenabled; then
+          chcon -Rt container_file_t cgal
+        fi
+
+        # Validate CGAL extraction
+        if [ ! -f "cgal/CMakeLists.txt" ]; then
+          echo "ERROR: CGAL extraction failed - CMakeLists.txt not found"
+          ls -la cgal/ | head -20
+          exit 1
+        fi
+
+        echo "✔️ CGAL extraction validated"
+
+    - name: Test standard images
+      run: |
+        set -e
+        [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+        prefix=$(echo "${{ matrix.test_platform }}" | tr 'A-Z' 'a-z')
+        images=$(docker images --format '{{.Repository}}:{{.Tag}}' cgal/testsuite-docker | grep "^cgal/testsuite-docker:${prefix}" | grep -v -- '-toolbox$' || true)
+
+        if [ -z "$images" ]; then
+          echo "No standard images to test for ${prefix}"
+          exit 0
+        fi
+
+        for image in $images; do
+          echo "Testing $image..."
+          docker run --rm -v "$(pwd)/cgal:/cgal" "$image" bash -c \
+            'cmake -DCMAKE_DISABLE_FIND_PACKAGE_libpointmatcher=ON -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON -DWITH_examples=ON -S /cgal -B /build && cmake --build /build -t terrain -v'
+        done
 
     - name: Summary
       run: |
@@ -37,17 +117,26 @@ jobs:
 
         echo "## Platform: ${{ matrix.test_platform }}"
         echo
-        echo "### Images and compiler versions"
+        echo "### Built images and compiler versions"
         echo
 
         if [ -z "$images" ]; then
-          echo '**No matching images found in local cache.**'
+          echo '⚠️ **No matching images found in local cache.**'
         else
-          echo '| Image | Compiler |'
-          echo '|-------|----------|'
+          standard=$(echo "$images" | grep -v -- '-toolbox$' | wc -l)
+          toolbox=$(echo "$images" | grep -- '-toolbox$' | wc -l)
+          total=$(echo "$images" | wc -l)
+          echo "**Build results:** ${total} images (${standard} standard, ${toolbox} toolbox)"
+          echo
+          echo '| Image | Type | Compiler |'
+          echo '|-------|------|----------|'
           for image in $images; do
+            type="standard"
+            if [[ "$image" == *"-toolbox" ]]; then
+              type="toolbox"
+            fi
             compiler=$(docker run --rm "$image" sh -c "c++ --version 2>/dev/null | head -n 1 || g++ --version 2>/dev/null | head -n 1 || echo unknown")
-            echo "| $(quote "${image}") | $(quote "${compiler}") |"
+            echo "| $(quote "${image}") | ${type} | $(quote "${compiler}") |"
           done
         fi
 
@@ -57,14 +146,83 @@ jobs:
         set -e
         [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
         docker login -u maxgimeno -p ${{ secrets.PASSWD }}
-        bash -$- ./push.sh ${{ matrix.test_platform }}
+        docker push --all-tags docker.io/cgal/testsuite-docker
+
         exec >> "$GITHUB_STEP_SUMMARY"
         echo
-        echo '### Images pushed successfully.'
+        echo "### Images pushed to Docker Hub"
+        echo
+        prefix=$(echo "${{ matrix.test_platform }}" | tr 'A-Z' 'a-z')
+        docker images --format '{{.Repository}}:{{.Tag}}' cgal/testsuite-docker | grep "^cgal/testsuite-docker:${prefix}" | sed 's/^/- /'
 
     - name: Skip push on pull requests
       if: ${{ !(github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') || github.ref != 'refs/heads/master' }}
       run: |
-        echo "Don't upload on pull_requests"
         exec >> "$GITHUB_STEP_SUMMARY"
-        echo '### Push skipped (not a push to master branch).'
+        echo
+        echo "### Push skipped"
+        echo "Images are only pushed on merges to master branch."
+
+    - name: Check the Toolbx images
+      run: |
+        set -eo pipefail
+        [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+        exec >> "$GITHUB_STEP_SUMMARY"
+
+        toolbox_images=$(docker images --format '{{.Repository}}:{{.Tag}}' cgal/testsuite-docker | grep -- '-toolbox$' || true)
+
+        if [ -z "$toolbox_images" ]; then
+          echo "### Toolbx checks"
+          echo "No toolbox images to check."
+          exit 0
+        fi
+
+        echo "### Toolbx image checks"
+        echo
+
+        total_pass=0
+        total_fail=0
+        total_warn=0
+        detail_file=$(mktemp)
+
+        for image in $toolbox_images; do
+          echo "**Checking:** \`${image}\`"
+          result_output=$(bash -$- ./check-toolbox.sh "$image" 2>&1 | sed -E 's/^[[:space:]]+//' | grep -E '^(PASS|FAIL|WARN) ' || true)
+
+          image_pass=$(echo "$result_output" | grep -c '^PASS' || true)
+          image_fail=$(echo "$result_output" | grep -c '^FAIL' || true)
+          image_warn=$(echo "$result_output" | grep -c '^WARN' || true)
+
+          total_pass=$((total_pass + image_pass))
+          total_fail=$((total_fail + image_fail))
+          total_warn=$((total_warn + image_warn))
+
+          if [ "$image_fail" -gt 0 ]; then
+            echo "- ❌ **$image_fail failure(s)**, ⚠️ $image_warn warning(s), ✔️ $image_pass pass(es)"
+          elif [ "$image_warn" -gt 0 ]; then
+            echo "- ⚠️ **$image_warn warning(s)**, ✔️ $image_pass pass(es)"
+          else
+            echo "- ✔️ All checks passed ($image_pass)"
+          fi
+
+          echo "$result_output" | sed 's/^PASS/✔️ PASS/; s/^FAIL/❌ FAIL/; s/^WARN/⚠️  WARN/' | sed "s|^|- [$image] |" >> "$detail_file"
+          echo
+        done
+
+        echo "#### Summary"
+        echo "- ✔️ Passes: $total_pass"
+        echo "- ⚠️ Warnings: $total_warn"
+        echo "- ❌ Failures: $total_fail"
+        echo
+
+        if [ -s "$detail_file" ]; then
+          echo "<details>"
+          echo "<summary>Full check details</summary>"
+          echo ""
+          echo '```'
+          cat "$detail_file"
+          echo '```'
+          echo "</details>"
+        fi
+
+        rm -f "$detail_file"
