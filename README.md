@@ -61,6 +61,19 @@ Or manually with Docker:
 
 The `root=.` named build context is required because some Dockerfiles copy files from the repository root.
 
+To test each standard image after building it, use a local CGAL source tree:
+
+```bash
+    CGAL_SOURCE_DIR=/path/to/cgal ./build.sh debian-stable --test
+```
+
+`CGAL_SOURCE_DIR` defaults to `./cgal`. The test runs the CI CMake
+configuration and builds the `terrain` example inside the image. Toolbox
+images are built as usual but are not tested by this option. A failed test
+makes the command fail and prevents that image from being pushed with `--push`.
+On SELinux systems, the source directory must be accessible to containers; see
+the SELinux section below.
+
 ## Checking the Toolbx Requirements
 
 `check-toolbox.sh` verifies that toolbox images satisfy the

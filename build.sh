@@ -9,6 +9,7 @@
 #   ./build.sh debian-stable            # Build both variants
 #   ./build.sh debian-stable --std-only # Build only standard
 #   ./build.sh debian-stable --toolbox  # Build only toolbox
+#   ./build.sh debian-stable --test     # Test standard image after building
 #   ./build.sh --all                    # Build all distributions
 #
 
@@ -30,6 +31,8 @@ BUILD_TOOLBOX=1
 TARGET_VARIANTS=()
 BUILD_ALL=0
 PUSH_IMAGES=0
+TEST_IMAGES=0
+CGAL_SOURCE_DIR="${CGAL_SOURCE_DIR:-./cgal}"
 
 # Show usage
 usage() {
@@ -46,6 +49,7 @@ Variants:
 Options:
   --std-only     Build only the standard (non-toolbox) image
   --toolbox      Build only the toolbox variant
+  --test         Test standard images using a local CGAL source tree
   --push         Push images to registry after building
   --registry URL Use custom registry (default: localhost)
   --help         Show this help message
@@ -54,6 +58,7 @@ Examples:
   $0 debian-stable              # Build both standard and toolbox
   $0 debian-stable --std-only   # Build only standard
   $0 debian-stable --toolbox    # Build only toolbox variant
+  $0 debian-stable --test       # Build both variants and test standard
   $0 --all                      # Build all variants
   $0 debian-stable --push       # Build and push to registry
 
@@ -61,6 +66,7 @@ Environment Variables:
   REGISTRY      Registry URL (default: localhost)
   NAMESPACE     Image namespace (default: cgal)
   IMAGE_NAME    Image name (default: testsuite)
+  CGAL_SOURCE_DIR  CGAL source tree for --test (default: ./cgal)
 
 EOF
 }
@@ -93,6 +99,10 @@ while [ $# -gt 0 ]; do
     PUSH_IMAGES=1
     shift
     ;;
+  --test)
+    TEST_IMAGES=1
+    shift
+    ;;
   --registry)
     REGISTRY="$2"
     shift 2
@@ -108,6 +118,22 @@ while [ $# -gt 0 ]; do
     ;;
   esac
 done
+
+if [ "$TEST_IMAGES" -eq 1 ]; then
+  if [ "$BUILD_ALL" -ne 1 ] && [ "${#TARGET_VARIANTS[@]}" -eq 0 ]; then
+    echo -e "${RED}Error: --test requires a variant or --all${NC}" >&2
+    exit 1
+  fi
+  if [ "$BUILD_STANDARD" -ne 1 ]; then
+    echo -e "${RED}Error: --test requires a standard image; it cannot be used with --toolbox${NC}" >&2
+    exit 1
+  fi
+  if [ ! -f "$CGAL_SOURCE_DIR/CMakeLists.txt" ]; then
+    echo -e "${RED}Error: CGAL source tree not found at '$CGAL_SOURCE_DIR' (CMakeLists.txt missing)${NC}" >&2
+    exit 1
+  fi
+  CGAL_SOURCE_DIR=$(cd "$CGAL_SOURCE_DIR" && pwd -P)
+fi
 
 # Normalize variant name
 normalize_variant() {
@@ -187,6 +213,16 @@ build_image() {
   fi
   echo -e "${GREEN}✓ Built: $image${NC}"
 
+  if [ "$TEST_IMAGES" -eq 1 ] && [ "$target" = cgal-base ]; then
+    echo -e "${BLUE}Testing: $image${NC}"
+    if ! docker run --rm -v "$CGAL_SOURCE_DIR:/cgal" "$image" bash -c \
+      'cmake -DCMAKE_DISABLE_FIND_PACKAGE_libpointmatcher=ON -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON -DWITH_examples=ON -S /cgal -B /build && cmake --build /build -t terrain -v'; then
+      echo -e "${RED}✗ Failed to test: $image${NC}"
+      return 1
+    fi
+    echo -e "${GREEN}✓ Tested: $image${NC}"
+  fi
+
   if [ "${PUSH_IMAGES:-0}" -eq 1 ]; then
     echo -e "${BLUE}Pushing: $image${NC}"
     if ! docker push "$image"; then
@@ -223,6 +259,7 @@ echo "  Namespace:  $NAMESPACE"
 echo "  Image:      $IMAGE_NAME"
 echo "  Standard:   $([ $BUILD_STANDARD -eq 1 ] && echo 'Yes' || echo 'No')"
 echo "  Toolbox:    $([ $BUILD_TOOLBOX -eq 1 ] && echo 'Yes' || echo 'No')"
+echo "  Test:       $([ $TEST_IMAGES -eq 1 ] && echo 'Yes' || echo 'No')"
 echo ""
 
 success_count=0
@@ -265,12 +302,12 @@ echo -e "${BLUE}╔════════════════════�
 echo -e "${BLUE}║   Build Summary                                            ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "${GREEN}✓ Successful builds:${NC} $success_count"
-echo -e "${RED}✗ Failed builds:${NC} $fail_count"
+echo -e "${GREEN}✓ Successful images:${NC} $success_count"
+echo -e "${RED}✗ Failed images:${NC} $fail_count"
 echo ""
 
 if [ $fail_count -eq 0 ]; then
-  echo -e "${GREEN}All builds completed successfully!${NC}"
+  echo -e "${GREEN}All requested image operations completed successfully!${NC}"
   echo ""
   echo "Next steps:"
   echo "  1. Test standard: docker run $REGISTRY/$NAMESPACE/$IMAGE_NAME:debian-stable"
@@ -281,6 +318,6 @@ if [ $fail_count -eq 0 ]; then
   fi
   exit 0
 else
-  echo -e "${RED}Some builds failed. Please check the output above.${NC}"
+  echo -e "${RED}Some image operations failed. Please check the output above.${NC}"
   exit 1
 fi
