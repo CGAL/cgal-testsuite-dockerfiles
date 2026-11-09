@@ -155,7 +155,7 @@ LABEL com.github.containers.toolbox="true" \
 RUN rm -f /etc/apt/apt.conf.d/docker-*
 
 # Remove the base image's UID 1000 user so Toolbx can create the host user.
-RUN userdel --remove ubuntu && if getent group ubuntu >/dev/null; then groupdel ubuntu; fi
+RUN if getent group ubuntu >/dev/null; then userdel --remove ubuntu; fi && if getent group ubuntu >/dev/null; then groupdel ubuntu; fi
 
 # Configure hostname resolution for toolbox compatibility
 RUN grep -Eq '^hosts:.*[[:space:]]myhostname([[:space:]]|$)' /etc/nsswitch.conf || sed -Ei 's/^(hosts:.*\<files\>)/\1 myhostname/' /etc/nsswitch.conf
