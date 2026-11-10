@@ -34,6 +34,8 @@ RUN dnf -y install \
     unzip \
     wget \
     tbb-devel \
+    'zlib-devel(x86-64)' \
+    'zlib-static(x86-64)' \
     'libpng-static(x86-64)' \
     diffutils.x86_64 \
     git \
@@ -42,9 +44,6 @@ RUN dnf -y install \
     json-devel \
     InsightToolkit-devel gdcm-devel libminc-devel \
     fast_float-devel
-
-#    'zlib-devel(x86-64)' \
-#    'zlib-static(x86-64)' \
 
 # Copy and run the script to install LAStools
 COPY --from=root install_lastools.sh LAStools.patch /tmp/
