@@ -20,9 +20,9 @@ COPY fix-cuda-glibc-noexcept.sh /tmp/
 RUN sed -i 's/\r$//' /tmp/fix-cuda-glibc-noexcept.sh \
  && wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-ubuntu2404.pin \
  && mv cuda-ubuntu2404.pin /etc/apt/preferences.d/cuda-repository-pin-600  \
- && apt-get -y install gcc-14 g++-14 \
+ && apt-get update && apt-get -y install gcc-14 g++-14 \
  && wget https://developer.download.nvidia.com/compute/cuda/12.8.2/local_installers/cuda-repo-ubuntu2404-12-8-local_12.8.2-570.211.01-1_amd64.deb \
- && dpkg -i cuda-repo-ubuntu2404-12-8-local_12.8.2-570.211.01-1_amd64.deb \
+ && dpkg -i cuda-repo-ubuntu2404-12-8-local_12.8.2-570.211.01-1_amd64.deb && rm *.deb \
  && cp /var/cuda-repo-ubuntu2404-12-8-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
  && apt-get update \
  && apt-get -y install cuda-toolkit-12-8 \
@@ -38,7 +38,9 @@ RUN sed -i 's/\r$//' /tmp/fix-cuda-glibc-noexcept.sh \
  && cd build/ \
  && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-14 -DCUDA_EXAMPLE_INCLUDE_DIR=/home/cuda-samples/Common .. \
  && make -j "$(nproc)" \
- && make install
+ && make install \
+ && cd /home \
+ && rm -rf protosphereextended cuda-samples
 
 # ===== STAGE 2: Toolbox Variant =====
 # Derived from cgal-base with toolbox label
