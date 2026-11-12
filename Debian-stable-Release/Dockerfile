@@ -1,11 +1,5 @@
-# This Dockerfile builds on a base variant.
-# Build with: docker build --target cgal-base (or --target cgal-toolbox)
-# See the base variant Dockerfile for multi-stage definitions.
-
 ARG base_image=cgal/testsuite-docker:debian-stable
-FROM ${base_image} AS cgal-base
-ARG dockerfile_url
-ENV DOCKERFILE_URL=$dockerfile_url
+FROM ${base_image} AS cgal-common
 
 ENV CGAL_TEST_PLATFORM="Debian-stable-Release"
 ENV CGAL_SUMMARY_NAME="Debian-stable-Release"
@@ -13,10 +7,21 @@ ENV CGAL_CMAKE_FLAGS="('-DCMAKE_BUILD_TYPE=Release' '-DCMAKE_CXX_FLAGS_RELEASE=-
 ENV INIT_FILE=/tmp/init.cmake
 COPY init.cmake /tmp/init.cmake
 
-# ===== STAGE 2: Toolbox Variant =====
-# Derived from cgal-base with toolbox label
-FROM cgal-base AS cgal-toolbox
+FROM cgal-common AS cgal-base
+ARG dockerfile_url
+ARG image_tag
+ENV DOCKERFILE_URL=$dockerfile_url
+ENV IMAGE_TAG=$image_tag
+
+FROM cgal-common AS cgal-toolbox
+ARG dockerfile_url
+ARG image_tag
+ENV DOCKERFILE_URL=$dockerfile_url
+ENV IMAGE_TAG=$image_tag
 
 LABEL com.github.containers.toolbox="true" \
       name="cgal-toolbox" \
       usage="This image is meant to be used with the toolbox command"
+
+COPY --from=root Debian-stable/toolbox-setup.sh /tmp/toolbox-setup.sh
+RUN sh /tmp/toolbox-setup.sh && rm /tmp/toolbox-setup.sh

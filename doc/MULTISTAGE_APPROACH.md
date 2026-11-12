@@ -6,20 +6,26 @@ Instead of using Python scripts to generate Dockerfiles, this approach uses **Do
 
 ## The Approach
 
-Each Dockerfile has two build targets:
+Each Dockerfile has a shared stage and two build targets:
 
-- **Stage 1 (`cgal-base`)**: Standard CGAL testsuite image (unchanged)
-- **Stage 2 (`cgal-toolbox`)**: Toolbox variant built from stage 1
+- **`cgal-common`**: Common CGAL dependencies and configuration
+- **`cgal-base`**: Standard image with target-specific metadata
+- **`cgal-toolbox`**: Toolbox image with target-specific metadata and setup
 
 ```dockerfile
-# Stage 1: Standard image
-FROM debian:stable AS cgal-base
-# ... standard CGAL configuration ...
+FROM debian:stable AS cgal-common
+# ... common CGAL configuration ...
 
-# Stage 2: Toolbox variant
-FROM cgal-base AS cgal-toolbox
-# ... add toolbox-specific configurations ...
+FROM cgal-common AS cgal-base
+# ... standard image metadata ...
+
+FROM cgal-common AS cgal-toolbox
+# ... toolbox image metadata and setup ...
 ```
+
+Derived Dockerfiles use their standard parent image for both targets. The
+toolbox setup is applied after the common stage, so a change in the image tag
+or toolbox target does not invalidate the common build layers.
 
 Build whichever you need:
 
@@ -45,18 +51,21 @@ Pass `--build-context root=.` when building from a distribution directory; some 
 cgal-testsuite-dockerfiles/
 ├── Debian-stable/
 │   ├── Dockerfile                    # Single multi-stage Dockerfile
+│   │   ├── Stage: cgal-common       (shared configuration)
 │   │   ├── Stage: cgal-base         (standard image)
 │   │   └── Stage: cgal-toolbox      (toolbox variant)
 │   └── init.cmake
 │
 ├── Ubuntu/
 │   ├── Dockerfile                    # Single multi-stage Dockerfile
+│   │   ├── Stage: cgal-common
 │   │   ├── Stage: cgal-base
 │   │   └── Stage: cgal-toolbox
 │   └── init.cmake
 │
 ├── Fedora/
 │   ├── Dockerfile                    # Single multi-stage Dockerfile
+│   │   ├── Stage: cgal-common
 │   │   ├── Stage: cgal-base
 │   │   └── Stage: cgal-toolbox
 │   └── init.cmake
@@ -66,74 +75,31 @@ cgal-testsuite-dockerfiles/
 
 ## Creating a Multi-Stage Dockerfile
 
-Here's the pattern for each distribution:
-
-### For Debian/Ubuntu
+Use the shared stage for installation, then set per-target metadata and apply
+the distribution's toolbox setup script only in the toolbox target:
 
 ```dockerfile
-# STAGE 1: Standard CGAL testsuite image
-FROM debian:stable AS cgal-base
+FROM debian:stable AS cgal-common
+# ... common CGAL installation and configuration ...
 
+FROM cgal-common AS cgal-base
 ARG dockerfile_url
+ARG image_tag
 ENV DOCKERFILE_URL=$dockerfile_url
+ENV IMAGE_TAG=$image_tag
 
-# ... all standard CGAL installation ...
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    libgmp-dev \
-    # ... etc ...
-
-ENV CGAL_TEST_PLATFORM="Debian-Stable"
-COPY init.cmake /tmp/init.cmake
-
-# STAGE 2: Toolbox variant
-FROM cgal-base AS cgal-toolbox
+FROM cgal-common AS cgal-toolbox
+ARG dockerfile_url
+ARG image_tag
+ENV DOCKERFILE_URL=$dockerfile_url
+ENV IMAGE_TAG=$image_tag
 
 LABEL com.github.containers.toolbox="true" \
-      name="cgal-toolbox-debian" \
+      name="cgal-toolbox" \
       usage="This image is meant to be used with the toolbox command"
 
-# Remove apt configurations optimized for containers
-RUN rm -f /etc/apt/apt.conf.d/docker-*
-
-# Configure hostname resolution
-RUN sed -Ei 's/^(hosts:.*)(\<files\>)\s*(.*)/\1\2 myhostname \3/' /etc/nsswitch.conf
-
-# Install/ensure libnss-myhostname
-RUN apt-get update && \
-    apt-get install -y libnss-myhostname && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Create required directories
-RUN mkdir -p /usr/share/empty /etc/pkcs11/modules
-```
-
-### For Fedora/RHEL
-
-```dockerfile
-# STAGE 1: Standard CGAL testsuite image
-FROM fedora:latest AS cgal-base
-
-# ... standard CGAL installation ...
-
-# STAGE 2: Toolbox variant
-FROM cgal-base AS cgal-toolbox
-
-LABEL com.github.containers.toolbox="true" \
-      name="cgal-toolbox-fedora"
-
-# Remove dnf container configurations
-RUN rm -f /etc/dnf/dnf.conf.d/container-*.conf
-
-# Configure hostname resolution
-RUN sed -Ei 's/^(hosts:.*)(\<files\>)\s*(.*)/\1\2 myhostname \3/' /etc/nsswitch.conf
-
-# Install/ensure libnss-myhostname
-RUN dnf install -y libnss-myhostname && dnf clean all
-
-# Create required directories
-RUN mkdir -p /usr/share/empty /etc/pkcs11/modules
+COPY --from=root Debian-stable/toolbox-setup.sh /tmp/toolbox-setup.sh
+RUN sh /tmp/toolbox-setup.sh && rm /tmp/toolbox-setup.sh
 ```
 
 ## Building
@@ -266,7 +232,7 @@ docker:
 
 When you modify a Dockerfile with multi-stage builds:
 
-1. Edit the standard image section (before `as cgal-toolbox`)
+1. Edit the shared `cgal-common` stage.
 2. Rebuild both targets:
 
    ```bash
@@ -279,27 +245,11 @@ The shared layers will be reused, so the build is efficient.
 
 To convert an existing single-stage Dockerfile:
 
-1. Add `as cgal-base` to the FROM line:
-
-   ```dockerfile
-   FROM debian:stable AS cgal-base
-   ```
-
-2. Keep all existing configuration in stage 1
-
-3. Add stage 2 at the end:
-
-   ```dockerfile
-   FROM cgal-base AS cgal-toolbox
-   LABEL com.github.containers.toolbox="true" \
-         # ... metadata ...
-
-   # Toolbox-specific configurations
-   RUN rm -f /etc/apt/apt.conf.d/docker-*
-   RUN sed -Ei 's/^(hosts:.*)(\<files\>)\s*(.*)/\1\2 myhostname \3/' /etc/nsswitch.conf
-   RUN apt-get update && apt-get install -y libnss-myhostname && apt-get clean
-   RUN mkdir -p /usr/share/empty /etc/pkcs11/modules
-   ```
+1. Name the original stage `cgal-common`.
+2. Add `cgal-base` and `cgal-toolbox` targets derived from `cgal-common`,
+   as in the example above.
+3. Keep target-specific metadata after the shared stage and use the
+   distribution's toolbox setup script.
 
 Done! Now build with `--target` to get either version.
 
@@ -325,7 +275,8 @@ docker build --build-context root=. --target cgal-base -t cgal/testsuite:debian-
 docker build --build-context root=. --target cgal-toolbox -t cgal/testsuite:debian-stable-toolbox .
 ```
 
-The second build reuses all layers from the first build. Very efficient.
+The second build reuses the common layers from the first build when the
+container builder's cache is available.
 
 ## Docker Compose (Optional)
 
@@ -475,9 +426,7 @@ docker push localhost/cgal/testsuite:debian-stable-toolbox
 
 ## Next Steps
 
-1. **Update existing Dockerfiles** to add multi-stage support:
-   - Change `FROM debian:stable` to `FROM debian:stable AS cgal-base`
-   - Add toolbox stage at the end
+1. **Update Dockerfiles** using the shared-stage pattern above.
 
 2. **Use the build script**: `./build.sh debian-stable`
 

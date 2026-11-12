@@ -1,11 +1,5 @@
-# This Dockerfile builds on a base variant.
-# Build with: docker build --target cgal-base (or --target cgal-toolbox)
-# See the base variant Dockerfile for multi-stage definitions.
-
 ARG base_image=cgal/testsuite-docker:archlinux-clang
-FROM ${base_image} AS cgal-base
-ARG dockerfile_url
-ENV DOCKERFILE_URL=$dockerfile_url
+FROM ${base_image} AS cgal-common
 
 ENV CGAL_TEST_PLATFORM="ArchLinux-clang-CXX20-Release"
 ENV CGAL_SUMMARY_NAME="ArchLinux-basedevel-clang-CXX20"
@@ -21,10 +15,21 @@ RUN git clone -b develop --depth=1 --shallow-submodules --recursive https://gith
 
 LABEL org.cgal.releases_to_ignore="^(4|5\\.0)"
 
-# ===== STAGE 2: Toolbox Variant =====
-# Derived from cgal-base with toolbox label
-FROM cgal-base AS cgal-toolbox
+FROM cgal-common AS cgal-base
+ARG dockerfile_url
+ARG image_tag
+ENV DOCKERFILE_URL=$dockerfile_url
+ENV IMAGE_TAG=$image_tag
+
+FROM cgal-common AS cgal-toolbox
+ARG dockerfile_url
+ARG image_tag
+ENV DOCKERFILE_URL=$dockerfile_url
+ENV IMAGE_TAG=$image_tag
 
 LABEL com.github.containers.toolbox="true" \
       name="cgal-toolbox" \
       usage="This image is meant to be used with the toolbox command"
+
+COPY --from=root ArchLinux/toolbox-setup.sh /tmp/toolbox-setup.sh
+RUN sh /tmp/toolbox-setup.sh && rm /tmp/toolbox-setup.sh

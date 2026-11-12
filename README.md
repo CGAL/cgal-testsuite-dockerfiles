@@ -60,6 +60,10 @@ Or manually with Docker:
 ```
 
 The `root=.` named build context is required because some Dockerfiles copy files from the repository root.
+Each Dockerfile builds common dependencies once and applies the distribution's
+toolbox setup only to the toolbox target. Derived images use the standard
+parent image for both targets; build that parent first. The `image_tag` build
+argument sets `IMAGE_TAG` separately on each target.
 
 To test each standard image after building it, use a local CGAL source tree:
 

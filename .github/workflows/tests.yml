@@ -9,6 +9,13 @@ on:
     - cron: '0 1 * * SUN'
 
 jobs:
+  build-script-tests:
+    name: Build script tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - run: bash tests/test-build.sh
+
   compile-and-push-docker-images:
     name: Docker images
     runs-on: ubuntu-latest
