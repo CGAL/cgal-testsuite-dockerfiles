@@ -18,14 +18,15 @@ COPY ./init.cmake .
 # Install Cuda 12.8. and libProtoSphere for Sphere_packing
 COPY fix-cuda-glibc-noexcept.sh /tmp/
 RUN sed -i 's/\r$//' /tmp/fix-cuda-glibc-noexcept.sh \
- && wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-ubuntu2404.pin \
+ && wget --progress=dot:giga https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-ubuntu2404.pin \
  && mv cuda-ubuntu2404.pin /etc/apt/preferences.d/cuda-repository-pin-600  \
- && apt-get update && apt-get -y install gcc-14 g++-14 \
- && wget https://developer.download.nvidia.com/compute/cuda/12.8.2/local_installers/cuda-repo-ubuntu2404-12-8-local_12.8.2-570.211.01-1_amd64.deb \
- && dpkg -i cuda-repo-ubuntu2404-12-8-local_12.8.2-570.211.01-1_amd64.deb && rm *.deb \
+ && apt-get update && apt-get -y install --no-install-recommends gcc-14 g++-14 \
+ && wget --progress=dot:giga https://developer.download.nvidia.com/compute/cuda/12.8.2/local_installers/cuda-repo-ubuntu2404-12-8-local_12.8.2-570.211.01-1_amd64.deb \
+ && dpkg -i cuda-repo-ubuntu2404-12-8-local_12.8.2-570.211.01-1_amd64.deb && rm ./*.deb \
  && cp /var/cuda-repo-ubuntu2404-12-8-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
  && apt-get update \
- && apt-get -y install cuda-toolkit-12-8 \
+ && apt-get -y install --no-install-recommends cuda-nvcc-12-8 cuda-nvrtc-dev-12-8 cuda-opencl-dev-12-8 \
+ && apt-get remove -y --purge "cuda-repo-ubuntu2404-12-8-local*" \
  && sh /tmp/fix-cuda-glibc-noexcept.sh /usr/local/cuda \
  && printf '#include <cmath>\n#include <math.h>\n__global__ void k(double* p, float* q) { p[0] = sinpi(p[0]) + cospi(p[0]) + rsqrt(p[0]); q[0] = sinpif(q[0]) + cospif(q[0]) + rsqrtf(q[0]); }\n' > /tmp/t.cu \
  && /usr/local/cuda/bin/nvcc -ccbin g++-14 -c /tmp/t.cu -o /tmp/t.o \
