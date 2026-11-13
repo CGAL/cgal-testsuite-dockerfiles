@@ -47,7 +47,7 @@ RUN groupadd -r makepkg && \
 USER 10000
 WORKDIR /tmp/makepkg
 RUN set -e; \
-    for PKG in ipe esbtl librs; do \
+    for PKG in ipe esbtl; do \
         if curl -sSL -o "${PKG}.tar.gz" "https://aur.archlinux.org/cgit/aur.git/snapshot/${PKG}.tar.gz" && \
            tar xzf "${PKG}.tar.gz" && \
            rm "${PKG}.tar.gz" && \
