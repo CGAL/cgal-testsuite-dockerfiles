@@ -2,7 +2,7 @@ FROM archlinux:base-devel AS cgal-common
 
 # Install additional packages beyond the baseline.
 # Install dependencies of the AUR (user repository) packages to be built from source later
-#   ipe: freetype2, lua, poppler, python3, zlib
+#   ipe: freetype2, gsl, libspiro, lua, poppler, python3, qtspell, zlib
 #   leda-free: tcsh
 # and clean up the package cache
 RUN pacman-key --init && pacman --noconfirm -Syu archlinux-keyring && \
@@ -22,7 +22,7 @@ RUN pacman-key --init && pacman --noconfirm -Syu archlinux-keyring && \
 	          intel-tbb \
                   nlohmann-json \
     && pacman -S --needed --noconfirm --asdeps \
-                 freetype2 lua poppler python3 zlib \
+                 freetype2 gsl libspiro lua poppler python3 qtspell zlib \
                  tcsh \
     && pacman -Scc --noconfirm
 # Install the latest CMake from GitHub's default branch.
