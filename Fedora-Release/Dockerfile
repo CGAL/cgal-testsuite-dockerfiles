@@ -1,7 +1,7 @@
 ARG base_image=cgal/testsuite-docker:fedora
 FROM ${base_image} AS cgal-common
 
-RUN dnf -y install libasan && dnf clean all
+RUN dnf -y install --setopt=install_weak_deps=False libasan && dnf clean all
 
 ENV CGAL_TEST_PLATFORM="Fedora-Release"
 ENV CGAL_SUMMARY_NAME="Fedora-latest-Release-ASAN"

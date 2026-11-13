@@ -1,5 +1,11 @@
 ignored:
+  # Specify package versions in dnf install commands.
   - DL3041
+  # Use WORKDIR instead of cd to change directories.
   - DL3003
+  # Pin image tags to release versions instead of using latest.
+  - DL3007
+  # Pin package versions in apt-get install commands.
   - DL3008
+  # COPY --from should reference a previously defined FROM alias; root is a named build context here.
   - DL3022
