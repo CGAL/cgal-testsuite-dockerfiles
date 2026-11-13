@@ -38,7 +38,7 @@ RUN dnf -y install \
     libssh-devel \
     lsb-release \
     json-devel \
-    InsightToolkit-devel gdcm-devel libminc-devel \
+    InsightToolkit-devel gdcm-devel libminc-devel vxl-devel \
     fast_float-devel
 
 # Copy and run the script to install LAStools
