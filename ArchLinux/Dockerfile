@@ -1,9 +1,8 @@
 FROM archlinux:base-devel AS cgal-common
 
 # Install additional packages beyond the baseline.
-# Install dependencies of the AUR (user repository) packages to be built from source later
+# Install dependencies of the AUR (user repository) packages to be built from source later.
 #   ipe: freetype2, gsl, libspiro, lua, poppler, python3, qtspell, zlib
-#   leda-free: tcsh
 # and clean up the package cache
 RUN pacman-key --init && pacman --noconfirm -Syu archlinux-keyring && \
     pacman -Syu --noconfirm && pacman -S --needed --noconfirm \
@@ -23,7 +22,6 @@ RUN pacman-key --init && pacman --noconfirm -Syu archlinux-keyring && \
                   nlohmann-json \
     && pacman -S --needed --noconfirm --asdeps \
                  freetype2 gsl libspiro lua poppler python3 qtspell zlib \
-                 tcsh \
     && pacman -Scc --noconfirm
 # Install the latest CMake from GitHub's default branch.
 RUN git clone --depth 1 https://github.com/Kitware/CMake.git \
@@ -49,7 +47,7 @@ RUN groupadd -r makepkg && \
 USER 10000
 WORKDIR /tmp/makepkg
 RUN set -e; \
-    for PKG in ipe esbtl leda-free librs; do \
+    for PKG in ipe esbtl librs; do \
         if curl -sSL -o "${PKG}.tar.gz" "https://aur.archlinux.org/cgit/aur.git/snapshot/${PKG}.tar.gz" && \
            tar xzf "${PKG}.tar.gz" && \
            rm "${PKG}.tar.gz" && \
@@ -79,15 +77,10 @@ RUN pacman -Syu --noconfirm --needed unzip wget && pacman -Scc --noconfirm
 COPY --from=root install_lastools.sh LAStools.patch /tmp/
 RUN bash /tmp/install_lastools.sh
 
-# LEDA includes are in a nonstandard location (/usr/include/LEDA/LEDA/...
-# instead of just /usr/include/LEDA/...) in Stephan Friedrich's AUR package,
-# to avoid conflicts with other files.
-#
 # The CMAKE_GENERATOR trick is used to pass a CMake variable to each CMake
 # run by the testsuite.
 #
-ENV CGAL_TEST_PLATFORM="ArchLinux" \
-    LEDA_INC_DIR=/usr/include/LEDA
+ENV CGAL_TEST_PLATFORM="ArchLinux"
 
 # Try to fix a strange bug with clang
 # where make complains about files in /include:
