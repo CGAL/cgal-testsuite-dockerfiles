@@ -2,12 +2,13 @@ ARG base_image=cgal/testsuite-docker:ubuntu
 FROM ${base_image} AS cgal-common
 
 #add qt6 as it is not run on cgal.gf.com
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     libgl-dev \
     qt6-base-dev \
     qt6-declarative-dev \
     qt6-svg-dev \
-    qt6-websockets-dev
+    qt6-websockets-dev \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest-NO_DEPRECATED_CODE"
 ENV CGAL_SUMMARY_NAME="Ubuntu-latest-NO_DEPRECATED_CODE"

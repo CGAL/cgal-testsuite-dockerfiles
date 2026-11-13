@@ -1,6 +1,6 @@
 FROM debian:testing AS cgal-common
 
-RUN apt-get clean && apt-get update && apt-get install -y \
+RUN apt-get clean && apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
     geomview \
@@ -36,31 +36,27 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     lsb-release \
     libvtk9-dev vtk9 \
     nlohmann-json3-dev \
-    wget
+    wget \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 #OpenMesh
 # https://www.graphics.rwth-aachen.de/media/openmesh_static/Releases/11.0/OpenMesh-11.0.0.tar.gz
-RUN  wget https://src.fedoraproject.org/repo/pkgs/rpms/OpenMesh/OpenMesh-11.0.0.tar.bz2/sha512/4667ef9ae935403455a57277bd81dd61eb967f81dcbcc8ce5a84d537d60db37b0155dc7c118b14f90e142e44b0a453fd98984de17e20fae62c86be2ddc6e9a69/OpenMesh-11.0.0.tar.bz2 && \
+RUN  wget --progress=dot:giga https://src.fedoraproject.org/repo/pkgs/rpms/OpenMesh/OpenMesh-11.0.0.tar.bz2/sha512/4667ef9ae935403455a57277bd81dd61eb967f81dcbcc8ce5a84d537d60db37b0155dc7c118b14f90e142e44b0a453fd98984de17e20fae62c86be2ddc6e9a69/OpenMesh-11.0.0.tar.bz2 && \
+     printf '%s  %s\n' '4667ef9ae935403455a57277bd81dd61eb967f81dcbcc8ce5a84d537d60db37b0155dc7c118b14f90e142e44b0a453fd98984de17e20fae62c86be2ddc6e9a69' 'OpenMesh-11.0.0.tar.bz2' > /tmp/OpenMesh-11.0.0.sha512 && \
+     sha512sum -c /tmp/OpenMesh-11.0.0.sha512 && \
+     rm /tmp/OpenMesh-11.0.0.sha512 && \
      tar xf OpenMesh-11.0.0.tar.bz2 && \
-     cd OpenMesh-11.0.0/ && \
-     mkdir build && \
-     cd build && \
-     cmake -DCMAKE_BUILD_TYPE=Release .. && \
-     make && make install && \
-     cd ../.. && rm -r OpenMesh-11.0.0*
+     cmake -S /OpenMesh-11.0.0 -B /OpenMesh-11.0.0/build -DCMAKE_BUILD_TYPE=Release && \
+     cmake --build /OpenMesh-11.0.0/build --parallel "$(nproc)" && \
+     cmake --install /OpenMesh-11.0.0/build && \
+     rm -r /OpenMesh-11.0.0*
 
 RUN  git clone https://github.com/fastfloat/fast_float \
- &&  cd fast_float \
- &&  git checkout v8.3.3 \
- &&  mkdir build \
- &&  cd build \
- &&  cmake .. \
- &&  make install \
- && cd .. && rm -rf fast_float
-
-ENV OpenMesh_DIR=/OpenMesh-11.0.0/build
-
-
+ &&  git -C /fast_float checkout v8.3.3 \
+ &&  cmake -S /fast_float -B /fast_float/build \
+ &&  cmake --build /fast_float/build --parallel "$(nproc)" \
+ &&  cmake --install /fast_float/build \
+ &&  rm -rf /fast_float
 
 ENV CGAL_TEST_PLATFORM="Debian-Testing"
 ENV CGAL_SUMMARY_NAME="Debian-testing-Debug"

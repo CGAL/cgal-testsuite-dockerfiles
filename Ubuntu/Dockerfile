@@ -1,7 +1,7 @@
 FROM ubuntu:latest AS cgal-common
 ENV CMAKE_POLICY_VERSION_MINIMUM=3.5
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential cmake \
     libopencv-dev \
     libsuitesparse-dev \
@@ -20,118 +20,83 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     qt6-declarative-dev \
     qt6-svg-dev \
     qt6-websockets-dev \
-    wget
+    wget \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 #install vtk 9.3 to work around an issue in vtk 9.3.1
-RUN wget https://www.vtk.org/files/release/9.3/VTK-9.3.1.tar.gz \
+RUN wget --progress=dot:giga https://www.vtk.org/files/release/9.3/VTK-9.3.1.tar.gz \
  && tar xf VTK-9.3.1.tar.gz \
- && cd VTK-9.3.1 \
  && sed -i 's/_M_chilren/m_children/g' /VTK-9.3.1/Utilities/octree/octree/octree_node.txx \
- && mkdir build \
- && cd build/ \
- && cmake -DCMAKE_BUILD_TYPE=Release .. \
- && make -j "$(nproc)" \
- && make install \
- && cd ../.. \
- && rm -rf VTK-9.3.1 \
- && rm  VTK-9.3.1.tar.gz
+ && cmake -S /VTK-9.3.1 -B /VTK-9.3.1/build -DCMAKE_BUILD_TYPE=Release \
+ && cmake --build /VTK-9.3.1/build --parallel "$(nproc)" \
+ && cmake --install /VTK-9.3.1/build \
+ && rm -rf /VTK-9.3.1 /VTK-9.3.1.tar.gz
 
 #manually install ITK compiled with our vtk version
-RUN wget https://github.com/InsightSoftwareConsortium/ITK/releases/download/v5.3.0/InsightToolkit-5.3.0.tar.gz \
+RUN wget --progress=dot:giga https://github.com/InsightSoftwareConsortium/ITK/releases/download/v5.3.0/InsightToolkit-5.3.0.tar.gz \
  && tar xf InsightToolkit-5.3.0.tar.gz \
- && cd InsightToolkit-5.3.0 \
- && mkdir build \
- && cd build/ \
- && export CFLAGS="-std=gnu17"; cmake -DCMAKE_BUILD_TYPE=Release .. \
+ && export CFLAGS="-std=gnu17" \
+ && cmake -S /InsightToolkit-5.3.0 -B /InsightToolkit-5.3.0/build -DCMAKE_BUILD_TYPE=Release \
  && sed -i '1 i\#include <stdint.h>' /InsightToolkit-5.3.0/Modules/Core/Common/include/itkFloatingPointExceptions.h \
  && sed -i '1 i\#include <stdint.h>' /InsightToolkit-5.3.0/Modules/Filtering/MathematicalMorphology/include/itkMathematicalMorphologyEnums.h \
- && make -j "$(nproc)" VERBOSE=1\
- && make install \
- && cd ../.. \
- && rm InsightToolkit-5.3.0 -r \
- && rm InsightToolkit-5.3.0.tar.gz
+ && cmake --build /InsightToolkit-5.3.0/build --parallel "$(nproc)" --verbose \
+ && cmake --install /InsightToolkit-5.3.0/build \
+ && rm -rf /InsightToolkit-5.3.0 /InsightToolkit-5.3.0.tar.gz
 
 RUN git clone https://github.com/STORM-IRIT/OpenGR.git --depth 1 \
- && cd ./OpenGR \
- && mkdir build \
- && cd build \
- && cmake .. \
- && make -j"$(nproc)" \
- && make install \
+ && cmake -S /OpenGR -B /OpenGR/build \
+ && cmake --build /OpenGR/build --parallel "$(nproc)" \
+ && cmake --install /OpenGR/build \
  && mkdir -p /usr/local/lib/cmake/opengr \
- && cd ../.. \
- && rm -rf ./OpenGR
+ && rm -rf /OpenGR
 
 RUN git clone https://github.com/ethz-asl/libnabo.git --depth 1 \
- && cd libnabo \
- && SRC_DIR=`pwd` && BUILD_DIR=${SRC_DIR}/build \
- && mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} \
- && cmake -DCMAKE_BUILD_TYPE=Release -DUSE_OPEN_MP=False ${SRC_DIR} \
- && make && make install \
- && cd ../.. && rm -rf libnado
+ && cmake -S /libnabo -B /libnabo/build -DCMAKE_BUILD_TYPE=Release -DUSE_OPEN_MP=False \
+ && cmake --build /libnabo/build --parallel "$(nproc)" \
+ && cmake --install /libnabo/build \
+ && rm -rf /libnabo
 
 RUN git clone https://github.com/ethz-asl/libpointmatcher.git \
- && cd libpointmatcher \
- && git switch -d 3eb448330b \
- && sed -i 's/Boost_USE_STATIC_LIBS  ON/Boost_USE_STATIC_LIBS  OFF/' CMakeLists.txt \
- && sed -i 's/thread system/thread/' libpointmatcherConfig.cmake.in CMakeLists.txt\
- && SRC_DIR=`pwd` \
- && BUILD_DIR=${SRC_DIR}/build \
- && mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} \
- && cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF -DBUILD_EVALUATIONS=OFF ${SRC_DIR} \
- && make -j"$(nproc)" && make install \
- && cd ../.. && rm -rf libpointmatcher
+ && git -C /libpointmatcher switch -d 3eb448330b \
+ && sed -i 's/Boost_USE_STATIC_LIBS  ON/Boost_USE_STATIC_LIBS  OFF/' /libpointmatcher/CMakeLists.txt \
+ && sed -i 's/thread system/thread/' /libpointmatcher/libpointmatcherConfig.cmake.in /libpointmatcher/CMakeLists.txt \
+ && cmake -S /libpointmatcher -B /libpointmatcher/build -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF -DBUILD_EVALUATIONS=OFF \
+ && cmake --build /libpointmatcher/build --parallel "$(nproc)" \
+ && cmake --install /libpointmatcher/build \
+ && rm -rf /libpointmatcher
  # Commit 3eb448330b is 1.4.4
 
 RUN git clone --recursive https://github.com/oxfordcontrol/osqp  --depth 1 \
- && cd ./osqp \
- && mkdir build \
- && cd build \
- && cmake .. \
- && make -j"$(nproc)" \
- && make install \
- && cd ../.. \
- && rm -rf osqp
+ && cmake -S /osqp -B /osqp/build \
+ && cmake --build /osqp/build --parallel "$(nproc)" \
+ && cmake --install /osqp/build \
+ && rm -rf /osqp
 
 RUN git clone https://github.com/scipopt/soplex --depth 1 \
- && cd soplex \
- && mkdir build \
- && cd build \
- && cmake .. \
- && make -j"$(nproc)" \
- && make install \
- && cd ../.. \
- && rm -rf soplex
+ && cmake -S /soplex -B /soplex/build \
+ && cmake --build /soplex/build --parallel "$(nproc)" \
+ && cmake --install /soplex/build \
+ && rm -rf /soplex
 
 RUN git clone https://github.com/scipopt/scip --depth 1 \
- && cd scip \
- && mkdir build \
- && cd build \
- && cmake -DAUTOBUILD=ON .. \
- && make -j"$(nproc)" \
- && make install \
- && cd ../.. \
- && rm -rf scip
+ && cmake -S /scip -B /scip/build -DAUTOBUILD=ON \
+ && cmake --build /scip/build --parallel "$(nproc)" \
+ && cmake --install /scip/build \
+ && rm -rf /scip
 
 RUN git clone https://ceres-solver.googlesource.com/ceres-solver \
- && cd ceres-solver \
- && git checkout 2.2.0 \
- && mkdir build \
- && cd build \
- && cmake -DMINIGLOG=ON -DMINIGLOG_MAX_LOG_LEVEL=0 .. \
- && make -j"$(nproc)" \
- && make install \
- && cd ../.. \
- && rm -rf ceres-solver
+ && git -C /ceres-solver checkout 2.2.0 \
+ && cmake -S /ceres-solver -B /ceres-solver/build -DMINIGLOG=ON -DMINIGLOG_MAX_LOG_LEVEL=0 \
+ && cmake --build /ceres-solver/build --parallel "$(nproc)" \
+ && cmake --install /ceres-solver/build \
+ && rm -rf /ceres-solver
 
 RUN  git clone https://github.com/fastfloat/fast_float \
- &&  cd fast_float \
- &&  git checkout v8.3.3 \
- &&  mkdir build \
- &&  cd build \
- &&  cmake .. \
- &&  make install \
- && cd ../.. && rm -rf fast_float
+ &&  git -C /fast_float checkout v8.3.3 \
+ &&  cmake -S /fast_float -B /fast_float/build \
+ &&  cmake --build /fast_float/build --parallel "$(nproc)" \
+ &&  cmake --install /fast_float/build \
+ && rm -rf /fast_float
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-Latest"
 ENV CGAL_SUMMARY_NAME="Ubuntu-latest-Debug"

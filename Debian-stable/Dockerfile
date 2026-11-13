@@ -1,6 +1,6 @@
 FROM debian:stable AS cgal-common
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libmetis-dev \
     geomview \
@@ -33,13 +33,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN  git clone https://github.com/fastfloat/fast_float \
- &&  cd fast_float \
- &&  git checkout v8.3.3 \
- &&  mkdir build \
- &&  cd build \
- &&  cmake .. \
- &&  make install \
- && cd .. && rm -rf fast_float
+ &&  git -C /fast_float checkout v8.3.3 \
+ &&  cmake -S /fast_float -B /fast_float/build \
+ &&  cmake --build /fast_float/build --parallel "$(nproc)" \
+ &&  cmake --install /fast_float/build \
+ &&  rm -rf /fast_float
 
 
 ENV CGAL_TEST_PLATFORM="Debian-Stable"
