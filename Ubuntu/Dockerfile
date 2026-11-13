@@ -3,6 +3,7 @@ ENV CMAKE_POLICY_VERSION_MINIMUM=3.5
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential cmake \
+    ca-certificates \
     libopencv-dev \
     libsuitesparse-dev \
     tar \

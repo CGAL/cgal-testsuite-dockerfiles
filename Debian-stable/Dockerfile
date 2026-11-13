@@ -2,6 +2,7 @@ FROM debian:stable AS cgal-common
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    ca-certificates \
     libmetis-dev \
     geomview \
     libboost-dev \

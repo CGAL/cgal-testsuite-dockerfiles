@@ -25,8 +25,8 @@ RUN pacman-key --init && pacman --noconfirm -Syu archlinux-keyring && \
                  freetype2 lua poppler python3 zlib \
                  tcsh \
     && pacman -Scc --noconfirm
-# Install the latest CMake from the `next` branch on GitHub.
-RUN git clone --branch next --depth 1 https://github.com/Kitware/CMake.git \
+# Install the latest CMake from GitHub's default branch.
+RUN git clone --depth 1 https://github.com/Kitware/CMake.git \
     && cd ./CMake \
     && mkdir build \
     && cd build \
