@@ -1,9 +1,10 @@
 ARG base_image=cgal/testsuite-docker:debian-testing
 FROM ${base_image} AS cgal-common
 
-RUN apt-get update -y && apt-get install -y --no-install-recommends wget \
+RUN apt-get update -y && apt-get install -y --no-install-recommends ca-certificates curl \
 && install -d -m 0755 /etc/apt/keyrings \
-&& wget -qO /etc/apt/keyrings/apt.llvm.org.asc https://apt.llvm.org/llvm-snapshot.gpg.key \
+&& curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --connect-timeout 15 --max-time 60 \
+     --output /etc/apt/keyrings/apt.llvm.org.asc https://apt.llvm.org/llvm-snapshot.gpg.key \
 && echo 'deb [signed-by=/etc/apt/keyrings/apt.llvm.org.asc] https://apt.llvm.org/unstable/ llvm-toolchain main' > /etc/apt/sources.list.d/llvm.list \
 && apt-get update -y \
 && apt-get install -y --no-install-recommends clang-22 \
