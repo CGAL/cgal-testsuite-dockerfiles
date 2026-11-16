@@ -1,16 +1,15 @@
 ARG base_image=cgal/testsuite-docker:ubuntu
 FROM ${base_image} AS cgal-common
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     liblapack-dev \
     libopenblas-dev \
     openmpi-bin \
     libopenmpi-dev \
-    && apt-get clean
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN buildDeps='bison flex libmpc-dev g++ ' \
- && apt-get update && apt-get install -y $buildDeps --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends bison flex libmpc-dev g++ \
  && git clone https://github.com/gcc-mirror/gcc.git --depth 1 \
  && cd gcc \
  && mkdir objdir \
@@ -23,7 +22,8 @@ RUN buildDeps='bison flex libmpc-dev g++ ' \
  && rm -rf ./gcc \
  && sed -i '1s/^/\/usr\/local\/lib64\n/' /etc/ld.so.conf \
  && ldconfig \
- && apt-get purge -y --auto-remove $buildDeps
+ && apt-get purge -y --auto-remove bison flex libmpc-dev g++ \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN git clone -b develop --depth=1 --shallow-submodules --recursive https://github.com/boostorg/boost.git && \
         cd boost && git submodule update -q && \
@@ -32,9 +32,11 @@ RUN git clone -b develop --depth=1 --shallow-submodules --recursive https://gith
         cd .. && rm -rf boost
 
 RUN git clone --depth=1 --shallow-submodules  https://gitlab.com/libeigen/eigen.git && \
-        cd eigen && git submodule update --quiet --init --recursive && \
-        mkdir build && cd build && \
-        cmake .. && make install && cd .. && rm -rf eigen
+        git -C /eigen submodule update --quiet --init --recursive && \
+        cmake -S /eigen -B /eigen/build && \
+        cmake --build /eigen/build --parallel "$(nproc)" && \
+        cmake --install /eigen/build && \
+        rm -rf /eigen
 
 ENV CGAL_TEST_PLATFORM="Ubuntu-latest-GCC6"
 ENV CGAL_SUMMARY_NAME="Ubuntu-latest-GCC_master-Debug"

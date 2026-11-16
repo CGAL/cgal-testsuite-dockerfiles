@@ -7,7 +7,7 @@ FROM ${base_image} AS cgal-common
 ENV CGAL_TEST_PLATFORM="Ubuntu-no-gmp-no-leda"
 ENV CGAL_SUMMARY_NAME="Ubuntu-latest-no-gmp-no-leda"
 ENV INIT_FILE=/init.cmake
-COPY ./init.cmake .
+COPY ./init.cmake /init.cmake
 
 # Install Cuda 12.8. and libProtoSphere for Sphere_packing
 COPY fix-cuda-glibc-noexcept.sh /tmp/
@@ -25,17 +25,13 @@ RUN sed -i 's/\r$//' /tmp/fix-cuda-glibc-noexcept.sh \
  && printf '#include <cmath>\n#include <math.h>\n__global__ void k(double* p, float* q) { p[0] = sinpi(p[0]) + cospi(p[0]) + rsqrt(p[0]); q[0] = sinpif(q[0]) + cospif(q[0]) + rsqrtf(q[0]); }\n' > /tmp/t.cu \
  && /usr/local/cuda/bin/nvcc -ccbin g++-14 -c /tmp/t.cu -o /tmp/t.o \
  && rm -f /tmp/t.cu /tmp/t.o /tmp/fix-cuda-glibc-noexcept.sh \
- && cd /home  \
- && git clone https://github.com/NVIDIA/cuda-samples.git \
- && git clone -b test_cgal https://gitlab.informatik.uni-bremen.de/cgvr_public/protosphereextended.git \
- && cd protosphereextended \
- && mkdir build \
- && cd build/ \
- && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-14 -DCUDA_EXAMPLE_INCLUDE_DIR=/home/cuda-samples/Common .. \
- && make -j "$(nproc)" \
- && make install \
- && cd /home \
- && rm -rf protosphereextended cuda-samples
+ && git clone https://github.com/NVIDIA/cuda-samples.git /home/cuda-samples \
+ && git clone -b test_cgal https://gitlab.informatik.uni-bremen.de/cgvr_public/protosphereextended.git /home/protosphereextended \
+ && cmake -S /home/protosphereextended -B /home/protosphereextended/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-14 -DCUDA_EXAMPLE_INCLUDE_DIR=/home/cuda-samples/Common \
+ && cmake --build /home/protosphereextended/build --parallel "$(nproc)" \
+ && cmake --install /home/protosphereextended/build \
+ && rm -rf /home/protosphereextended /home/cuda-samples \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 FROM cgal-common AS cgal-base
 ARG dockerfile_url

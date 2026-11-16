@@ -1,16 +1,17 @@
 ARG base_image=cgal/testsuite-docker:debian-stable
 FROM ${base_image} AS cgal-common
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc-arm-linux-gnueabihf \
     g++-arm-linux-gnueabihf \
     ssh \
     python3 \
-    gzip
+    gzip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV CGAL_TEST_PLATFORM="Debian-stable-cross-compilation-for-arm"
-COPY ./startup.sh .
-CMD bash ./startup.sh
+COPY ./startup.sh /startup.sh
+CMD ["bash", "/startup.sh"]
 
 FROM cgal-common AS cgal-base
 ARG dockerfile_url

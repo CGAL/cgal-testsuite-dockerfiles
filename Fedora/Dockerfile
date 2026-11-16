@@ -1,7 +1,7 @@
 FROM fedora:latest AS cgal-common
 
-RUN dnf -y update; dnf clean all
-RUN dnf -y install \
+RUN dnf -y upgrade --refresh && \
+  dnf -y install --setopt=install_weak_deps=False \
     boost-devel.x86_64 \
     awk \
     patch \
@@ -39,11 +39,12 @@ RUN dnf -y install \
     lsb-release \
     json-devel \
     InsightToolkit-devel gdcm-devel libminc-devel vxl-devel \
-    fast_float-devel
+    fast_float-devel && \
+  dnf clean all
 
 # Copy and run the script to install LAStools
 COPY --from=root install_lastools.sh LAStools.patch /tmp/
-RUN chmod +x /tmp/install_lastools.sh && bash /tmp/install_lastools.sh
+RUN bash /tmp/install_lastools.sh
 
 ENV CGAL_TEST_PLATFORM="Fedora"
 ENV CGAL_SUMMARY_NAME="Fedora-latest-Debug"

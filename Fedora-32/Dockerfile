@@ -1,7 +1,7 @@
 FROM fedora:latest AS cgal-common
 
-RUN dnf -y update; dnf clean all
-RUN dnf -y install \
+RUN dnf -y update && dnf clean all
+RUN dnf -y install --setopt=install_weak_deps=False \
     awk util-linux \
     boost-devel.i686 \
     cmake \
@@ -28,13 +28,11 @@ RUN dnf -y install \
     'zlib-devel(x86-32)' && dnf clean all
 
 RUN  git clone https://github.com/fastfloat/fast_float \
- &&  cd fast_float \
- &&  git checkout v8.3.3 \
- &&  mkdir build \
- &&  cd build \
- &&  cmake .. \
- &&  make install \
- && cd .. && rm -rf fast_float
+ &&  git -C /fast_float checkout v8.3.3 \
+ &&  cmake -S /fast_float -B /fast_float/build \
+ &&  cmake --build /fast_float/build --parallel "$(nproc)" \
+ &&  cmake --install /fast_float/build \
+ && rm -rf /fast_float
 
 ENV CC="gcc -m32" CXX="g++ -m32"
 ENV CGAL_TEST_PLATFORM="Fedora-32"
